@@ -1,0 +1,246 @@
+*indent_blankline.txt*        Show vertical lines for indent on empty lines
+
+
+Author: Lukas Reineke <lukas.reineke@protonmail.com>
+Version: 1.0.0
+
+==============================================================================
+CONTENTS                                                    *indent-blankline*
+
+  1. Introduction                          |indent-blankline-introduction|
+  2. Variables                             |indent-blankline-variables|
+  3. Commands                              |indent-blankline-commands|
+  4. Changelog                             |indent-blankline-changelog|
+  5. License                               |indent-blankline-license|
+
+==============================================================================
+ 1. INTRODUCTION                               *indent-blankline-introduction*
+
+This plugin displays indentation guides on empty lines using Neovims virtual
+text feature.
+
+The guides are generated asynchronously by an embedded read-only instance of
+Neovim.
+
+It is recommended, but not required, to use it together
+with https://github.com/Yggdroot/indentLine
+
+This plugin will read setting values from the indentLine plugin as well.
+The settings resolve with following priority
+
+|indent-blankline| > |indentLine| > default
+
+==============================================================================
+ 2. VARIABLES                                     *indent-blankline-variables*
+
+g:indent_blankline_char                              *g:indent_blankline_char*
+
+    Specifies the character to be used as indent line.
+    Not used if |g:indent_blankline_char_list| is not empty.
+
+    Also set by |g:indentLine_char|
+
+    Default: '|'                                                             ~
+
+    Example: >
+
+        let g:indent_blankline_char = '|'
+
+------------------------------------------------------------------------------
+g:indent_blankline_char_list                    *g:indent_blankline_char_list*
+
+    Specifies a list of characters to be used as indent line for
+    each indentation level.
+    Ignored if the value is an empty list.
+
+    Also set by |g:indentLine_char_list|
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_char_list = ['|', '¦', '┆', '┊']
+
+------------------------------------------------------------------------------
+g:indent_blankline_space_char                  *g:indent_blankline_space_char*
+
+    Specifies the character to be used as the space value in between indent
+    lines.
+
+    Default: The listchars space value                                       ~
+
+    Example: >
+
+        let g:indent_blankline_space_char = ' '
+
+------------------------------------------------------------------------------
+g:indent_blankline_indent_level              *g:indent_blankline_indent_level*
+
+    Specifies the maximum indent level to display.
+
+    Also set by |g:indentLine_indentLevel|
+
+    Default: 10                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_indent_level = 4
+
+------------------------------------------------------------------------------
+g:indent_blankline_enabled                        *g:indent_blankline_enabled*
+
+    Turns this plugin on or off globally.
+
+    Also set by |g:indentLine_enabled|
+
+    Default: v:true                                                          ~
+
+    Example: >
+
+        let g:indent_blankline_enabled = v:false
+
+------------------------------------------------------------------------------
+g:indent_blankline_filetype                      *g:indent_blankline_filetype*
+
+    Specifies a list of |filetype| values for which this plugin is enabled.
+    All |filetypes| are enabled if the value is an empty list.
+
+    Also set by |g:indentLine_fileType|
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_filetype = ['vim']
+
+------------------------------------------------------------------------------
+g:indent_blankline_filetype_exclude      *g:indent_blankline_filetype_exclude*
+
+    Specifies a list of |filetype| values for which this plugin is not enabled.
+    Ignored if the value is an empty list.
+
+    Also set by |g:indentLine_fileTypeExclude|
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_filetype_exclude = ['help']
+
+------------------------------------------------------------------------------
+g:indent_blankline_buftype_exclude        *g:indent_blankline_buftype_exclude*
+
+    Specifies a list of |buftype| values for which this plugin is not enabled.
+    Ignored if the value is an empty list.
+
+    Also set by |g:indentLine_bufTypeExclude|
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_buftype_exclude = ['terminal']
+
+------------------------------------------------------------------------------
+g:indent_blankline_bufname_exclude        *g:indent_blankline_bufname_exclude*
+
+    Specifies a list of buffer names (file name with full path) for which
+    this plugin is not enabled.
+    A name can be regular expression as well.
+
+    Also set by |g:indentLine_bufNameExclude|
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_bufname_exclude = ['README.md', '.*\.py']
+
+==============================================================================
+ 3. COMMANDS                                       *indent-blankline-commands*
+
+IndentBlanklineRefresh                                *IndentBlanklineRefresh*
+
+    Refreshes the indent guides for the current buffer.
+    Run this with |autocmd| when the file changes. For example after a plugin
+    formats the file.
+
+    By default it is run for:
+      1. |Syntax| *
+      2. |BufWritePost| *
+      3. |FileChangedShellPost| *
+      3. |OptionSet| shiftwidth,tabstop
+
+    Example: >
+
+        autocmd User ALEFixPost IndentBlanklineRefresh
+
+------------------------------------------------------------------------------
+IndentBlanklineEnable                                  *IndentBlanklineEnable*
+
+    Enables this plugin for the current buffer.
+    This overwrites any include/exclude rules.
+
+------------------------------------------------------------------------------
+IndentBlanklineDisable                                *IndentBlanklineDisable*
+
+    Disables this plugin for the current buffer.
+    This overwrites any include/exclude rules.
+
+------------------------------------------------------------------------------
+IndentBlanklineToggle                                  *IndentBlanklineToggle*
+
+    Toggles between |IndentBlanklineEnable| and |IndentBlanklineDisable|.
+
+------------------------------------------------------------------------------
+IndentBlanklineEnableAll                            *IndentBlanklineEnableAll*
+
+    Same as |IndentBlanklineEnable|, but also calls |IndentLinesEnable| if
+    available.
+
+------------------------------------------------------------------------------
+IndentBlanklineDisableAll                          *IndentBlanklineDisableAll*
+
+    Same as |IndentBlanklineDisable|, but also calls |IndentLinesDisable| if
+    available.
+
+------------------------------------------------------------------------------
+IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
+
+    Same as |IndentBlanklineToggle|, but also calls |IndentLinesToggle| if
+    available.
+
+==============================================================================
+ 4. CHANGELOG                                           *indentLine-changelog*
+
+1.0.0
+  * First release
+
+==============================================================================
+ 5. LICENSE                                         *indent-blankline-license*
+
+The MIT Licence
+http://www.opensource.org/licenses/mit-license.php
+
+Copyright (c) 2020 Lukas Reineke
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl
