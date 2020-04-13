@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.0.1
+Version: 1.0.2
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -225,6 +225,10 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 
 ==============================================================================
  4. CHANGELOG                                           *indentLine-changelog*
+
+1.0.2
+* Fixed wrong variable reference form `indentLine_bufTypeExclude`
+  to `indent_blankline_buftype_exclude`
 
 1.0.1
   * Fixed typo in docs
