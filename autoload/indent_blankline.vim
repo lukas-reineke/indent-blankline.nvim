@@ -1,7 +1,7 @@
 
 function! indent_blankline#Init()
 
-    if len(nvim_list_uis()) ==# 0 || g:indent_blankline_enabled !=# 1
+    if len(nvim_list_uis()) ==# 0 || g:indent_blankline_enabled !=# v:true
         return
     endif
 
@@ -46,7 +46,7 @@ function! indent_blankline#BufferEnabled()
         return v:false
     endif
 
-    for name in g:indentLine_bufNameExclude
+    for name in g:indent_blankline_bufname_exclude
         if matchstr(bufname(''), name) == bufname('')
             return v:false
         endif
@@ -58,7 +58,7 @@ endfunction
 
 function! indent_blankline#Refresh()
 
-    if g:indent_blankline_enabled !=# 1 || !indent_blankline#BufferEnabled()
+    if g:indent_blankline_enabled !=# v:true || !indent_blankline#BufferEnabled()
         if get(b:, 'set_indent_blankline', v:false) && exists('g:indent_blankline_namespace')
             call nvim_buf_clear_namespace(0, g:indent_blankline_namespace, 1, -1)
         endif

@@ -100,6 +100,19 @@ g:indent_blankline_enabled                        *g:indent_blankline_enabled*
         let g:indent_blankline_enabled = v:false
 
 ------------------------------------------------------------------------------
+b:indent_blankline_enabled                        *b:indent_blankline_enabled*
+
+    Turns this plugin on or off for the buffer.
+
+    Also set by |b:indentLine_enabled|
+
+    Default: v:true                                                          ~
+
+    Example: >
+
+        let b:indent_blankline_enabled = v:false
+
+------------------------------------------------------------------------------
 g:indent_blankline_filetype                      *g:indent_blankline_filetype*
 
     Specifies a list of |filetype| values for which this plugin is enabled.
