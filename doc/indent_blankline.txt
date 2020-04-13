@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.0.1
+Version: 1.0.2
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -98,6 +98,19 @@ g:indent_blankline_enabled                        *g:indent_blankline_enabled*
     Example: >
 
         let g:indent_blankline_enabled = v:false
+
+------------------------------------------------------------------------------
+b:indent_blankline_enabled                        *b:indent_blankline_enabled*
+
+    Turns this plugin on or off for the buffer.
+
+    Also set by |b:indentLine_enabled|
+
+    Default: v:true                                                          ~
+
+    Example: >
+
+        let b:indent_blankline_enabled = v:false
 
 ------------------------------------------------------------------------------
 g:indent_blankline_filetype                      *g:indent_blankline_filetype*
@@ -212,6 +225,10 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 
 ==============================================================================
  4. CHANGELOG                                           *indentLine-changelog*
+
+1.0.2
+* Fixed wrong variable reference form `indentLine_bufTypeExclude`
+  to `indent_blankline_buftype_exclude`
 
 1.0.1
   * Fixed typo in docs
