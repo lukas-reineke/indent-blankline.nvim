@@ -213,6 +213,9 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 ==============================================================================
  4. CHANGELOG                                           *indentLine-changelog*
 
+1.0.1
+  * Fixed typo in docs
+
 1.0.0
   * First release
 
