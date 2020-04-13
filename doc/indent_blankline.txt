@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.0.0
+Version: 1.0.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -169,7 +169,7 @@ IndentBlanklineRefresh                                *IndentBlanklineRefresh*
       1. |Syntax| *
       2. |BufWritePost| *
       3. |FileChangedShellPost| *
-      3. |OptionSet| shiftwidth,tabstop
+      4. |OptionSet| shiftwidth,tabstop
 
     Example: >
 
@@ -212,6 +212,9 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 
 ==============================================================================
  4. CHANGELOG                                           *indentLine-changelog*
+
+1.0.1
+  * Fixed typo in docs
 
 1.0.0
   * First release
