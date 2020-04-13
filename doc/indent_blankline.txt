@@ -169,7 +169,7 @@ IndentBlanklineRefresh                                *IndentBlanklineRefresh*
       1. |Syntax| *
       2. |BufWritePost| *
       3. |FileChangedShellPost| *
-      3. |OptionSet| shiftwidth,tabstop
+      4. |OptionSet| shiftwidth,tabstop
 
     Example: >
 
