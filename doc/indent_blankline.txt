@@ -224,7 +224,7 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
     available.
 
 ==============================================================================
- 4. CHANGELOG                                           *indentLine-changelog*
+ 4. CHANGELOG                                           *indent-blankline-changelog*
 
 1.0.2
 * Fixed wrong variable reference form `indentLine_bufTypeExclude`
