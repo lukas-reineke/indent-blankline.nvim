@@ -84,6 +84,8 @@ function! indent_blankline#Refresh()
     catch /E475/
         call indent_blankline#Init()
         return
+    catch
+        echom 'indent_blankline encountered an error: ' . v:exception
     endtry
 
     let b:set_indent_blankline = v:true
