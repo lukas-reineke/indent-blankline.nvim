@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.0.3
+Version: 1.1.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -224,7 +224,11 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
     available.
 
 ==============================================================================
- 4. CHANGELOG                                           *indent-blankline-changelog*
+ 4. CHANGELOG                                     *indent-blankline-changelog*
+
+1.1.0
+ * Don't throw errors when `rpcnotify` fails. Just print the error message and
+   try again next time.
 
 1.0.3
  * Fixed wrong help tag
