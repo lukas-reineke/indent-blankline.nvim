@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.1.0
+Version: 1.2.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -237,6 +237,9 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 
 ==============================================================================
  4. CHANGELOG                                     *indent-blankline-changelog*
+
+1.2.0
+ * Added `g:indent_blankline_extra_indent_level` option.
 
 1.1.0
  * Don't throw errors when `rpcnotify` fails. Just print the error message and
