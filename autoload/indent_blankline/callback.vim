@@ -10,8 +10,13 @@ function! indent_blankline#callback#ApplyMatches(result, bufnr)
     for l:match in a:result
         let l:v_text = []
         let l:level = 0
+        let l:indent_level = min([ l:match['indent'] / l:space, g:indent_blankline_indent_level ])
 
-        for i in range(min([ l:match['indent'] / l:space, g:indent_blankline_indent_level ]))
+        if g:indent_blankline_extra_indent_level
+            let l:indent_level = l:indent_level + g:indent_blankline_extra_indent_level
+        endif
+
+        for i in range(l:indent_level)
             if n > 0
                 let l:char = g:indent_blankline_char_list[level % n]
                 let l:level += 1

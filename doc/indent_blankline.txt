@@ -87,6 +87,18 @@ g:indent_blankline_indent_level              *g:indent_blankline_indent_level*
         let g:indent_blankline_indent_level = 4
 
 ------------------------------------------------------------------------------
+g:indent_blankline_extra_indent_level  *g:indent_blankline_extra_indent_level*
+
+    Specifies the number of indentation levels to be added the computed value.
+    (can be negative as well)
+
+    Default: 0                                                               ~
+
+    Example: >
+
+        let g:indent_blankline_extra_indent_level = -1
+
+------------------------------------------------------------------------------
 g:indent_blankline_enabled                        *g:indent_blankline_enabled*
 
     Turns this plugin on or off globally.
