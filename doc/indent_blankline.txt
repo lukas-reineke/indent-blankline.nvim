@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.2.0
+Version: 1.2.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -237,6 +237,9 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 
 ==============================================================================
  4. CHANGELOG                                     *indent-blankline-changelog*
+
+1.2.1
+ * Fixed out of range bug with `g:indent_blankline_extra_indent_level`
 
 1.2.0
  * Added `g:indent_blankline_extra_indent_level` option.
