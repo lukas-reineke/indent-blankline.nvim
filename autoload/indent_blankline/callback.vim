@@ -16,7 +16,7 @@ function! indent_blankline#callback#ApplyMatches(result, bufnr)
             let l:indent_level = l:indent_level + g:indent_blankline_extra_indent_level
         endif
 
-        for i in range(l:indent_level)
+        for i in range(max([l:indent_level, 0]))
             if n > 0
                 let l:char = g:indent_blankline_char_list[level % n]
                 let l:level += 1
