@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.2.2
+Version: 1.3.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -181,6 +181,17 @@ g:indent_blankline_bufname_exclude        *g:indent_blankline_bufname_exclude*
 
         let g:indent_blankline_bufname_exclude = ['README.md', '.*\.py']
 
+------------------------------------------------------------------------------
+g:indent_blankline_debug                            *g:indent_blankline_debug*
+
+    Turns on error logging.
+
+    Default: v:false                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_debug = v:true
+
 ==============================================================================
  3. COMMANDS                                       *indent-blankline-commands*
 
@@ -237,6 +248,12 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 
 ==============================================================================
  4. CHANGELOG                                     *indent-blankline-changelog*
+
+1.3.0
+ * Error logs have more context
+ * More error logs
+ * Added `g:indent_blankline_debug` option to only display the errors logs
+   when needed
 
 1.2.2
  * Apply `indent_blankline_indent_level` after
