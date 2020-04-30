@@ -181,6 +181,17 @@ g:indent_blankline_bufname_exclude        *g:indent_blankline_bufname_exclude*
 
         let g:indent_blankline_bufname_exclude = ['README.md', '.*\.py']
 
+------------------------------------------------------------------------------
+g:indent_blankline_debug                            *g:indent_blankline_debug*
+
+    Turns on error logging.
+
+    Default: v:false                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_debug = v:true
+
 ==============================================================================
  3. COMMANDS                                       *indent-blankline-commands*
 

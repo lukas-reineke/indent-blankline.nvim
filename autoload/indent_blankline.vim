@@ -5,12 +5,20 @@ function! indent_blankline#Init()
         return
     endif
 
-    let g:indent_blankline_nvim_instance = jobstart(
-                \ ['nvim', '--embed', '--headless', '-R', '--cmd', 'set sessionoptions='],
-                \ { 'rpc': v:true }
-                \ )
+    try
+        let g:indent_blankline_nvim_instance = jobstart(
+                    \ ['nvim', '--embed', '--headless', '-R', '--cmd', 'set sessionoptions='],
+                    \ { 'rpc': v:true }
+                    \ )
 
-    call indent_blankline#Refresh()
+        call indent_blankline#Refresh()
+    catch
+        if g:indent_blankline_debug
+            echohl Error
+            echom 'indent-blankline encountered an error on init: ' . v:exception
+            echohl None
+        endif
+    endtry
 
 endfunction
 
@@ -60,7 +68,15 @@ function! indent_blankline#Refresh()
 
     if g:indent_blankline_enabled !=# v:true || !indent_blankline#BufferEnabled()
         if get(b:, 'set_indent_blankline', v:false) && exists('g:indent_blankline_namespace')
-            call nvim_buf_clear_namespace(0, g:indent_blankline_namespace, 1, -1)
+            try
+                call nvim_buf_clear_namespace(0, g:indent_blankline_namespace, 1, -1)
+            catch
+                if g:indent_blankline_debug
+                    echohl Error
+                    echom 'indent-blankline encountered an error while cleaning the namespace: ' . v:exception
+                    echohl None
+                endif
+            endtry
         endif
         return
     endif
@@ -85,7 +101,11 @@ function! indent_blankline#Refresh()
         call indent_blankline#Init()
         return
     catch
-        echom 'indent_blankline encountered an error: ' . v:exception
+        if g:indent_blankline_debug
+            echohl Error
+            echom 'indent-blankline encountered an error on refresh: ' . v:exception
+            echohl None
+        endif
     endtry
 
     let b:set_indent_blankline = v:true
