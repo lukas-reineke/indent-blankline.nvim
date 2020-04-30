@@ -1,11 +1,11 @@
 
 function! indent_blankline#Init()
 
-    if len(nvim_list_uis()) ==# 0 || g:indent_blankline_enabled !=# v:true
-        return
-    endif
-
     try
+        if len(nvim_list_uis()) ==# 0 || g:indent_blankline_enabled !=# v:true
+            return
+        endif
+
         let g:indent_blankline_nvim_instance = jobstart(
                     \ ['nvim', '--embed', '--headless', '-R', '--cmd', 'set sessionoptions='],
                     \ { 'rpc': v:true }
