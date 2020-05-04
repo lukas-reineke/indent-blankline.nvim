@@ -13,12 +13,14 @@ function! indent_blankline#embedded#FindMatches(file, bufnr)
                 break
             endif
 
+            let l:indent = 0
+
             if &indentexpr ==# 'lisp'
                 let l:indent = lispindent(l:lnum)
             elseif &indentexpr !=# ''
                 let l:current_view = winsaveview()
                 let v:lnum = l:lnum
-                let l:indent = execute('echon '. &indentexpr)
+                execute('silent! let l:indent = '. &indentexpr)
                 call winrestview(l:current_view)
             else
                 let l:indent = cindent(l:lnum)
