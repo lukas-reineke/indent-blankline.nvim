@@ -1,7 +1,9 @@
 
 function! indent_blankline#embedded#FindMatches(file, bufnr)
     try
+        keepjumps
         execute ':edit ' . a:file
+        let l:view = winsaveview()
         call cursor(1, 1)
 
         let l:matches = []
@@ -34,5 +36,10 @@ function! indent_blankline#embedded#FindMatches(file, bufnr)
         call rpcrequest(1, 'vim_eval', 'indent_blankline#callback#ApplyMatches([' . join(l:matches, ', ') . '], ' . a:bufnr . ')')
     catch
         call rpcrequest(1, 'vim_eval', 'indent_blankline#callback#Error("' . v:exception . '")')
+    finally
+        if exists('l:view')
+            call winrestview(l:view)
+            bdelete
+        endif
     endtry
 endfunction
