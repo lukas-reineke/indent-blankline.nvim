@@ -17,7 +17,7 @@ let g:indent_blankline_extra_indent_level = get(g:, 'indent_blankline_extra_inde
 let g:indent_blankline_debug = get(g:, 'indent_blankline_debug', v:false)
 
 
-command! IndentBlanklineRefresh call indent_blankline#Refresh()
+command! IndentBlanklineRefresh lua require("indent_blankline").refresh()
 
 command! IndentBlanklineEnable call indent_blankline#commands#Enable()
 command! IndentBlanklineDisable call indent_blankline#commands#Disable()
@@ -29,8 +29,6 @@ command! IndentBlanklineToggleAll call indent_blankline#commands#ToggleAll()
 
 augroup IndentBlanklineAutogroup
     autocmd!
-    autocmd Syntax * IndentBlanklineRefresh
-    autocmd BufWritePost * IndentBlanklineRefresh
-    autocmd FileChangedShellPost * IndentBlanklineRefresh
     autocmd OptionSet shiftwidth,tabstop IndentBlanklineRefresh
+    autocmd FileChangedShellPost,Syntax,TextChanged,TextChangedI * IndentBlanklineRefresh
 augroup END

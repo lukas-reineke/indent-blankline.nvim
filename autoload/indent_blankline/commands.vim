@@ -6,14 +6,13 @@ endfunction
 
 function! indent_blankline#commands#Disable()
     let b:indent_blankline_enabled = v:false
-    let b:set_indent_blankline = v:false
     if exists('g:indent_blankline_namespace')
         call nvim_buf_clear_namespace(0, g:indent_blankline_namespace, 1, -1)
     endif
 endfunction
 
 function! indent_blankline#commands#Toggle()
-    if get(b:, 'set_indent_blankline', v:false)
+    if get(b:, 'indent_blankline_enabled', v:false)
         call indent_blankline#commands#Disable()
     else
         call indent_blankline#commands#Enable()
