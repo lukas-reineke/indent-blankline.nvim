@@ -41,19 +41,16 @@ local set_indent_blankline_enabled = function()
 end
 
 local refresh = function()
-    local buf = vim.api.nvim_get_current_buf()
-
     if vim.b.indent_blankline_enabled == nil then
         set_indent_blankline_enabled()
     end
 
-    if vim.g.indent_blankline_enabled == false or vim.b.indent_blankline_enabled == false then
-        vim.api.nvim_buf_clear_namespace(buf, vim.g.indent_blankline_namespace, 1, -1)
+    if not vim.g.indent_blankline_enabled or not vim.b.indent_blankline_enabled then
         return
     end
 
+    local buf = vim.api.nvim_get_current_buf()
     local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-
     local cache = {}
     local space
     local char = vim.g.indent_blankline_char
@@ -61,8 +58,9 @@ local refresh = function()
     local char_list = vim.g.indent_blankline_char_list
     local space_char = vim.g.indent_blankline_space_char
     local extra_indent_level = vim.g.indent_blankline_extra_indent_level
+    local expandtab = vim.bo.expandtab
 
-    if (vim.bo.shiftwidth == 0) then
+    if (vim.bo.shiftwidth == 0 or not expandtab) then
         space = vim.bo.tabstop
     else
         space = vim.bo.shiftwidth
@@ -103,7 +101,11 @@ local refresh = function()
 
             local v_text = {}
 
-            local indent_level = indent / space
+            local indent_level = indent
+
+            if (expandtab) then
+                indent_level = indent_level / space
+            end
 
             if extra_indent_level then
                 indent_level = indent_level + extra_indent_level
