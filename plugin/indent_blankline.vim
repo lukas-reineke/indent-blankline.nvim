@@ -1,5 +1,5 @@
 
-if exists('g:loaded_indent_blankline') || !has('nvim-0.4.0')
+if exists('g:loaded_indent_blankline') || !has('nvim-0.5.0')
     finish
 endif
 let g:loaded_indent_blankline = 1
