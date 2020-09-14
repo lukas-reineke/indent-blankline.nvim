@@ -16,8 +16,7 @@ let g:indent_blankline_buftype_exclude = get(g:, 'indent_blankline_buftype_exclu
 let g:indent_blankline_extra_indent_level = get(g:, 'indent_blankline_extra_indent_level', 0)
 let g:indent_blankline_debug = get(g:, 'indent_blankline_debug', v:false)
 
-
-command! IndentBlanklineRefresh lua require("indent_blankline").refresh()
+command! IndentBlanklineRefresh call indent_blankline#Refresh()
 
 command! IndentBlanklineEnable call indent_blankline#commands#Enable()
 command! IndentBlanklineDisable call indent_blankline#commands#Disable()
