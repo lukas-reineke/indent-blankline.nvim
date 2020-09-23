@@ -4,6 +4,14 @@ local M = {}
 
 vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace('indent_blankline')
 
+local function error_handler(err)
+    if vim.g.indent_blankline_debug then
+        vim.api.nvim_command('echohl Error')
+        vim.api.nvim_command('echom "' .. err .. '"')
+        vim.api.nvim_command('echohl None')
+    end
+end
+
 local set_indent_blankline_enabled = function()
     vim.b.indent_blankline_enabled = true
 
@@ -71,14 +79,19 @@ local refresh = function()
         async = vim.loop.new_async(function()
 
             if lines[i]:len() > 0 then
-                vim.schedule_wrap(function()
-                    vim.api.nvim_buf_clear_namespace(
-                        buf,
-                        vim.g.indent_blankline_namespace,
-                        i - 1,
-                        i
-                    )
-                end)()
+                vim.schedule_wrap(
+                    function()
+                        xpcall(function()
+                            vim.api.nvim_buf_clear_namespace(
+                                buf,
+                                vim.g.indent_blankline_namespace,
+                                i - 1,
+                                i
+                            )
+                        end, error_handler)
+                    end
+                )()
+
                 return
             end
 
@@ -124,29 +137,25 @@ local refresh = function()
                 v_text[i * 2] = {c, 'Whitespace'}
             end
 
-            vim.schedule_wrap(function()
-                vim.api.nvim_buf_set_virtual_text(
-                    buf,
-                    vim.g.indent_blankline_namespace,
-                    i - 1,
-                    v_text,
-                    vim.empty_dict()
-                )
-            end)()
+            vim.schedule_wrap(
+                function()
+                    xpcall(function()
+                        vim.api.nvim_buf_set_virtual_text(
+                            buf,
+                            vim.g.indent_blankline_namespace,
+                            i - 1,
+                            v_text,
+                            vim.empty_dict()
+                        )
+                    end, error_handler)
+                end
+            )()
 
             async:close()
 
         end)
 
         async:send()
-    end
-end
-
-local function error_handler(err)
-    if vim.g.indent_blankline_debug then
-        vim.api.nvim_command('echohl Error')
-        vim.api.nvim_command('echom "' .. err .. '"')
-        vim.api.nvim_command('echohl None')
     end
 end
 
