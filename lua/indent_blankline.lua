@@ -126,19 +126,16 @@ local refresh = function()
                 return async:close()
             end
 
-            local v_text = {}
-
-            local indent_level = indent
-
             if (expandtab) then
-                indent_level = indent_level / space
+                indent = indent / space
             end
 
             if extra_indent_level then
-                indent_level = indent_level + extra_indent_level
+                indent = indent + extra_indent_level
             end
 
-            for i = 1, math.min(math.max(indent_level, 0), max_indent_level) do
+            local v_text = {}
+            for i = 1, math.min(math.max(indent, 0), max_indent_level) do
                 local c
 
                 if #char_list > 0 then
