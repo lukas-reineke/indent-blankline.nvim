@@ -48,6 +48,17 @@ local set_indent_blankline_enabled = function()
     end
 end
 
+local clear_line_indent = function(buf, lnum)
+    xpcall(function()
+        vim.api.nvim_buf_clear_namespace(
+            buf,
+            vim.g.indent_blankline_namespace,
+            lnum - 1,
+            lnum
+        )
+    end, error_handler)
+end
+
 local refresh = function()
     if vim.b.indent_blankline_enabled == nil then
         set_indent_blankline_enabled()
@@ -77,22 +88,13 @@ local refresh = function()
     for i = 1, #lines do
         local async
         async = vim.loop.new_async(function()
-
             if lines[i]:len() > 0 then
                 vim.schedule_wrap(
                     function()
-                        xpcall(function()
-                            vim.api.nvim_buf_clear_namespace(
-                                buf,
-                                vim.g.indent_blankline_namespace,
-                                i - 1,
-                                i
-                            )
-                        end, error_handler)
+                        clear_line_indent(buf, i)
                     end
                 )()
-
-                return
+                return async:close()
             end
 
             local _, indent
@@ -109,7 +111,12 @@ local refresh = function()
             end
 
             if not indent then
-                return
+                vim.schedule_wrap(
+                    function()
+                        clear_line_indent(buf, i)
+                    end
+                )()
+                return async:close()
             end
 
             local v_text = {}
@@ -150,9 +157,7 @@ local refresh = function()
                     end, error_handler)
                 end
             )()
-
-            async:close()
-
+            return async:close()
         end)
 
         async:send()
