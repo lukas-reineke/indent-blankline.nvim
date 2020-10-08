@@ -70,7 +70,6 @@ local refresh = function()
 
     local buf = vim.api.nvim_get_current_buf()
     local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
-    local cache = {}
     local space
     local char = vim.g.indent_blankline_char
     local max_indent_level = vim.g.indent_blankline_indent_level
@@ -78,6 +77,8 @@ local refresh = function()
     local space_char = vim.g.indent_blankline_space_char
     local extra_indent_level = vim.g.indent_blankline_extra_indent_level
     local expandtab = vim.bo.expandtab
+    local empty_line_counter = 0
+    local next_indent
 
     if (vim.bo.shiftwidth == 0 or not expandtab) then
         space = vim.bo.tabstop
@@ -97,17 +98,23 @@ local refresh = function()
                 return async:close()
             end
 
-            local _, indent
-
-            local j = i
-            while(lines[j]:len() == 0 and j < #lines) do
-                if cache[j] then
-                    indent = cache[j]
+            local indent
+            if empty_line_counter > 0 then
+                empty_line_counter = empty_line_counter - 1
+                indent = next_indent
+            else
+                if i == #lines then
+                    indent = 0
                 else
-                    j = j + 1
+                    local j = i + 1
+                    while(j < #lines and lines[j]:len() == 0) do
+                        j = j + 1
+                        empty_line_counter = empty_line_counter + 1
+                    end
+                    local _
                     _, indent = lines[j]:find('^%s+')
-                    cache[j] = indent
                 end
+                next_indent = indent
             end
 
             if not indent then
