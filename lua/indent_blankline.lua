@@ -65,7 +65,8 @@ local refresh = function()
     end
 
     local buf = vim.api.nvim_get_current_buf()
-    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    local offset = vim.fn.line("w0")
+    local lines = vim.api.nvim_buf_get_lines(buf, offset, vim.fn.line("w$"), false)
     local space
     local char = vim.g.indent_blankline_char
     local max_indent_level = vim.g.indent_blankline_indent_level
@@ -90,7 +91,7 @@ local refresh = function()
                 if lines[i]:len() > 0 then
                     vim.schedule_wrap(
                         function()
-                            clear_line_indent(buf, i)
+                            clear_line_indent(buf, i + offset)
                         end
                     )()
                     return async:close()
@@ -118,7 +119,7 @@ local refresh = function()
                 if not indent then
                     vim.schedule_wrap(
                         function()
-                            clear_line_indent(buf, i)
+                            clear_line_indent(buf, i + offset)
                         end
                     )()
                     return async:close()
@@ -133,17 +134,17 @@ local refresh = function()
                 end
 
                 local v_text = {}
-                for i = 1, math.min(math.max(indent, 0), max_indent_level) do
+                for j = 1, math.min(math.max(indent, 0), max_indent_level) do
                     local c
 
                     if #char_list > 0 then
-                        c = char_list[((i - 1) % #char_list) + 1]
+                        c = char_list[((j - 1) % #char_list) + 1]
                     else
                         c = char
                     end
 
-                    v_text[i * 2 - 1] = {space_char:rep(space - 1), "Conceal"}
-                    v_text[i * 2] = {c, "Whitespace"}
+                    v_text[j * 2 - 1] = {space_char:rep(space - 1), "Conceal"}
+                    v_text[j * 2] = {c, "Whitespace"}
                 end
 
                 vim.schedule_wrap(
@@ -153,7 +154,7 @@ local refresh = function()
                                 vim.api.nvim_buf_set_virtual_text(
                                     buf,
                                     vim.g.indent_blankline_namespace,
-                                    i - 1,
+                                    i - 1 + offset,
                                     v_text,
                                     vim.empty_dict()
                                 )

@@ -29,5 +29,5 @@ command! IndentBlanklineToggleAll call indent_blankline#commands#ToggleAll()
 augroup IndentBlanklineAutogroup
     autocmd!
     autocmd OptionSet shiftwidth,tabstop IndentBlanklineRefresh
-    autocmd FileChangedShellPost,Syntax,TextChanged,TextChangedI * IndentBlanklineRefresh
+    autocmd FileChangedShellPost,Syntax,TextChanged,TextChangedI,WinScrolled * IndentBlanklineRefresh
 augroup END
