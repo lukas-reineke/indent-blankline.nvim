@@ -65,7 +65,7 @@ local refresh = function()
     end
 
     local buf = vim.api.nvim_get_current_buf()
-    local offset = vim.fn.line("w0")
+    local offset = vim.fn.line("w0") - 1
     local lines = vim.api.nvim_buf_get_lines(buf, offset, vim.fn.line("w$"), false)
     local space
     local char = vim.g.indent_blankline_char
@@ -116,7 +116,7 @@ local refresh = function()
                     next_indent = indent
                 end
 
-                if not indent then
+                if not indent or indent == 0 then
                     vim.schedule_wrap(
                         function()
                             clear_line_indent(buf, i + offset)
