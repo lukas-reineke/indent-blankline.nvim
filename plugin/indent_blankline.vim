@@ -14,6 +14,7 @@ let g:indent_blankline_filetype_exclude = get(g:, 'indent_blankline_filetype_exc
 let g:indent_blankline_bufname_exclude = get(g:, 'indent_blankline_bufname_exclude', get(g:, 'indentLine_bufNameExclude', []))
 let g:indent_blankline_buftype_exclude = get(g:, 'indent_blankline_buftype_exclude', get(g:, 'indentLine_bufTypeExclude', []))
 let g:indent_blankline_extra_indent_level = get(g:, 'indent_blankline_extra_indent_level', 0)
+let g:indent_blankline_viewport_buffer = get(g:, 'indent_blankline_viewport_buffer', 10)
 let g:indent_blankline_debug = get(g:, 'indent_blankline_debug', v:false)
 
 command! IndentBlanklineRefresh call indent_blankline#Refresh()

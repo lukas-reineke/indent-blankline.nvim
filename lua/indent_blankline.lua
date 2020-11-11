@@ -65,8 +65,9 @@ local refresh = function()
     end
 
     local buf = vim.api.nvim_get_current_buf()
-    local offset = vim.fn.line("w0") - 1
-    local lines = vim.api.nvim_buf_get_lines(buf, offset, vim.fn.line("w$"), false)
+    local offset = math.max(vim.fn.line("w0") - 1 - vim.g.indent_blankline_viewport_buffer, 0)
+    local range = math.min(vim.fn.line("w$") + vim.g.indent_blankline_viewport_buffer, vim.api.nvim_buf_line_count(buf))
+    local lines = vim.api.nvim_buf_get_lines(buf, offset, range, false)
     local space
     local char = vim.g.indent_blankline_char
     local max_indent_level = vim.g.indent_blankline_indent_level
