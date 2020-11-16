@@ -26,12 +26,12 @@ local set_indent_blankline_enabled = function()
     end
 
     if #vim.g.indent_blankline_filetype > 0 then
+        vim.b.indent_blankline_enabled = false
         for i = 1, #vim.g.indent_blankline_filetype do
             if vim.g.indent_blankline_filetype[i] == vim.bo.filetype then
                 vim.b.indent_blankline_enabled = true
             end
         end
-        vim.b.indent_blankline_enabled = false
     end
 
     local bufname = vim.fn["bufname"]("")
