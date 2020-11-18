@@ -4,9 +4,9 @@ vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace("indent_blankli
 
 local function error_handler(err)
     if vim.g.indent_blankline_debug then
-        vim.api.nvim_command("echohl Error")
-        vim.api.nvim_command('echom "' .. err .. '"')
-        vim.api.nvim_command("echohl None")
+        vim.cmd("echohl Error")
+        vim.cmd('echomsg "' .. err .. '"')
+        vim.cmd("echohl None")
     end
 end
 
@@ -47,12 +47,11 @@ local set_indent_blankline_enabled = function()
 end
 
 local clear_line_indent = function(buf, lnum)
-    xpcall(
-        function()
-            vim.api.nvim_buf_clear_namespace(buf, vim.g.indent_blankline_namespace, lnum - 1, lnum)
-        end,
-        error_handler
-    )
+    xpcall(vim.api.nvim_buf_clear_namespace, error_handler, buf, vim.g.indent_blankline_namespace, lnum - 1, lnum)
+end
+
+local get_from_list = function(list, i)
+    return list[((i - 1) % #list) + 1]
 end
 
 local refresh = function()
@@ -64,14 +63,19 @@ local refresh = function()
         return
     end
 
-    local buf = vim.api.nvim_get_current_buf()
+    local bufnr = vim.api.nvim_get_current_buf()
     local offset = math.max(vim.fn.line("w0") - 1 - vim.g.indent_blankline_viewport_buffer, 0)
-    local range = math.min(vim.fn.line("w$") + vim.g.indent_blankline_viewport_buffer, vim.api.nvim_buf_line_count(buf))
-    local lines = vim.api.nvim_buf_get_lines(buf, offset, range, false)
+    local range =
+        math.min(vim.fn.line("w$") + vim.g.indent_blankline_viewport_buffer, vim.api.nvim_buf_line_count(bufnr))
+    local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local space
     local char = vim.g.indent_blankline_char
     local max_indent_level = vim.g.indent_blankline_indent_level
     local char_list = vim.g.indent_blankline_char_list
+    local char_highlight = vim.g.indent_blankline_char_highlight
+    local char_highlight_list = vim.g.indent_blankline_char_highlight_list
+    local space_char_highlight = vim.g.indent_blankline_space_char_highlight
+    local space_char_highlight_list = vim.g.indent_blankline_space_char_highlight_list
     local space_char = vim.g.indent_blankline_space_char
     local extra_indent_level = vim.g.indent_blankline_extra_indent_level
     local expandtab = vim.bo.expandtab
@@ -84,17 +88,23 @@ local refresh = function()
         space = vim.bo.shiftwidth
     end
 
+    if #char_list > 0 then
+        char = nil
+    end
+    if #char_highlight_list > 0 then
+        char_highlight = nil
+    end
+    if #space_char_highlight_list > 0 then
+        space_char_highlight = nil
+    end
+
     for i = 1, #lines do
         local async
         async =
             vim.loop.new_async(
             function()
                 if lines[i]:len() > 0 then
-                    vim.schedule_wrap(
-                        function()
-                            clear_line_indent(buf, i + offset)
-                        end
-                    )()
+                    vim.schedule_wrap(clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
 
@@ -118,11 +128,7 @@ local refresh = function()
                 end
 
                 if not indent or indent == 0 then
-                    vim.schedule_wrap(
-                        function()
-                            clear_line_indent(buf, i + offset)
-                        end
-                    )()
+                    vim.schedule_wrap(clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
 
@@ -136,31 +142,26 @@ local refresh = function()
 
                 local v_text = {}
                 for j = 1, math.min(math.max(indent, 0), max_indent_level) do
-                    local c
-
-                    if #char_list > 0 then
-                        c = char_list[((j - 1) % #char_list) + 1]
-                    else
-                        c = char
-                    end
-
-                    v_text[j * 2 - 1] = {space_char:rep(space - 1), "Conceal"}
-                    v_text[j * 2] = {c, "Whitespace"}
+                    v_text[j * 2 - 1] = {
+                        space_char:rep(space - 1),
+                        space_char_highlight or get_from_list(space_char_highlight_list, j)
+                    }
+                    v_text[j * 2] = {
+                        char or get_from_list(char_list, j),
+                        char_highlight or get_from_list(char_highlight_list, j)
+                    }
                 end
 
                 vim.schedule_wrap(
                     function()
                         xpcall(
-                            function()
-                                vim.api.nvim_buf_set_virtual_text(
-                                    buf,
-                                    vim.g.indent_blankline_namespace,
-                                    i - 1 + offset,
-                                    v_text,
-                                    vim.empty_dict()
-                                )
-                            end,
-                            error_handler
+                            vim.api.nvim_buf_set_virtual_text,
+                            error_handler,
+                            bufnr,
+                            vim.g.indent_blankline_namespace,
+                            i - 1 + offset,
+                            v_text,
+                            vim.empty_dict()
                         )
                     end
                 )()
