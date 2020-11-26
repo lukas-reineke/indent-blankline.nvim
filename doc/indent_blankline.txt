@@ -93,7 +93,7 @@ g:indent_blankline_char_highlight_list*g:indent_blankline_char_highlight_list*
     Specifies the list of character highlights for each indentation level.
     Ignored if the value is an empty list.
 
-    Default: '[]'                                                            ~
+    Default: []                                                              ~
 
     Example: >
 
@@ -120,11 +120,23 @@ g:indent_blankline_space_char_highlight_list*g:indent_blankline_space_char_highl
     level.
     Ignored if the value is an empty list.
 
-    Default: '[]'                                                            ~
+    Default: []                                                              ~
 
     Example: >
 
         let g:indent_blankline_space_char_highlight_list = ['Error', 'Function']
+
+------------------------------------------------------------------------------
+
+g:indent_blankline_use_treesitter          *g:indent_blankline_use_treesitter*
+
+    Use treesitter to calculate indentation when possible.
+
+    Default: false                                                           ~
+
+    Example: >
+
+        let g:indent_blankline_use_treesitter = v:true
 
 ------------------------------------------------------------------------------
 g:indent_blankline_indent_level              *g:indent_blankline_indent_level*

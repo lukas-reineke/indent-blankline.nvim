@@ -1,3 +1,5 @@
+local ts_status, ts_query = pcall(require, "nvim-treesitter.query")
+local ts_status, ts_indent = pcall(require, "nvim-treesitter.indent")
 local M = {}
 
 vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace("indent_blankline")
@@ -79,8 +81,8 @@ local refresh = function()
     local space_char = vim.g.indent_blankline_space_char
     local extra_indent_level = vim.g.indent_blankline_extra_indent_level
     local expandtab = vim.bo.expandtab
-    local empty_line_counter = 0
-    local next_indent
+    local filetype = vim.bo.filetype
+    local has_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(filetype)
 
     if (vim.bo.shiftwidth == 0 or not expandtab) then
         space = vim.bo.tabstop
@@ -98,6 +100,32 @@ local refresh = function()
         space_char_highlight = nil
     end
 
+    local get_v_text = function(indent)
+        if expandtab then
+            indent = indent / space
+        end
+
+        if extra_indent_level then
+            indent = indent + extra_indent_level
+        end
+
+        local v_text = {}
+        for j = 1, math.min(math.max(indent, 0), max_indent_level) do
+            v_text[j * 2 - 1] = {
+                space_char:rep(space - 1),
+                space_char_highlight or get_from_list(space_char_highlight_list, j)
+            }
+            v_text[j * 2] = {
+                char or get_from_list(char_list, j),
+                char_highlight or get_from_list(char_highlight_list, j)
+            }
+        end
+
+        return v_text
+    end
+
+    local next_indent
+    local empty_line_counter = 0
     for i = 1, #lines do
         local async
         async =
@@ -105,6 +133,24 @@ local refresh = function()
             function()
                 if lines[i]:len() > 0 then
                     vim.schedule_wrap(clear_line_indent)(bufnr, i + offset)
+                    return async:close()
+                end
+
+                if has_ts_indent then
+                    vim.schedule_wrap(
+                        function()
+                            local v_text = get_v_text(ts_indent.get_indent(i + offset))
+                            xpcall(
+                                vim.api.nvim_buf_set_virtual_text,
+                                error_handler,
+                                bufnr,
+                                vim.g.indent_blankline_namespace,
+                                i - 1 + offset,
+                                v_text,
+                                vim.empty_dict()
+                            )
+                        end
+                    )()
                     return async:close()
                 end
 
@@ -132,26 +178,7 @@ local refresh = function()
                     return async:close()
                 end
 
-                if (expandtab) then
-                    indent = indent / space
-                end
-
-                if extra_indent_level then
-                    indent = indent + extra_indent_level
-                end
-
-                local v_text = {}
-                for j = 1, math.min(math.max(indent, 0), max_indent_level) do
-                    v_text[j * 2 - 1] = {
-                        space_char:rep(space - 1),
-                        space_char_highlight or get_from_list(space_char_highlight_list, j)
-                    }
-                    v_text[j * 2] = {
-                        char or get_from_list(char_list, j),
-                        char_highlight or get_from_list(char_highlight_list, j)
-                    }
-                end
-
+                local v_text = get_v_text(indent)
                 vim.schedule_wrap(
                     function()
                         xpcall(
