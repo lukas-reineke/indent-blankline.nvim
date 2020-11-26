@@ -22,6 +22,8 @@ let g:indent_blankline_viewport_buffer = get(g:, 'indent_blankline_viewport_buff
 let g:indent_blankline_use_treesitter = get(g:, 'indent_blankline_use_treesitter', v:false)
 let g:indent_blankline_debug = get(g:, 'indent_blankline_debug', v:false)
 
+lua require("indent_blankline").setup()
+
 command! IndentBlanklineRefresh call indent_blankline#Refresh()
 
 command! IndentBlanklineEnable call indent_blankline#commands#Enable()

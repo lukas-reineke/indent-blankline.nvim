@@ -1,64 +1,15 @@
 local ts_status, ts_query = pcall(require, "nvim-treesitter.query")
 local ts_status, ts_indent = pcall(require, "nvim-treesitter.indent")
+local utils = require "indent_blankline/utils"
 local M = {}
 
-vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace("indent_blankline")
-
-local function error_handler(err)
-    if vim.g.indent_blankline_debug then
-        vim.cmd("echohl Error")
-        vim.cmd('echomsg "' .. err .. '"')
-        vim.cmd("echohl None")
-    end
-end
-
-local set_indent_blankline_enabled = function()
-    vim.b.indent_blankline_enabled = true
-
-    for i = 1, #vim.g.indent_blankline_filetype_exclude do
-        if vim.g.indent_blankline_filetype_exclude[i] == vim.bo.filetype then
-            vim.b.indent_blankline_enabled = false
-        end
-    end
-
-    for i = 1, #vim.g.indent_blankline_buftype_exclude do
-        if vim.g.indent_blankline_buftype_exclude[i] == vim.bo.buftype then
-            vim.b.indent_blankline_enabled = false
-        end
-    end
-
-    if #vim.g.indent_blankline_filetype > 0 then
-        vim.b.indent_blankline_enabled = false
-        for i = 1, #vim.g.indent_blankline_filetype do
-            if vim.g.indent_blankline_filetype[i] == vim.bo.filetype then
-                vim.b.indent_blankline_enabled = true
-            end
-        end
-    end
-
-    local bufname = vim.fn["bufname"]("")
-    for i = 1, #vim.g.indent_blankline_bufname_exclude do
-        if vim.fn["matchstr"](bufname, vim.g.indent_blankline_bufname_exclude[i]) == bufname then
-            vim.b.indent_blankline_enabled = false
-        end
-    end
-
-    if vim.b.indentLine_enabled == false then
-        vim.b.indent_blankline_enabled = false
-    end
-end
-
-local clear_line_indent = function(buf, lnum)
-    xpcall(vim.api.nvim_buf_clear_namespace, error_handler, buf, vim.g.indent_blankline_namespace, lnum - 1, lnum)
-end
-
-local get_from_list = function(list, i)
-    return list[((i - 1) % #list) + 1]
+M.setup = function()
+    vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace("indent_blankline")
 end
 
 local refresh = function()
     if vim.b.indent_blankline_enabled == nil then
-        set_indent_blankline_enabled()
+        utils.set_indent_blankline_enabled()
     end
 
     if not vim.g.indent_blankline_enabled or not vim.b.indent_blankline_enabled then
@@ -70,20 +21,19 @@ local refresh = function()
     local range =
         math.min(vim.fn.line("w$") + vim.g.indent_blankline_viewport_buffer, vim.api.nvim_buf_line_count(bufnr))
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
-    local space
     local char = vim.g.indent_blankline_char
-    local max_indent_level = vim.g.indent_blankline_indent_level
     local char_list = vim.g.indent_blankline_char_list
     local char_highlight = vim.g.indent_blankline_char_highlight
     local char_highlight_list = vim.g.indent_blankline_char_highlight_list
     local space_char_highlight = vim.g.indent_blankline_space_char_highlight
     local space_char_highlight_list = vim.g.indent_blankline_space_char_highlight_list
     local space_char = vim.g.indent_blankline_space_char
+    local max_indent_level = vim.g.indent_blankline_indent_level
     local extra_indent_level = vim.g.indent_blankline_extra_indent_level
     local expandtab = vim.bo.expandtab
-    local filetype = vim.bo.filetype
-    local has_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(filetype)
+    local has_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(vim.bo.filetype)
 
+    local space
     if (vim.bo.shiftwidth == 0 or not expandtab) then
         space = vim.bo.tabstop
     else
@@ -100,7 +50,7 @@ local refresh = function()
         space_char_highlight = nil
     end
 
-    local get_v_text = function(indent)
+    local get_virtual_text = function(indent)
         if expandtab then
             indent = indent / space
         end
@@ -109,19 +59,19 @@ local refresh = function()
             indent = indent + extra_indent_level
         end
 
-        local v_text = {}
-        for j = 1, math.min(math.max(indent, 0), max_indent_level) do
-            v_text[j * 2 - 1] = {
+        local virtual_text = {}
+        for i = 1, math.min(math.max(indent, 0), max_indent_level) do
+            virtual_text[i * 2 - 1] = {
                 space_char:rep(space - 1),
-                space_char_highlight or get_from_list(space_char_highlight_list, j)
+                space_char_highlight or utils.get_from_list(space_char_highlight_list, i)
             }
-            v_text[j * 2] = {
-                char or get_from_list(char_list, j),
-                char_highlight or get_from_list(char_highlight_list, j)
+            virtual_text[i * 2] = {
+                char or utils.get_from_list(char_list, i),
+                char_highlight or utils.get_from_list(char_highlight_list, i)
             }
         end
 
-        return v_text
+        return virtual_text
     end
 
     local next_indent
@@ -132,21 +82,27 @@ local refresh = function()
             vim.loop.new_async(
             function()
                 if lines[i]:len() > 0 then
-                    vim.schedule_wrap(clear_line_indent)(bufnr, i + offset)
+                    vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
 
                 if has_ts_indent then
                     vim.schedule_wrap(
                         function()
-                            local v_text = get_v_text(ts_indent.get_indent(i + offset))
+                            local indent = ts_indent.get_indent(i + offset)
+                            if not indent or indent == 0 then
+                                utils.clear_line_indent(bufnr, i + offset)
+                                return
+                            end
+
+                            local virtual_text = get_virtual_text(indent)
                             xpcall(
                                 vim.api.nvim_buf_set_virtual_text,
-                                error_handler,
+                                utils.error_handler,
                                 bufnr,
                                 vim.g.indent_blankline_namespace,
                                 i - 1 + offset,
-                                v_text,
+                                virtual_text,
                                 vim.empty_dict()
                             )
                         end
@@ -167,27 +123,26 @@ local refresh = function()
                             j = j + 1
                             empty_line_counter = empty_line_counter + 1
                         end
-                        local _
                         _, indent = lines[j]:find("^%s+")
                     end
                     next_indent = indent
                 end
 
                 if not indent or indent == 0 then
-                    vim.schedule_wrap(clear_line_indent)(bufnr, i + offset)
+                    vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
 
-                local v_text = get_v_text(indent)
+                local virtual_text = get_virtual_text(indent)
                 vim.schedule_wrap(
                     function()
                         xpcall(
                             vim.api.nvim_buf_set_virtual_text,
-                            error_handler,
+                            utils.error_handler,
                             bufnr,
                             vim.g.indent_blankline_namespace,
                             i - 1 + offset,
-                            v_text,
+                            virtual_text,
                             vim.empty_dict()
                         )
                     end
@@ -201,7 +156,7 @@ local refresh = function()
 end
 
 M.refresh = function()
-    xpcall(refresh, error_handler)
+    xpcall(refresh, utils.error_handler)
 end
 
 return M
