@@ -31,7 +31,7 @@ local refresh = function()
     local max_indent_level = vim.g.indent_blankline_indent_level
     local extra_indent_level = vim.g.indent_blankline_extra_indent_level
     local expandtab = vim.bo.expandtab
-    local has_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(vim.bo.filetype)
+    local use_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(vim.bo.filetype)
 
     local space
     if (vim.bo.shiftwidth == 0 or not expandtab) then
@@ -86,7 +86,7 @@ local refresh = function()
                     return async:close()
                 end
 
-                if has_ts_indent then
+                if use_ts_indent then
                     vim.schedule_wrap(
                         function()
                             local indent = ts_indent.get_indent(i + offset)
