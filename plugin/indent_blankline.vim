@@ -38,4 +38,5 @@ augroup IndentBlanklineAutogroup
     autocmd!
     autocmd OptionSet shiftwidth,tabstop IndentBlanklineRefresh
     autocmd FileChangedShellPost,Syntax,TextChanged,TextChangedI,WinScrolled * IndentBlanklineRefresh
+    autocmd VimEnter * windo IndentBlanklineRefresh
 augroup END
