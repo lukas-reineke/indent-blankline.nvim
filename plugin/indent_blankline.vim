@@ -34,9 +34,15 @@ command! IndentBlanklineEnableAll call indent_blankline#commands#EnableAll()
 command! IndentBlanklineDisableAll call indent_blankline#commands#DisableAll()
 command! IndentBlanklineToggleAll call indent_blankline#commands#ToggleAll()
 
+function s:IndentBlanklineInit()
+    let l:win_id = win_getid()
+    windo IndentBlanklineRefresh
+    call win_gotoid(l:win_id)
+endfunction
+
 augroup IndentBlanklineAutogroup
     autocmd!
     autocmd OptionSet shiftwidth,tabstop IndentBlanklineRefresh
     autocmd FileChangedShellPost,Syntax,TextChanged,TextChangedI,WinScrolled * IndentBlanklineRefresh
-    autocmd VimEnter * windo IndentBlanklineRefresh
+    autocmd VimEnter * call s:IndentBlanklineInit()
 augroup END
