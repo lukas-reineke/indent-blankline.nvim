@@ -7,6 +7,12 @@ It is recommended, but not required, to use it together with [Yggdroot/indentLin
 This plugin requires Neovim 0.4.0 or higher. It makes use of Neovim only
 features so it will not work in Vim.
 
+## Note
+
+**If you are using Neomvim 0.5, you should use the `lua` branch.**  
+It is much faster and has real-time update support.  
+It will become the default once Neovim 0.5 is released.
+
 ## Details
 
 indent-blankline uses the virtual text feature from Neovim to display
