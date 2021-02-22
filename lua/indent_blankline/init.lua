@@ -27,7 +27,10 @@ local refresh = function()
     local char_highlight_list = vim.g.indent_blankline_char_highlight_list
     local space_char_highlight = vim.g.indent_blankline_space_char_highlight
     local space_char_highlight_list = vim.g.indent_blankline_space_char_highlight_list
+    local space_char_blankline_highlight = vim.g.indent_blankline_space_char_blankline_highlight
+    local space_char_blankline_highlight_list = vim.g.indent_blankline_space_char_blankline_highlight_list
     local space_char = vim.g.indent_blankline_space_char
+    local space_char_blankline = vim.g.indent_blankline_space_char_blankline
     local max_indent_level = vim.g.indent_blankline_indent_level
     local extra_indent_level = vim.g.indent_blankline_extra_indent_level
     local expandtab = vim.bo.expandtab
@@ -50,7 +53,10 @@ local refresh = function()
         space_char_highlight = nil
     end
 
-    local get_virtual_text = function(indent)
+    local get_virtual_text = function(indent, blankline)
+        if not indent then
+            indent = 0
+        end
         if expandtab then
             indent = indent / space
         end
@@ -59,13 +65,28 @@ local refresh = function()
             indent = indent + extra_indent_level
         end
 
-        local virtual_text = {}
-        for i = 1, math.min(math.max(indent, 0), max_indent_level) do
-            virtual_text[i * 2 - 1] = {
-                space_char:rep(space - 1),
-                space_char_highlight or utils.get_from_list(space_char_highlight_list, i)
+        local sc = space_char_blankline
+        local sch = space_char_blankline_highlight
+        local schl = space_char_blankline_highlight_list
+        if not blankline then
+            indent = indent - 1
+            sc = space_char
+            sch = space_char_highlight
+            schl = space_char_highlight_list
+        end
+
+        local virtual_text = {
+            {
+                char or utils.get_from_list(char_list, 1),
+                char_highlight or utils.get_from_list(char_highlight_list, 1)
             }
+        }
+        for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             virtual_text[i * 2] = {
+                sc:rep(space - 1),
+                sch or utils.get_from_list(schl, i)
+            }
+            virtual_text[i * 2 + 1] = {
                 char or utils.get_from_list(char_list, i),
                 char_highlight or utils.get_from_list(char_highlight_list, i)
             }
@@ -81,29 +102,27 @@ local refresh = function()
         async =
             vim.loop.new_async(
             function()
-                if lines[i]:len() > 0 then
-                    vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
-                    return async:close()
-                end
+                local blankline = lines[i]:len() == 0
 
-                if use_ts_indent then
+                if blankline and use_ts_indent then
                     vim.schedule_wrap(
                         function()
                             local indent = ts_indent.get_indent(i + offset)
-                            if not indent or indent == 0 then
+                            if (not indent or indent == 0) and not blankline then
                                 utils.clear_line_indent(bufnr, i + offset)
                                 return
                             end
 
-                            local virtual_text = get_virtual_text(indent)
+                            local virtual_text = get_virtual_text(indent, blankline)
+                            utils.clear_line_indent(bufnr, i + offset)
                             xpcall(
-                                vim.api.nvim_buf_set_virtual_text,
+                                vim.api.nvim_buf_set_extmark,
                                 utils.error_handler,
                                 bufnr,
                                 vim.g.indent_blankline_namespace,
                                 i - 1 + offset,
-                                virtual_text,
-                                vim.empty_dict()
+                                0,
+                                {virt_text = virtual_text, virt_text_pos = "overlay"}
                             )
                         end
                     )()
@@ -111,7 +130,9 @@ local refresh = function()
                 end
 
                 local indent
-                if empty_line_counter > 0 then
+                if not blankline then
+                    _, indent = lines[i]:find("^%s+")
+                elseif empty_line_counter > 0 then
                     empty_line_counter = empty_line_counter - 1
                     indent = next_indent
                 else
@@ -128,22 +149,23 @@ local refresh = function()
                     next_indent = indent
                 end
 
-                if not indent or indent == 0 then
+                if (not indent or indent == 0) and not blankline then
                     vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
 
-                local virtual_text = get_virtual_text(indent)
+                local virtual_text = get_virtual_text(indent, blankline)
                 vim.schedule_wrap(
                     function()
+                        utils.clear_line_indent(bufnr, i + offset)
                         xpcall(
-                            vim.api.nvim_buf_set_virtual_text,
+                            vim.api.nvim_buf_set_extmark,
                             utils.error_handler,
                             bufnr,
                             vim.g.indent_blankline_namespace,
                             i - 1 + offset,
-                            virtual_text,
-                            vim.empty_dict()
+                            0,
+                            {virt_text = virtual_text, virt_text_pos = "overlay"}
                         )
                     end
                 )()

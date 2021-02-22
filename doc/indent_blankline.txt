@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.4.0
+Version: 2.0.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -62,6 +62,18 @@ g:indent_blankline_char_list                    *g:indent_blankline_char_list*
         let g:indent_blankline_char_list = ['|', '¦', '┆', '┊']
 
 ------------------------------------------------------------------------------
+g:indent_blankline_space_char_blankline*g:indent_blankline_space_char_blankline*
+
+    Specifies the character to be used as the space value in between indent
+    lines when the line is blank.
+
+    Default: The listchars space value                                       ~
+
+    Example: >
+
+        let g:indent_blankline_space_char_blankline = ' '
+
+------------------------------------------------------------------------------
 g:indent_blankline_space_char                  *g:indent_blankline_space_char*
 
     Specifies the character to be used as the space value in between indent
@@ -101,6 +113,19 @@ g:indent_blankline_char_highlight_list*g:indent_blankline_char_highlight_list*
 
 ------------------------------------------------------------------------------
 
+g:indent_blankline_space_char_blankline_highlight*g:indent_blankline_space_char_blankline_highlight*
+
+    Specifies the space character highlight when the line is empty.
+    Not used if |g:indent_blankline_space_char_blankline_highlight_list| is not empty.
+
+    Default: 'Whitespace'                                                    ~
+
+    Example: >
+
+        let g:indent_blankline_space_char_blankline_highlight = 'Error'
+
+------------------------------------------------------------------------------
+
 g:indent_blankline_space_char_highlight*g:indent_blankline_space_char_highlight*
 
     Specifies the space character highlight.
@@ -125,6 +150,20 @@ g:indent_blankline_space_char_highlight_list*g:indent_blankline_space_char_highl
     Example: >
 
         let g:indent_blankline_space_char_highlight_list = ['Error', 'Function']
+
+------------------------------------------------------------------------------
+
+g:indent_blankline_space_char_blankline_highlight_list*g:indent_blankline_space_char_blankline_highlight_list*
+
+    Specifies the list of space character highlights for each indentation
+    level when the line is empty.
+    Ignored if the value is an empty list.
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_space_char_blankline_highlight_list = ['Error', 'Function']
 
 ------------------------------------------------------------------------------
 
