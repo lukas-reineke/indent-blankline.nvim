@@ -39,7 +39,8 @@ local refresh = function()
     local trail_indent = vim.g.indent_blankline_show_trailing_blankline_indent
 
     local space
-    if (vim.bo.shiftwidth == 0 or not expandtab) then
+    local tabs = vim.bo.shiftwidth == 0 or not expandtab
+    if tabs then
         space = vim.bo.tabstop
     else
         space = vim.bo.shiftwidth
@@ -62,7 +63,7 @@ local refresh = function()
         if not indent then
             indent = 0
         end
-        local extra = indent % space ~= 0
+        local extra = indent % space ~= 0 and not tabs
         if expandtab then
             indent = indent / space
         end
