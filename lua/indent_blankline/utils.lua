@@ -60,4 +60,19 @@ M._if = function(bool, a, b)
     end
 end
 
+M.find_indent = function(line, shiftwidth, strict_tabs)
+    local _, whitespace_count = line:find("^%s+")
+    if not whitespace_count or whitespace_count == 0 then
+        return 0, false
+    end
+    local whitespace_string = line:sub(1, whitespace_count)
+    local _, spaces = whitespace_string:gsub(" ", "")
+    local _, tabs = whitespace_string:gsub("	", "")
+    if strict_tabs and tabs > 0 then
+        return tabs, spaces > 0
+    end
+    local indent = tabs + (spaces / shiftwidth)
+    return indent, spaces % shiftwidth ~= 0
+end
+
 return M

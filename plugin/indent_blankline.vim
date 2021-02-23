@@ -30,6 +30,7 @@ let g:indent_blankline_debug = get(g:, 'indent_blankline_debug', v:false)
 let g:indent_blankline_disable_warning_message = get(g:, 'indent_blankline_disable_warning_message', v:false)
 let g:indent_blankline_show_first_indent_level = get(g:, 'indent_blankline_show_first_indent_level', v:true)
 let g:indent_blankline_show_trailing_blankline_indent = get(g:, 'indent_blankline_show_trailing_blankline_indent', v:true)
+let g:indent_blankline_strict_tabs = get(g:, 'indent_blankline_strict_tabs', v:false)
 
 lua require("indent_blankline").setup()
 

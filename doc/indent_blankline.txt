@@ -316,6 +316,22 @@ g:indent_blankline_bufname_exclude        *g:indent_blankline_bufname_exclude*
         let g:indent_blankline_bufname_exclude = ['README.md', '.*\.py']
 
 ------------------------------------------------------------------------------
+g:indent_blankline_strict_tabs                *g:indent_blankline_strict_tabs*
+
+    When on, if there is a single tab in a line, only tabs are used to
+    calculate the indentation level.
+    When off, both spaces and tabs are used to calculate the indentation
+    level.
+    Only makes a difference if a line has a mix of tabs and spaces for
+    indentation.
+
+    Default: v:false                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_strict_tabs = v:true
+
+------------------------------------------------------------------------------
 g:indent_blankline_debug                            *g:indent_blankline_debug*
 
     Turns on error logging.

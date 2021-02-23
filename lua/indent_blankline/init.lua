@@ -37,19 +37,12 @@ local refresh = function()
     local use_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(vim.bo.filetype)
     local first_indent = vim.g.indent_blankline_show_first_indent_level
     local trail_indent = vim.g.indent_blankline_show_trailing_blankline_indent
+    local strict_tabs = vim.g.indent_blankline_strict_tabs
 
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
     local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
 
-    local get_virtual_text = function(indent, blankline)
-        if not indent then
-            indent = 0
-        end
-        local extra = indent % space ~= 0 and not tabs
-        if expandtab then
-            indent = indent / space
-        end
-
+    local get_virtual_text = function(indent, extra, blankline)
         if extra_indent_level then
             indent = indent + extra_indent_level
         end
@@ -106,6 +99,7 @@ local refresh = function()
     end
 
     local next_indent
+    local next_extra
     local empty_line_counter = 0
     for i = 1, #lines do
         local async
@@ -123,7 +117,7 @@ local refresh = function()
                                 return
                             end
 
-                            local virtual_text = get_virtual_text(indent, blankline)
+                            local virtual_text = get_virtual_text(indent, false, blankline)
                             utils.clear_line_indent(bufnr, i + offset)
                             xpcall(
                                 vim.api.nvim_buf_set_extmark,
@@ -139,24 +133,27 @@ local refresh = function()
                     return async:close()
                 end
 
-                local indent
+                local indent, extra
                 if not blankline then
-                    _, indent = lines[i]:find("^%s+")
+                    indent, extra = utils.find_indent(lines[i], space, strict_tabs)
                 elseif empty_line_counter > 0 then
                     empty_line_counter = empty_line_counter - 1
                     indent = next_indent
+                    extra = next_extra
                 else
                     if i == #lines then
                         indent = 0
+                        extra = false
                     else
                         local j = i + 1
                         while (j < #lines and lines[j]:len() == 0) do
                             j = j + 1
                             empty_line_counter = empty_line_counter + 1
                         end
-                        _, indent = lines[j]:find("^%s+")
+                        indent, extra = utils.find_indent(lines[j], space, strict_tabs)
                     end
                     next_indent = indent
+                    next_extra = extra
                 end
 
                 if not indent or indent == 0 then
@@ -164,7 +161,7 @@ local refresh = function()
                     return async:close()
                 end
 
-                local virtual_text = get_virtual_text(indent, blankline)
+                local virtual_text = get_virtual_text(indent, extra, blankline)
                 vim.schedule_wrap(
                     function()
                         utils.clear_line_indent(bufnr, i + offset)
