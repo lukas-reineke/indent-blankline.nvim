@@ -35,6 +35,8 @@ local refresh = function()
     local extra_indent_level = vim.g.indent_blankline_extra_indent_level
     local expandtab = vim.bo.expandtab
     local use_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(vim.bo.filetype)
+    local first_indent = vim.g.indent_blankline_show_first_indent_level
+    local trail_indent = vim.g.indent_blankline_show_trailing_blankline_indent
 
     local space
     if (vim.bo.shiftwidth == 0 or not expandtab) then
@@ -52,11 +54,15 @@ local refresh = function()
     if #space_char_highlight_list > 0 then
         space_char_highlight = nil
     end
+    if #space_char_blankline_highlight_list > 0 then
+        space_char_blankline_highlight = nil
+    end
 
     local get_virtual_text = function(indent, blankline)
         if not indent then
             indent = 0
         end
+        local extra = indent % space ~= 0
         if expandtab then
             indent = indent / space
         end
@@ -69,27 +75,41 @@ local refresh = function()
         local sch = space_char_blankline_highlight
         local schl = space_char_blankline_highlight_list
         if not blankline then
-            indent = indent - 1
             sc = space_char
             sch = space_char_highlight
             schl = space_char_highlight_list
         end
 
-        local virtual_text = {
-            {
-                char or utils.get_from_list(char_list, 1),
-                char_highlight or utils.get_from_list(char_highlight_list, 1)
-            }
-        }
+        local virtual_text = {}
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
-            virtual_text[i * 2] = {
-                sc:rep(space - 1),
-                sch or utils.get_from_list(schl, i)
-            }
-            virtual_text[i * 2 + 1] = {
-                char or utils.get_from_list(char_list, i),
-                char_highlight or utils.get_from_list(char_highlight_list, i)
-            }
+            local space_count = space
+            if i ~= 1 or first_indent then
+                space_count = space_count - 1
+                table.insert(
+                    virtual_text,
+                    {
+                        char or utils.get_from_list(char_list, i),
+                        char_highlight or utils.get_from_list(char_highlight_list, i)
+                    }
+                )
+            end
+            table.insert(
+                virtual_text,
+                {
+                    sc:rep(space_count),
+                    sch or utils.get_from_list(schl, i)
+                }
+            )
+        end
+
+        if (blankline and trail_indent) or extra then
+            table.insert(
+                virtual_text,
+                {
+                    char or utils.get_from_list(char_list, #virtual_text),
+                    char_highlight or utils.get_from_list(char_highlight_list, #virtual_text)
+                }
+            )
         end
 
         return virtual_text
@@ -108,7 +128,7 @@ local refresh = function()
                     vim.schedule_wrap(
                         function()
                             local indent = ts_indent.get_indent(i + offset)
-                            if (not indent or indent == 0) and not blankline then
+                            if not indent or indent == 0 then
                                 utils.clear_line_indent(bufnr, i + offset)
                                 return
                             end
@@ -149,7 +169,7 @@ local refresh = function()
                     next_indent = indent
                 end
 
-                if (not indent or indent == 0) and not blankline then
+                if not indent or indent == 0 then
                     vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
