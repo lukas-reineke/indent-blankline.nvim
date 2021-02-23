@@ -92,10 +92,10 @@ local refresh = function()
             table.insert(
                 virtual_text,
                 {
-                    utils._if(#char_list > 0, utils.get_from_list(char_list, #virtual_text), char),
+                    utils._if(#char_list > 0, utils.get_from_list(char_list, (#virtual_text / 2) + 1), char),
                     utils._if(
                         #char_highlight_list > 0,
-                        utils.get_from_list(char_highlight_list, #virtual_text),
+                        utils.get_from_list(char_highlight_list, (#virtual_text / 2) + 1),
                         char_highlight
                     )
                 }
