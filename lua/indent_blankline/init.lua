@@ -38,26 +38,8 @@ local refresh = function()
     local first_indent = vim.g.indent_blankline_show_first_indent_level
     local trail_indent = vim.g.indent_blankline_show_trailing_blankline_indent
 
-    local space
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
-    if tabs then
-        space = vim.bo.tabstop
-    else
-        space = vim.bo.shiftwidth
-    end
-
-    if #char_list > 0 then
-        char = nil
-    end
-    if #char_highlight_list > 0 then
-        char_highlight = nil
-    end
-    if #space_char_highlight_list > 0 then
-        space_char_highlight = nil
-    end
-    if #space_char_blankline_highlight_list > 0 then
-        space_char_blankline_highlight = nil
-    end
+    local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
 
     local get_virtual_text = function(indent, blankline)
         if not indent then
@@ -72,15 +54,6 @@ local refresh = function()
             indent = indent + extra_indent_level
         end
 
-        local sc = space_char_blankline
-        local sch = space_char_blankline_highlight
-        local schl = space_char_blankline_highlight_list
-        if not blankline then
-            sc = space_char
-            sch = space_char_highlight
-            schl = space_char_highlight_list
-        end
-
         local virtual_text = {}
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             local space_count = space
@@ -89,16 +62,28 @@ local refresh = function()
                 table.insert(
                     virtual_text,
                     {
-                        char or utils.get_from_list(char_list, i),
-                        char_highlight or utils.get_from_list(char_highlight_list, i)
+                        utils._if(#char_list > 0, utils.get_from_list(char_list, i), char),
+                        utils._if(#char_highlight_list > 0, utils.get_from_list(char_highlight_list, i), char_highlight)
                     }
                 )
             end
             table.insert(
                 virtual_text,
                 {
-                    sc:rep(space_count),
-                    sch or utils.get_from_list(schl, i)
+                    utils._if(blankline, space_char_blankline, space_char):rep(space_count),
+                    utils._if(
+                        blankline,
+                        utils._if(
+                            #space_char_blankline_highlight_list > 0,
+                            utils.get_from_list(space_char_blankline_highlight_list, i),
+                            space_char_blankline_highlight
+                        ),
+                        utils._if(
+                            #space_char_highlight_list > 0,
+                            utils.get_from_list(space_char_highlight_list, i),
+                            space_char_highlight
+                        )
+                    )
                 }
             )
         end
@@ -107,8 +92,12 @@ local refresh = function()
             table.insert(
                 virtual_text,
                 {
-                    char or utils.get_from_list(char_list, #virtual_text),
-                    char_highlight or utils.get_from_list(char_highlight_list, #virtual_text)
+                    utils._if(#char_list > 0, utils.get_from_list(char_list, #virtual_text), char),
+                    utils._if(
+                        #char_highlight_list > 0,
+                        utils.get_from_list(char_highlight_list, #virtual_text),
+                        char_highlight
+                    )
                 }
             )
         end

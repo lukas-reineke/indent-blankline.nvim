@@ -52,4 +52,12 @@ M.get_from_list = function(list, i)
     return list[((i - 1) % #list) + 1]
 end
 
+M._if = function(bool, a, b)
+    if bool then
+        return a
+    else
+        return b
+    end
+end
+
 return M
