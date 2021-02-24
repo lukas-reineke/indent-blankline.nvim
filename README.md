@@ -24,6 +24,10 @@ Please see `:help indent_blankline.txt`for more details.
 
 ![Screenshot](https://i.imgur.com/VxCThMu.png)
 
+#### With custom `g:indent_blankline_char_highlight_list`
+
+![Screenshot](https://i.imgur.com/E3B0PUb.png)
+
 ## Thanks
 
 Special thanks to [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine)
