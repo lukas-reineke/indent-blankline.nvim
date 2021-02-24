@@ -28,6 +28,10 @@ Please see `:help indent_blankline.txt`for more details.
 
 ![Screenshot](https://i.imgur.com/E3B0PUb.png)
 
+#### With custom background highlight
+
+![Screenshot](https://i.imgur.com/DukMZGk.png)
+
 ## Thanks
 
 Special thanks to [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine)
