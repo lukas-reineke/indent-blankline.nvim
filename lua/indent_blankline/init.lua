@@ -81,7 +81,7 @@ local refresh = function()
             )
         end
 
-        if (blankline and trail_indent) or extra then
+        if ((blankline and trail_indent) or extra) and (first_indent or #virtual_text > 0) then
             table.insert(
                 virtual_text,
                 {
