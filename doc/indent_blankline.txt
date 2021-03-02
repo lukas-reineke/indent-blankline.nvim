@@ -68,7 +68,7 @@ g:indent_blankline_char_highlight          *g:indent_blankline_char_highlight*
     Specifies the character highlight.
     Not used if |g:indent_blankline_char_highlight_list| is not empty.
 
-    Default: 'Conceal'                                                       ~
+    Default: 'Whitespace'                                                    ~
 
     Example: >
 

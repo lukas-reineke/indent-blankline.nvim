@@ -6,7 +6,7 @@ let g:loaded_indent_blankline = 1
 
 let g:indent_blankline_char = get(g:, 'indent_blankline_char', get(g:, 'indentLine_char', '|'))
 let g:indent_blankline_char_list = get(g:, 'indent_blankline_char_list', get(g:, 'indentLine_char_list', []))
-let g:indent_blankline_char_highlight = get(g:, 'indent_blankline_char_highlight', 'Comment')
+let g:indent_blankline_char_highlight = get(g:, 'indent_blankline_char_highlight', 'Whitespace')
 let g:indent_blankline_char_highlight_list = get(g:, 'indent_blankline_char_highlight_list', [])
 
 let g:indent_blankline_space_char = get(g:, 'indent_blankline_space_char', indent_blankline#helper#GetListChar('space', ' '))
