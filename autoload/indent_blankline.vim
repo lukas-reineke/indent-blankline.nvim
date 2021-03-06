@@ -86,7 +86,12 @@ function! indent_blankline#Refresh()
         return
     endif
 
-    let l:file = expand('%')
+    let l:shellslash = &shellslash
+    set shellslash
+
+    let l:file = expand('%:p')
+
+    let &shellslash = l:shellslash
 
     if !filereadable(l:file)
         return
