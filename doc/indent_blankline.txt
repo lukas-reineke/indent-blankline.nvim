@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 1.4.0
+Version: 1.4.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -248,6 +248,9 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 
 ==============================================================================
  4. CHANGELOG                                     *indent-blankline-changelog*
+
+1.4.1
+ * Fix windows working directory bug
 
 1.4.0
  * Don't create jumps in embedded nvim instance
