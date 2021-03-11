@@ -126,7 +126,7 @@ local refresh = function()
                                 vim.g.indent_blankline_namespace,
                                 i - 1 + offset,
                                 0,
-                                {virt_text = virtual_text, virt_text_pos = "overlay"}
+                                {virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine"}
                             )
                         end
                     )()
@@ -172,7 +172,7 @@ local refresh = function()
                             vim.g.indent_blankline_namespace,
                             i - 1 + offset,
                             0,
-                            {virt_text = virtual_text, virt_text_pos = "overlay"}
+                            {virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine"}
                         )
                     end
                 )()
