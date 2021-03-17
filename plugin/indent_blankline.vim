@@ -59,7 +59,7 @@ endfunction
 augroup IndentBlanklineAutogroup
     autocmd!
     autocmd OptionSet shiftwidth,tabstop IndentBlanklineRefresh
-    autocmd FileChangedShellPost,TextChanged,TextChangedI,WinScrolled * IndentBlanklineRefresh
+    autocmd FileChangedShellPost,TextChanged,TextChangedI,WinScrolled,BufWinEnter * IndentBlanklineRefresh
     autocmd VimEnter * call s:IndentBlanklineInit()
 augroup END
 

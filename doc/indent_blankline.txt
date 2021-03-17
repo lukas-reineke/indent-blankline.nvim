@@ -359,7 +359,8 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
       3. |TextChanged| *
       4. |TextChangedI| *
       5. |WinScrolled| *
-      6. |OptionSet| shiftwidth,tabstop
+      6. |BufWinEnter| *
+      7. |OptionSet| shiftwidth,tabstop
 
     Example: >
 
