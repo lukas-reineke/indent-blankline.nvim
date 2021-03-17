@@ -356,11 +356,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     By default it is run for:
       1. |VimEnter| *  [bang]
       2. |FileChangedShellPost| *
-      3. |Syntax| *
-      4. |TextChanged| *
-      5. |TextChangedI| *
-      6. |WinScrolled| *
-      7. |OptionSet| shiftwidth,tabstop
+      3. |TextChanged| *
+      4. |TextChangedI| *
+      5. |WinScrolled| *
+      6. |OptionSet| shiftwidth,tabstop
 
     Example: >
 
