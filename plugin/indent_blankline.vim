@@ -34,10 +34,39 @@ let g:indent_blankline_strict_tabs = get(g:, 'indent_blankline_strict_tabs', v:f
 
 lua require("indent_blankline").setup()
 
-command! -bang IndentBlanklineRefresh lua require("indent_blankline.commands").refresh("<bang>" == "!")
-command! -bang IndentBlanklineEnable lua require("indent_blankline.commands").enable("<bang>" == "!")
-command! -bang IndentBlanklineDisable lua require("indent_blankline.commands").disable("<bang>" == "!")
-command! -bang IndentBlanklineToggle lua require("indent_blankline.commands").toggle("<bang>" == "!")
+function s:refresh()
+    try
+        lua require("indent_blankline.commands").refresh("<bang>" == "!")
+    catch /E12/
+        return
+    endtry
+endfunction
+function s:enable()
+    try
+        lua require("indent_blankline.commands").enable("<bang>" == "!")
+    catch /E12/
+        return
+    endtry
+endfunction
+function s:disable()
+    try
+        lua require("indent_blankline.commands").disable("<bang>" == "!")
+    catch /E12/
+        return
+    endtry
+endfunction
+function s:toggle()
+    try
+        lua require("indent_blankline.commands").toggle("<bang>" == "!")
+    catch /E12/
+        return
+    endtry
+endfunction
+
+command! -bang IndentBlanklineRefresh call s:refresh()
+command! -bang IndentBlanklineEnable call s:enable()
+command! -bang IndentBlanklineDisable call s:disable()
+command! -bang IndentBlanklineToggle call s:toggle()
 
 function s:IndentBlanklineInit()
     if exists(':IndentLinesEnable') && !g:indent_blankline_disable_warning_message
