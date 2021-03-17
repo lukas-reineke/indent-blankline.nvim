@@ -34,15 +34,10 @@ let g:indent_blankline_strict_tabs = get(g:, 'indent_blankline_strict_tabs', v:f
 
 lua require("indent_blankline").setup()
 
-command! IndentBlanklineRefresh call indent_blankline#Refresh()
-
-command! IndentBlanklineEnable call indent_blankline#commands#Enable()
-command! IndentBlanklineDisable call indent_blankline#commands#Disable()
-command! IndentBlanklineToggle call indent_blankline#commands#Toggle()
-
-command! IndentBlanklineEnableAll call indent_blankline#commands#EnableAll()
-command! IndentBlanklineDisableAll call indent_blankline#commands#DisableAll()
-command! IndentBlanklineToggleAll call indent_blankline#commands#ToggleAll()
+command! -bang IndentBlanklineRefresh lua require("indent_blankline.commands").refresh("<bang>" == "!")
+command! -bang IndentBlanklineEnable lua require("indent_blankline.commands").enable("<bang>" == "!")
+command! -bang IndentBlanklineDisable lua require("indent_blankline.commands").disable("<bang>" == "!")
+command! -bang IndentBlanklineToggle lua require("indent_blankline.commands").toggle("<bang>" == "!")
 
 function s:IndentBlanklineInit()
     if exists(':IndentLinesEnable') && !g:indent_blankline_disable_warning_message
@@ -50,9 +45,7 @@ function s:IndentBlanklineInit()
         echom 'indent-blankline does not require IndentLine anymore, please remove it.'
         echohl None
     endif
-    let l:win_id = win_getid()
-    windo IndentBlanklineRefresh
-    call win_gotoid(l:win_id)
+    IndentBlanklineRefresh!
 endfunction
 
 augroup IndentBlanklineAutogroup

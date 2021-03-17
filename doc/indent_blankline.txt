@@ -345,56 +345,49 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 ==============================================================================
  3. COMMANDS                                       *indent-blankline-commands*
 
-IndentBlanklineRefresh                                *IndentBlanklineRefresh*
+:IndentBlanklineRefresh[!]                            *IndentBlanklineRefresh*
 
     Refreshes the indent guides for the current buffer.
     Run this with |autocmd| when the file changes. For example after a plugin
     formats the file.
 
+    With bang (IndentBlanklineRefresh!) refreshes the indent guides globally.
+
     By default it is run for:
-      1. |Syntax| *
-      2. |BufWritePost| *
-      3. |FileChangedShellPost| *
-      4. |OptionSet| shiftwidth,tabstop
+      1. |VimEnter| *  [bang]
+      2. |FileChangedShellPost| *
+      3. |Syntax| *
+      4. |TextChanged| *
+      5. |TextChangedI| *
+      6. |WinScrolled| *
+      7. |OptionSet| shiftwidth,tabstop
 
     Example: >
 
         autocmd User ALEFixPost IndentBlanklineRefresh
 
 ------------------------------------------------------------------------------
-IndentBlanklineEnable                                  *IndentBlanklineEnable*
+:IndentBlanklineEnable[!]                               *IndentBlanklineEnable*
 
     Enables this plugin for the current buffer.
     This overwrites any include/exclude rules.
 
+    With bang (IndentBlanklineEnable!) enables this plugin globally
+
 ------------------------------------------------------------------------------
-IndentBlanklineDisable                                *IndentBlanklineDisable*
+:IndentBlanklineDisable[!]                            *IndentBlanklineDisable*
 
     Disables this plugin for the current buffer.
     This overwrites any include/exclude rules.
 
+    With bang (IndentBlanklineDisable!) disables this plugin globally
+
 ------------------------------------------------------------------------------
-IndentBlanklineToggle                                  *IndentBlanklineToggle*
+:IndentBlanklineToggle[!]                              *IndentBlanklineToggle*
 
     Toggles between |IndentBlanklineEnable| and |IndentBlanklineDisable|.
 
-------------------------------------------------------------------------------
-IndentBlanklineEnableAll                            *IndentBlanklineEnableAll*
-
-    Same as |IndentBlanklineEnable|, but also calls |IndentLinesEnable| if
-    available.
-
-------------------------------------------------------------------------------
-IndentBlanklineDisableAll                          *IndentBlanklineDisableAll*
-
-    Same as |IndentBlanklineDisable|, but also calls |IndentLinesDisable| if
-    available.
-
-------------------------------------------------------------------------------
-IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
-
-    Same as |IndentBlanklineToggle|, but also calls |IndentLinesToggle| if
-    available.
+    With bang (IndentBlanklineToggle!) toggles globally
 
 ==============================================================================
  4. CHANGELOG                                     *indent-blankline-changelog*
@@ -402,6 +395,16 @@ IndentBlanklineToggleAll                            *IndentBlanklineToggleAll*
 2.0.0
  * Complete lua rewrite
  * Trigger on `TextChanged`, `TextChangedI` and `WinScrolled`
+ * Removed IndentGuide dependency
+ * Removed commands
+    - IndentBlanklineEnableAll
+    - IndentBlanklineDisableAll
+    - IndentBlanklineToggleAll
+ * Added Bang for commands
+    - IndentBlanklineRefresh
+    - IndentBlanklineEnable
+    - IndentBlanklineDisable
+    - IndentBlanklineToggle
  * New options:
     |g:indent_blankline_char_highlight|
     |g:indent_blankline_char_highlight_list|
