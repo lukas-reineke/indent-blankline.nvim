@@ -197,18 +197,6 @@ g:indent_blankline_indent_level              *g:indent_blankline_indent_level*
         let g:indent_blankline_indent_level = 4
 
 ------------------------------------------------------------------------------
-g:indent_blankline_extra_indent_level  *g:indent_blankline_extra_indent_level*
-
-    Specifies the number of indentation levels to be added the computed value.
-    (can be negative as well)
-
-    Default: 0                                                               ~
-
-    Example: >
-
-        let g:indent_blankline_extra_indent_level = -1
-
-------------------------------------------------------------------------------
 g:indent_blankline_show_first_indent_level*g:indent_blankline_show_first_indent_level*
 
     Displays indentation in the first column.
@@ -410,6 +398,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     |g:indent_blankline_char_highlight_list|
     |g:indent_blankline_space_char_highlight|
     |g:indent_blankline_space_char_highlight_list|
+ * Remove `indent_blankline_extra_indent_level` option
 
 1.4.0
  * Don't create jumps in embedded nvim instance

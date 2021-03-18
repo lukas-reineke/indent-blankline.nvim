@@ -32,7 +32,6 @@ local refresh = function()
     local space_char = vim.g.indent_blankline_space_char
     local space_char_blankline = vim.g.indent_blankline_space_char_blankline
     local max_indent_level = vim.g.indent_blankline_indent_level
-    local extra_indent_level = vim.g.indent_blankline_extra_indent_level
     local expandtab = vim.bo.expandtab
     local use_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(vim.bo.filetype)
     local first_indent = vim.g.indent_blankline_show_first_indent_level
@@ -43,10 +42,6 @@ local refresh = function()
     local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
 
     local get_virtual_text = function(indent, extra, blankline)
-        if extra_indent_level then
-            indent = indent + extra_indent_level
-        end
-
         local virtual_text = {}
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             local space_count = space
