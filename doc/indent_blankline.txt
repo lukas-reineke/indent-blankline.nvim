@@ -221,6 +221,18 @@ g:indent_blankline_show_trailing_blankline_indent*g:indent_blankline_show_traili
         let g:indent_blankline_show_trailing_blankline_indent = v:false
 
 ------------------------------------------------------------------------------
+g:indent_blankline_show_end_of_line      *g:indent_blankline_show_end_of_line*
+
+    Displays the end of line character set by |listchars| instead of the
+    indent guide on line returns.
+
+    Default: v:false                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_show_end_of_line = v:true
+
+------------------------------------------------------------------------------
 g:indent_blankline_enabled                        *g:indent_blankline_enabled*
 
     Turns this plugin on or off globally.
@@ -398,7 +410,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     |g:indent_blankline_char_highlight_list|
     |g:indent_blankline_space_char_highlight|
     |g:indent_blankline_space_char_highlight_list|
- * Remove `indent_blankline_extra_indent_level` option
+    |g:indent_blankline_show_end_of_line|
+ * Remove options:
+    `indent_blankline_extra_indent_level`
 
 1.4.0
  * Don't create jumps in embedded nvim instance

@@ -36,6 +36,8 @@ local refresh = function()
     local use_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(vim.bo.filetype)
     local first_indent = vim.g.indent_blankline_show_first_indent_level
     local trail_indent = vim.g.indent_blankline_show_trailing_blankline_indent
+    local end_of_line = vim.g.indent_blankline_show_end_of_line
+    local end_of_line_char = vim.fn["indent_blankline#helper#GetListChar"]("eol", "")
     local strict_tabs = vim.g.indent_blankline_strict_tabs
 
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
@@ -50,7 +52,11 @@ local refresh = function()
                 table.insert(
                     virtual_text,
                     {
-                        utils._if(#char_list > 0, utils.get_from_list(char_list, i), char),
+                        utils._if(
+                            i == 1 and blankline and end_of_line and #end_of_line_char > 0,
+                            end_of_line_char,
+                            utils._if(#char_list > 0, utils.get_from_list(char_list, i), char)
+                        ),
                         utils._if(#char_highlight_list > 0, utils.get_from_list(char_highlight_list, i), char_highlight)
                     }
                 )
