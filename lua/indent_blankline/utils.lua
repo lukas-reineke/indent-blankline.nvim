@@ -75,4 +75,33 @@ M.find_indent = function(line, shiftwidth, strict_tabs)
     return indent, spaces % shiftwidth ~= 0
 end
 
+M.get_current_context = function(type_patterns)
+    local ts_utils = require "nvim-treesitter.ts_utils"
+    local cursor_node = ts_utils.get_node_at_cursor()
+
+    while cursor_node do
+        local node_type = cursor_node:type()
+        local found
+        for _, rgx in ipairs(type_patterns) do
+            if node_type:find(rgx) then
+                found = true
+            end
+        end
+        if found then
+            break
+        end
+        cursor_node = cursor_node:parent()
+    end
+
+    if cursor_node then
+        local node_start, _, node_end, _ = cursor_node:range()
+
+        if node_start ~= node_end then
+            return true, node_start, node_end
+        end
+    end
+
+    return false
+end
+
 return M

@@ -43,10 +43,17 @@ local refresh = function()
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
     local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
 
-    local get_virtual_text = function(indent, extra, blankline)
+    local context_highlight = vim.g.indent_blankline_context_highlight
+    local context_status, context_start, context_end = false, 0, 0
+    if vim.g.indent_blankline_show_current_context then
+        context_status, context_start, context_end = utils.get_current_context(vim.g.indent_blankline_context_patterns)
+    end
+
+    local get_virtual_text = function(indent, extra, blankline, context_active, context_indent)
         local virtual_text = {}
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             local space_count = space
+            local context = context_active and context_indent == i
             if i ~= 1 or first_indent then
                 space_count = space_count - 1
                 table.insert(
@@ -57,7 +64,15 @@ local refresh = function()
                             end_of_line_char,
                             utils._if(#char_list > 0, utils.get_from_list(char_list, i), char)
                         ),
-                        utils._if(#char_highlight_list > 0, utils.get_from_list(char_highlight_list, i), char_highlight)
+                        utils._if(
+                            context,
+                            context_highlight,
+                            utils._if(
+                                #char_highlight_list > 0,
+                                utils.get_from_list(char_highlight_list, i),
+                                char_highlight
+                            )
+                        )
                     }
                 )
             end
@@ -102,12 +117,17 @@ local refresh = function()
     local next_indent
     local next_extra
     local empty_line_counter = 0
+    local context_indent
     for i = 1, #lines do
         local async
         async =
             vim.loop.new_async(
             function()
                 local blankline = lines[i]:len() == 0
+                local context_active = false
+                if context_status then
+                    context_active = offset + i > context_start and offset + i <= context_end + 1
+                end
 
                 if blankline and use_ts_indent then
                     vim.schedule_wrap(
@@ -117,8 +137,12 @@ local refresh = function()
                                 utils.clear_line_indent(bufnr, i + offset)
                                 return
                             end
+                            if offset + i == context_start then
+                                context_indent = (indent or 0) + 1
+                            end
 
-                            local virtual_text = get_virtual_text(indent, false, blankline)
+                            local virtual_text =
+                                get_virtual_text(indent, false, blankline, context_active, context_indent)
                             utils.clear_line_indent(bufnr, i + offset)
                             xpcall(
                                 vim.api.nvim_buf_set_extmark,
@@ -157,12 +181,16 @@ local refresh = function()
                     next_extra = extra
                 end
 
+                if offset + i == context_start then
+                    context_indent = (indent or 0) + 1
+                end
+
                 if not indent or indent == 0 then
                     vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
 
-                local virtual_text = get_virtual_text(indent, extra, blankline)
+                local virtual_text = get_virtual_text(indent, extra, blankline, context_active, context_indent)
                 vim.schedule_wrap(
                     function()
                         utils.clear_line_indent(bufnr, i + offset)

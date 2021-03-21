@@ -176,6 +176,7 @@ g:indent_blankline_space_char_blankline_highlight_list*g:indent_blankline_space_
 g:indent_blankline_use_treesitter          *g:indent_blankline_use_treesitter*
 
     Use treesitter to calculate indentation when possible.
+    Requires treesitter
 
     Default: false                                                           ~
 
@@ -330,6 +331,49 @@ g:indent_blankline_strict_tabs                *g:indent_blankline_strict_tabs*
     Example: >
 
         let g:indent_blankline_strict_tabs = v:true
+
+------------------------------------------------------------------------------
+g:indent_blankline_show_current_context*g:indent_blankline_show_current_context*
+
+    When on, use treesitter to determine the current context. Then show the
+    indent character in a different highlight.
+    Requires treesitter
+
+    Note: With this option enabled, the plugin refreshes on |CursorMoved|,
+          which might be slower
+
+    Default: v:false                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_show_current_context = v:true
+
+------------------------------------------------------------------------------
+g:indent_blankline_context_highlight    *g:indent_blankline_context_highlight*
+
+    Specifies the character highlight for the current context
+
+    Only used when |g:indent_blankline_show_current_context| is active
+
+    Default: 'Label'                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_context_highlight = 'Error'
+
+------------------------------------------------------------------------------
+g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
+
+    Specifies the treesitter |tsnode:type()| pattern for which determine the
+    current context.
+
+    Only used when |g:indent_blankline_show_current_context| is active
+
+    Default: ['class', 'function', 'method']                                 ~
+
+    Example: >
+
+        let g:indent_blankline_context_highlight = ['class']
 
 ------------------------------------------------------------------------------
 g:indent_blankline_debug                            *g:indent_blankline_debug*
