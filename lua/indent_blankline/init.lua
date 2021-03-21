@@ -126,7 +126,7 @@ local refresh = function()
                 local blankline = lines[i]:len() == 0
                 local context_active = false
                 if context_status then
-                    context_active = offset + i > context_start and offset + i <= context_end + 1
+                    context_active = offset + i > context_start and offset + i <= context_end
                 end
 
                 if blankline and use_ts_indent then

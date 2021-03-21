@@ -97,7 +97,7 @@ M.get_current_context = function(type_patterns)
         local node_start, _, node_end, _ = cursor_node:range()
 
         if node_start ~= node_end then
-            return true, node_start, node_end
+            return true, node_start + 1, node_end + 1
         end
     end
 
