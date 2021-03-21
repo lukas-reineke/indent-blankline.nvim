@@ -22,14 +22,6 @@ text feature.
 The guides are generated asynchronously by an embedded read-only instance of
 Neovim.
 
-It is recommended, but not required, to use it together
-with https://github.com/Yggdroot/indentLine
-
-This plugin will read setting values from the indentLine plugin as well.
-The settings resolve with following priority
-
-|indent-blankline| > |indentLine| > default
-
 ==============================================================================
  2. VARIABLES                                     *indent-blankline-variables*
 
