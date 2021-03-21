@@ -16,11 +16,12 @@ CONTENTS                                                    *indent-blankline*
 ==============================================================================
  1. INTRODUCTION                               *indent-blankline-introduction*
 
-This plugin displays indentation guides on empty lines using Neovims virtual
-text feature.
+This plugin adds indentation guides to all lines (including empty lines).
 
-The guides are generated asynchronously by an embedded read-only instance of
-Neovim.
+It uses Neovims virtual text feature and **no conceal**
+
+This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
+features so it will not work in Vim.
 
 ==============================================================================
  2. VARIABLES                                     *indent-blankline-variables*
@@ -447,6 +448,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     |g:indent_blankline_space_char_highlight|
     |g:indent_blankline_space_char_highlight_list|
     |g:indent_blankline_show_end_of_line|
+    |g:indent_blankline_show_current_context|
+    |g:indent_blankline_context_highlight|
+    |g:indent_blankline_context_patterns|
  * Remove options:
     `indent_blankline_extra_indent_level`
 
