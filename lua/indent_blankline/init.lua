@@ -103,9 +103,13 @@ local refresh = function()
                 {
                     utils._if(#char_list > 0, utils.get_from_list(char_list, math.ceil(#virtual_text / 2) + 1), char),
                     utils._if(
-                        #char_highlight_list > 0,
-                        utils.get_from_list(char_highlight_list, math.ceil(#virtual_text / 2) + 1),
-                        char_highlight
+                        context_active and context_indent == #virtual_text,
+                        context_highlight,
+                        utils._if(
+                            #char_highlight_list > 0,
+                            utils.get_from_list(char_highlight_list, math.ceil(#virtual_text / 2) + 1),
+                            char_highlight
+                        )
                     )
                 }
             )
