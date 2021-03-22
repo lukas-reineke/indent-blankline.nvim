@@ -1,8 +1,8 @@
 # Indent Blankline
 
-This plugin adds indentation guides to all lines (including empty lines).  
+This plugin adds indentation guides to all lines (including empty lines).
 
-It uses Neovims virtual text feature and **no conceal**  
+It uses Neovims virtual text feature and **no conceal**
 
 This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
 features so it will not work in Vim.
@@ -10,7 +10,7 @@ features so it will not work in Vim.
 ## Settings
 
 A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options
-should work out of the box.  
+should work out of the box.
 
 Please see `:help indent_blankline.txt`for more details.
 
@@ -31,6 +31,10 @@ Please see `:help indent_blankline.txt`for more details.
 #### With custom background highlight
 
 ![Screenshot](https://i.imgur.com/DukMZGk.png)
+
+#### With context indent highlighted by treesitter
+
+![Screenshot](https://i.imgur.com/mkyGPZZ.png)
 
 ## Thanks
 
