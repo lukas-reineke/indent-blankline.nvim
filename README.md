@@ -18,23 +18,23 @@ Please see `:help indent_blankline.txt`for more details.
 
 #### Default settings
 
-![Screenshot](https://i.imgur.com/3gRG5qI.png)
+<img width="900" src="https://i.imgur.com/3gRG5qI.png" alt="Screenshot" />
 
 #### With custom `listchars` and `g:indent_blankline_space_char`
 
-![Screenshot](https://i.imgur.com/VxCThMu.png)
+<img width="900" src="https://i.imgur.com/VxCThMu.png" alt="Screenshot" />
 
 #### With custom `g:indent_blankline_char_highlight_list`
 
-![Screenshot](https://i.imgur.com/E3B0PUb.png)
+<img width="900" src="https://i.imgur.com/E3B0PUb.png" alt="Screenshot" />
 
 #### With custom background highlight
 
-![Screenshot](https://i.imgur.com/DukMZGk.png)
+<img width="900" src="https://i.imgur.com/DukMZGk.png" alt="Screenshot" />
 
 #### With context indent highlighted by treesitter
 
-![Screenshot](https://i.imgur.com/mkyGPZZ.png)
+<img width="900" src="https://i.imgur.com/mkyGPZZ.png" alt="Screenshot" />
 
 ## Thanks
 
