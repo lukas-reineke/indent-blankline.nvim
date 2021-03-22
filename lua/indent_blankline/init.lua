@@ -142,7 +142,6 @@ local refresh = function()
                                 return
                             end
                             indent = indent / space
-                            P(indent)
                             if offset + i == context_start then
                                 context_indent = (indent or 0) + 1
                             end
