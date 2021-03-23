@@ -367,7 +367,7 @@ g:indent_blankline_context_highlight_list*g:indent_blankline_context_highlight_l
 
     Example: >
 
-        let g:indent_blankline_context_highlight = 'Error'
+        let g:indent_blankline_context_highlight_list = ['Error', 'Warning']
 
 ------------------------------------------------------------------------------
 g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
