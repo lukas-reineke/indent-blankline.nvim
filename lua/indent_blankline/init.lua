@@ -68,9 +68,9 @@ local refresh = function()
                         utils._if(
                             context,
                             utils._if(
-                              #context_highlight_list > 0,
-                              utils.get_from_list(context_highlight_list, i),
-                              context_highlight
+                                #context_highlight_list > 0,
+                                utils.get_from_list(context_highlight_list, i),
+                                context_highlight
                             ),
                             utils._if(
                                 #char_highlight_list > 0,
