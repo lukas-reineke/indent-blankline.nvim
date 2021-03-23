@@ -33,6 +33,7 @@ let g:indent_blankline_show_trailing_blankline_indent = get(g:, 'indent_blanklin
 let g:indent_blankline_show_end_of_line = get(g:, 'indent_blankline_show_end_of_line', v:false)
 let g:indent_blankline_show_current_context = get(g:, 'indent_blankline_show_current_context', v:false)
 let g:indent_blankline_context_highlight = get(g:, 'indent_blankline_context_highlight', 'Label')
+let g:indent_blankline_context_highlight_list = get(g:, 'indent_blankline_context_highlight_list', [])
 let g:indent_blankline_context_patterns = get(g:, 'indent_blankline_context_patterns', ['class', 'function', 'method'])
 let g:indent_blankline_strict_tabs = get(g:, 'indent_blankline_strict_tabs', v:false)
 
