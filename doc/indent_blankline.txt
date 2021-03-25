@@ -36,17 +36,29 @@ IndentBlanklineChar                                   *hl-IndentBlanklineChar*
 
     Default: takes guifg color from 'Whitespace'                             ~
 
+    Example: >
+
+        highlight IndentBlanklineChar guifg=#00FF00 gui=nocombine
+
 IndentBlanklineSpaceChar                         *hl-IndentBlanklineSpaceChar*
 
     Highlight of space character.
 
     Default: takes guifg color from 'Whitespace'                             ~
 
+    Example: >
+
+        highlight IndentBlanklineSpaceChar guifg=#00FF00 gui=nocombine
+
 IndentBlanklineSpaceCharBlankline       *hl-IndentBlanklineSpaceCharBlankline*
 
     Highlight of space character on blank lines.
 
     Default: takes guifg color from 'Whitespace'                             ~
+
+    Example: >
+
+        highlight IndentBlanklineSpaceCharBlankline guifg=#00FF00 gui=nocombine
 
 When defining the highlight group, it is important to set |nocombine| as a
 gui option. This is to make sure the character does not inherit gui options
