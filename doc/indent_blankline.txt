@@ -363,7 +363,7 @@ g:indent_blankline_context_highlight_list*g:indent_blankline_context_highlight_l
 
     Only used when |g:indent_blankline_show_current_context| is active
 
-    Default: '[]'                                                         ~
+    Default: []                                                              ~
 
     Example: >
 
@@ -465,6 +465,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     |g:indent_blankline_show_end_of_line|
     |g:indent_blankline_show_current_context|
     |g:indent_blankline_context_highlight|
+    |g:indent_blankline_context_highlight_list|
     |g:indent_blankline_context_patterns|
  * Remove options:
     `indent_blankline_extra_indent_level`

@@ -23,7 +23,6 @@ let g:indent_blankline_filetype = get(g:, 'indent_blankline_filetype', get(g:, '
 let g:indent_blankline_filetype_exclude = get(g:, 'indent_blankline_filetype_exclude', get(g:, 'indentLine_fileTypeExclude', []))
 let g:indent_blankline_bufname_exclude = get(g:, 'indent_blankline_bufname_exclude', get(g:, 'indentLine_bufNameExclude', []))
 let g:indent_blankline_buftype_exclude = get(g:, 'indent_blankline_buftype_exclude', get(g:, 'indentLine_bufTypeExclude', []))
-let g:indent_blankline_extra_indent_level = get(g:, 'indent_blankline_extra_indent_level', 0)
 let g:indent_blankline_viewport_buffer = get(g:, 'indent_blankline_viewport_buffer', 10)
 let g:indent_blankline_use_treesitter = get(g:, 'indent_blankline_use_treesitter', v:false)
 let g:indent_blankline_debug = get(g:, 'indent_blankline_debug', v:false)

@@ -103,20 +103,21 @@ local refresh = function()
         end
 
         if ((blankline and trail_indent) or extra) and (first_indent or #virtual_text > 0) then
+            local index = math.ceil(#virtual_text / 2) + 1
             table.insert(
                 virtual_text,
                 {
-                    utils._if(#char_list > 0, utils.get_from_list(char_list, math.ceil(#virtual_text / 2) + 1), char),
+                    utils._if(#char_list > 0, utils.get_from_list(char_list, index), char),
                     utils._if(
-                        context_active and context_indent == #virtual_text,
+                        context_active and context_indent == index,
                         utils._if(
                             #context_highlight_list > 0,
-                            utils.get_from_list(context_highlight_list, math.ceil(#virtual_text / 2) + 1),
+                            utils.get_from_list(context_highlight_list, index),
                             context_highlight
                         ),
                         utils._if(
                             #char_highlight_list > 0,
-                            utils.get_from_list(char_highlight_list, math.ceil(#virtual_text / 2) + 1),
+                            utils.get_from_list(char_highlight_list, index),
                             char_highlight
                         )
                     )
