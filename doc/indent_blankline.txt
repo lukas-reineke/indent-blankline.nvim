@@ -8,10 +8,11 @@ Version: 2.0.0
 CONTENTS                                                    *indent-blankline*
 
   1. Introduction                          |indent-blankline-introduction|
-  2. Variables                             |indent-blankline-variables|
-  3. Commands                              |indent-blankline-commands|
-  4. Changelog                             |indent-blankline-changelog|
-  5. License                               |indent-blankline-license|
+  2. Highlights                            |indent-blankline-highlights|
+  3. Variables                             |indent-blankline-variables|
+  4. Commands                              |indent-blankline-commands|
+  5. Changelog                             |indent-blankline-changelog|
+  6. License                               |indent-blankline-license|
 
 ==============================================================================
  1. INTRODUCTION                               *indent-blankline-introduction*
@@ -24,7 +25,41 @@ This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
 features so it will not work in Vim.
 
 ==============================================================================
- 2. VARIABLES                                     *indent-blankline-variables*
+ 3. HIGHLIGHTS                                   *indent-blankline-highlights*
+
+To change the highlighting of either the indent character, or the whitespace
+between indent characters, define or update these highlight groups.
+
+IndentBlanklineChar                                   *hl-IndentBlanklineChar*
+
+    Highlight of indent character.
+
+    Default: takes guifg color from 'Whitespace'                             ~
+
+IndentBlanklineSpaceChar                         *hl-IndentBlanklineSpaceChar*
+
+    Highlight of space character.
+
+    Default: takes guifg color from 'Whitespace'                             ~
+
+IndentBlanklineSpaceCharBlankline       *hl-IndentBlanklineSpaceCharBlankline*
+
+    Highlight of space character on blank lines.
+
+    Default: takes guifg color from 'Whitespace'                             ~
+
+When defining the highlight group, it is important to set |nocombine| as a
+gui option. This is to make sure the character does not inherit gui options
+from the underlying text, like italic or bold.
+
+The set more than one highlight group that changes based on indentation level,
+see:
+|g:indent_blankline_char_highlight_list|
+|g:indent_blankline_space_char_highlight_list|
+|g:indent_blankline_space_char_blankline_highlight_list|
+
+==============================================================================
+ 3. VARIABLES                                     *indent-blankline-variables*
 
 g:indent_blankline_char                              *g:indent_blankline_char*
 
@@ -53,19 +88,6 @@ g:indent_blankline_char_list                    *g:indent_blankline_char_list*
     Example: >
 
         let g:indent_blankline_char_list = ['|', '¦', '┆', '┊']
-
-------------------------------------------------------------------------------
-
-g:indent_blankline_char_highlight          *g:indent_blankline_char_highlight*
-
-    Specifies the character highlight.
-    Not used if |g:indent_blankline_char_highlight_list| is not empty.
-
-    Default: 'Whitespace'                                                    ~
-
-    Example: >
-
-        let g:indent_blankline_char_highlight = 'Error'
 
 ------------------------------------------------------------------------------
 
@@ -105,34 +127,6 @@ g:indent_blankline_space_char_blankline*g:indent_blankline_space_char_blankline*
     Example: >
 
         let g:indent_blankline_space_char_blankline = ' '
-
-------------------------------------------------------------------------------
-
-g:indent_blankline_space_char_highlight*g:indent_blankline_space_char_highlight*
-
-    Specifies the space character highlight.
-    Not used if |g:indent_blankline_space_char_highlight_list| is not empty.
-
-    Default: 'Whitespace'                                                    ~
-
-    Example: >
-
-        let g:indent_blankline_space_char_highlight = 'Error'
-
-------------------------------------------------------------------------------
-
-g:indent_blankline_space_char_blankline_highlight*g:indent_blankline_space_char_blankline_highlight*
-
-    Specifies the space character highlight when the line is empty.
-    Not used if |g:indent_blankline_space_char_blankline_highlight_list| is not empty.
-
-    Also set by |g:indent_blankline_space_char_highlight|
-
-    Default: 'Whitespace'                                                    ~
-
-    Example: >
-
-        let g:indent_blankline_space_char_blankline_highlight = 'Error'
 
 ------------------------------------------------------------------------------
 
@@ -395,7 +389,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
         let g:indent_blankline_debug = v:true
 
 ==============================================================================
- 3. COMMANDS                                       *indent-blankline-commands*
+ 4. COMMANDS                                       *indent-blankline-commands*
 
 :IndentBlanklineRefresh[!]                            *IndentBlanklineRefresh*
 
@@ -442,7 +436,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     With bang (IndentBlanklineToggle!) toggles globally
 
 ==============================================================================
- 4. CHANGELOG                                     *indent-blankline-changelog*
+ 5. CHANGELOG                                     *indent-blankline-changelog*
 
 2.0.0
  * Complete lua rewrite
@@ -458,9 +452,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     - IndentBlanklineDisable
     - IndentBlanklineToggle
  * New options:
-    |g:indent_blankline_char_highlight|
     |g:indent_blankline_char_highlight_list|
-    |g:indent_blankline_space_char_highlight|
     |g:indent_blankline_space_char_highlight_list|
     |g:indent_blankline_show_end_of_line|
     |g:indent_blankline_show_current_context|
@@ -515,7 +507,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
   * First release
 
 ==============================================================================
- 5. LICENSE                                         *indent-blankline-license*
+ 6. LICENSE                                         *indent-blankline-license*
 
 The MIT Licence
 http://www.opensource.org/licenses/mit-license.php

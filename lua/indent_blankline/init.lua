@@ -3,8 +3,19 @@ local ts_status, ts_indent = pcall(require, "nvim-treesitter.indent")
 local utils = require "indent_blankline/utils"
 local M = {}
 
+local char_highlight = "IndentBlanklineChar"
+local space_char_highlight = "IndentBlanklineSpaceChar"
+local space_char_blankline_highlight = "IndentBlanklineSpaceCharBlankline"
+
 M.setup = function()
     vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace("indent_blankline")
+
+    local whitespace_fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg")
+    for _, highlight in ipairs({char_highlight, space_char_highlight, space_char_blankline_highlight}) do
+        if vim.fn.hlexists(highlight) == 0 then
+            vim.cmd(string.format("highlight %s guifg=%s gui=nocombine", highlight, whitespace_fg))
+        end
+    end
 end
 
 local refresh = function()
@@ -23,11 +34,8 @@ local refresh = function()
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local char = vim.g.indent_blankline_char
     local char_list = vim.g.indent_blankline_char_list
-    local char_highlight = vim.g.indent_blankline_char_highlight
     local char_highlight_list = vim.g.indent_blankline_char_highlight_list
-    local space_char_highlight = vim.g.indent_blankline_space_char_highlight
     local space_char_highlight_list = vim.g.indent_blankline_space_char_highlight_list
-    local space_char_blankline_highlight = vim.g.indent_blankline_space_char_blankline_highlight
     local space_char_blankline_highlight_list = vim.g.indent_blankline_space_char_blankline_highlight_list
     local space_char = vim.g.indent_blankline_space_char
     local space_char_blankline = vim.g.indent_blankline_space_char_blankline

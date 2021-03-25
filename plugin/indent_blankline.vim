@@ -6,15 +6,12 @@ let g:loaded_indent_blankline = 1
 
 let g:indent_blankline_char = get(g:, 'indent_blankline_char', get(g:, 'indentLine_char', '|'))
 let g:indent_blankline_char_list = get(g:, 'indent_blankline_char_list', get(g:, 'indentLine_char_list', []))
-let g:indent_blankline_char_highlight = get(g:, 'indent_blankline_char_highlight', 'Whitespace')
 let g:indent_blankline_char_highlight_list = get(g:, 'indent_blankline_char_highlight_list', [])
 
 let g:indent_blankline_space_char = get(g:, 'indent_blankline_space_char', indent_blankline#helper#GetListChar('space', ' '))
-let g:indent_blankline_space_char_highlight = get(g:, 'indent_blankline_space_char_highlight', 'Whitespace')
 let g:indent_blankline_space_char_highlight_list = get(g:, 'indent_blankline_space_char_highlight_list', [])
 
 let g:indent_blankline_space_char_blankline = get(g:, 'indent_blankline_space_char_blankline', g:indent_blankline_space_char)
-let g:indent_blankline_space_char_blankline_highlight = get(g:, 'indent_blankline_space_char_blankline_highlight', g:indent_blankline_space_char_highlight)
 let g:indent_blankline_space_char_blankline_highlight_list = get(g:, 'indent_blankline_space_char_blankline_highlight_list', g:indent_blankline_space_char_highlight_list)
 
 let g:indent_blankline_indent_level = get(g:, 'indent_blankline_indent_level', get(g:, 'indentLine_indentLevel', 20))
