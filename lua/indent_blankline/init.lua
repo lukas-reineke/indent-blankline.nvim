@@ -44,6 +44,7 @@ local refresh = function()
     local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
 
     local context_highlight = vim.g.indent_blankline_context_highlight
+    local context_highlight_list = vim.g.indent_blankline_context_highlight_list
     local context_status, context_start, context_end = false, 0, 0
     if vim.g.indent_blankline_show_current_context then
         context_status, context_start, context_end = utils.get_current_context(vim.g.indent_blankline_context_patterns)
@@ -66,7 +67,11 @@ local refresh = function()
                         ),
                         utils._if(
                             context,
-                            context_highlight,
+                            utils._if(
+                                #context_highlight_list > 0,
+                                utils.get_from_list(context_highlight_list, i),
+                                context_highlight
+                            ),
                             utils._if(
                                 #char_highlight_list > 0,
                                 utils.get_from_list(char_highlight_list, i),
@@ -104,7 +109,11 @@ local refresh = function()
                     utils._if(#char_list > 0, utils.get_from_list(char_list, math.ceil(#virtual_text / 2) + 1), char),
                     utils._if(
                         context_active and context_indent == #virtual_text,
-                        context_highlight,
+                        utils._if(
+                            #context_highlight_list > 0,
+                            utils.get_from_list(context_highlight_list, math.ceil(#virtual_text / 2) + 1),
+                            context_highlight
+                        ),
                         utils._if(
                             #char_highlight_list > 0,
                             utils.get_from_list(char_highlight_list, math.ceil(#virtual_text / 2) + 1),

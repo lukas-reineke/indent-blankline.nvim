@@ -355,6 +355,21 @@ g:indent_blankline_context_highlight    *g:indent_blankline_context_highlight*
         let g:indent_blankline_context_highlight = 'Error'
 
 ------------------------------------------------------------------------------
+g:indent_blankline_context_highlight_list*g:indent_blankline_context_highlight_list*
+
+    Specifies the list of character highlights for the current context at
+    each indentation level.
+    Ignored if the value is an empty list.
+
+    Only used when |g:indent_blankline_show_current_context| is active
+
+    Default: '[]'                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_context_highlight_list = ['Error', 'Warning']
+
+------------------------------------------------------------------------------
 g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
 
     Specifies the treesitter |tsnode:type()| pattern for which determine the
