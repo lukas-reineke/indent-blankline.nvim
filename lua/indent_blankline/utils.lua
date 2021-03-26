@@ -104,4 +104,23 @@ M.get_current_context = function(type_patterns)
     return false
 end
 
+M.reset_highlights = function()
+    local whitespace_fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg")
+    local label_fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Label")), "fg")
+
+    for highlight_name, highlight in pairs(
+        {
+            IndentBlanklineChar = whitespace_fg,
+            IndentBlanklineSpaceChar = whitespace_fg,
+            IndentBlanklineSpaceCharBlankline = whitespace_fg,
+            IndentBlanklineContextChar = label_fg
+        }
+    ) do
+        local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
+        if vim.fn.synIDattr(current_highlight, "fg") == "" and vim.fn.synIDattr(current_highlight, "bg") == "" then
+            vim.cmd(string.format("highlight %s guifg=%s gui=nocombine", highlight_name, highlight))
+        end
+    end
+end
+
 return M

@@ -6,16 +6,12 @@ local M = {}
 local char_highlight = "IndentBlanklineChar"
 local space_char_highlight = "IndentBlanklineSpaceChar"
 local space_char_blankline_highlight = "IndentBlanklineSpaceCharBlankline"
+local context_highlight = "IndentBlanklineContextChar"
 
 M.setup = function()
     vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace("indent_blankline")
 
-    local whitespace_fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg")
-    for _, highlight in ipairs({char_highlight, space_char_highlight, space_char_blankline_highlight}) do
-        if vim.fn.hlexists(highlight) == 0 then
-            vim.cmd(string.format("highlight %s guifg=%s gui=nocombine", highlight, whitespace_fg))
-        end
-    end
+    utils.reset_highlights()
 end
 
 local refresh = function()
@@ -51,7 +47,6 @@ local refresh = function()
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
     local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
 
-    local context_highlight = vim.g.indent_blankline_context_highlight
     local context_highlight_list = vim.g.indent_blankline_context_highlight_list
     local context_status, context_start, context_end = false, 0, 0
     if vim.g.indent_blankline_show_current_context then

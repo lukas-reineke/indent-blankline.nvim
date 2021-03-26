@@ -60,9 +60,23 @@ IndentBlanklineSpaceCharBlankline       *hl-IndentBlanklineSpaceCharBlankline*
 
         highlight IndentBlanklineSpaceCharBlankline guifg=#00FF00 gui=nocombine
 
+IndentBlanklineContextChar                     *hl-IndentBlanklineContextChar*
+
+    Highlight of indent character when base of current context.
+    Only used when |g:indent_blankline_show_current_context| is active
+
+    Default: takes guifg color from 'Label'                             ~
+
+    Example: >
+
+        highlight IndentBlanklineContextChar guifg=#00FF00 gui=nocombine
+
 When defining the highlight group, it is important to set |nocombine| as a
 gui option. This is to make sure the character does not inherit gui options
 from the underlying text, like italic or bold.
+
+Highlight groups get reset on |ColorScheme| autocommand, *if* both fg and bg
+are empty.
 
 The set more than one highlight group that changes based on indentation level,
 see:
@@ -348,19 +362,6 @@ g:indent_blankline_show_current_context*g:indent_blankline_show_current_context*
         let g:indent_blankline_show_current_context = v:true
 
 ------------------------------------------------------------------------------
-g:indent_blankline_context_highlight    *g:indent_blankline_context_highlight*
-
-    Specifies the character highlight for the current context
-
-    Only used when |g:indent_blankline_show_current_context| is active
-
-    Default: 'Label'                                                         ~
-
-    Example: >
-
-        let g:indent_blankline_context_highlight = 'Error'
-
-------------------------------------------------------------------------------
 g:indent_blankline_context_highlight_list*g:indent_blankline_context_highlight_list*
 
     Specifies the list of character highlights for the current context at
@@ -387,7 +388,7 @@ g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
 
     Example: >
 
-        let g:indent_blankline_context_highlight = ['class']
+        let g:indent_blankline_context_patterns = ['class']
 
 ------------------------------------------------------------------------------
 g:indent_blankline_debug                            *g:indent_blankline_debug*
@@ -468,7 +469,6 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     |g:indent_blankline_space_char_highlight_list|
     |g:indent_blankline_show_end_of_line|
     |g:indent_blankline_show_current_context|
-    |g:indent_blankline_context_highlight|
     |g:indent_blankline_context_highlight_list|
     |g:indent_blankline_context_patterns|
  * Remove options:
