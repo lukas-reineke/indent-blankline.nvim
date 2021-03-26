@@ -105,8 +105,17 @@ M.get_current_context = function(type_patterns)
 end
 
 M.reset_highlights = function()
-    local whitespace_fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg")
-    local label_fg = vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Label")), "fg")
+    local whitespace_highlight = vim.fn.synIDtrans(vim.fn.hlID("Whitespace"))
+    local label_highlight = vim.fn.synIDtrans(vim.fn.hlID("Label"))
+
+    local whitespace_fg = {
+        vim.fn.synIDattr(whitespace_highlight, "fg", "gui"),
+        vim.fn.synIDattr(whitespace_highlight, "fg", "cterm")
+    }
+    local label_fg = {
+        vim.fn.synIDattr(label_highlight, "fg", "gui"),
+        vim.fn.synIDattr(label_highlight, "fg", "cterm")
+    }
 
     for highlight_name, highlight in pairs(
         {
@@ -118,7 +127,14 @@ M.reset_highlights = function()
     ) do
         local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
         if vim.fn.synIDattr(current_highlight, "fg") == "" and vim.fn.synIDattr(current_highlight, "bg") == "" then
-            vim.cmd(string.format("highlight %s guifg=%s gui=nocombine", highlight_name, highlight))
+            vim.cmd(
+                string.format(
+                    "highlight %s guifg=%s ctermfg=%s gui=nocombine cterm=nocombine",
+                    highlight_name,
+                    M._if(highlight[1] == "", "NONE", highlight[1]),
+                    M._if(highlight[2] == "", "NONE", highlight[2])
+                )
+            )
         end
     end
 end
