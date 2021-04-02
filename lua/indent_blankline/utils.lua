@@ -81,24 +81,16 @@ M.get_current_context = function(type_patterns)
 
     while cursor_node do
         local node_type = cursor_node:type()
-        local found
         for _, rgx in ipairs(type_patterns) do
             if node_type:find(rgx) then
-                found = true
+                local node_start, _, node_end, _ = cursor_node:range()
+                if node_start ~= node_end then
+                    return true, node_start + 1, node_end + 1
+                end
+                node_start, node_end = nil, nil
             end
         end
-        if found then
-            break
-        end
         cursor_node = cursor_node:parent()
-    end
-
-    if cursor_node then
-        local node_start, _, node_end, _ = cursor_node:range()
-
-        if node_start ~= node_end then
-            return true, node_start + 1, node_end + 1
-        end
     end
 
     return false
