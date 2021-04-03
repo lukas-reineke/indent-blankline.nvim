@@ -56,19 +56,11 @@ function s:IndentBlanklineInit()
     IndentBlanklineRefresh!
 endfunction
 
-function s:IndentBlanklineFiletypeReset()
-    if exists("b:indent_blankline_enabled")
-        unlet b:indent_blankline_enabled
-        IndentBlanklineRefresh
-    endif
-endfunction
-
 augroup IndentBlanklineAutogroup
     autocmd!
     autocmd OptionSet shiftwidth,tabstop IndentBlanklineRefresh
-    autocmd FileChangedShellPost,TextChanged,TextChangedI,WinScrolled,BufWinEnter * IndentBlanklineRefresh
+    autocmd FileChangedShellPost,TextChanged,TextChangedI,WinScrolled,BufWinEnter,Filetype * IndentBlanklineRefresh
     autocmd VimEnter * call s:IndentBlanklineInit()
-    autocmd FileType * call s:IndentBlanklineFiletypeReset()
     autocmd ColorScheme * lua require("indent_blankline.utils").reset_highlights()
 augroup END
 

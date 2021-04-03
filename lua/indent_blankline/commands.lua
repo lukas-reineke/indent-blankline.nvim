@@ -31,6 +31,7 @@ M.disable = function(bang)
         end
     else
         vim.b.indent_blankline_enabled = false
+        vim.b.__indent_blankline_active = false
         vim.api.nvim_buf_clear_namespace(0, vim.g.indent_blankline_namespace, 1, -1)
     end
 end
@@ -43,7 +44,7 @@ M.toggle = function(bang)
             M.enable(bang)
         end
     else
-        if vim.b.indent_blankline_enabled then
+        if vim.b.__indent_blankline_active then
             M.disable(bang)
         else
             M.enable(bang)

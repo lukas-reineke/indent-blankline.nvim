@@ -15,12 +15,23 @@ M.setup = function()
 end
 
 local refresh = function()
-    if vim.b.indent_blankline_enabled == nil then
-        utils.set_indent_blankline_enabled()
-    end
-
-    if not vim.g.indent_blankline_enabled or not vim.b.indent_blankline_enabled then
+    if
+        not utils.is_indent_blankline_enabled(
+            vim.b.indent_blankline_enabled,
+            vim.g.indent_blankline_enabled,
+            vim.bo.filetype,
+            vim.g.indent_blankline_filetype,
+            vim.g.indent_blankline_filetype_exclude,
+            vim.bo.buftype,
+            vim.g.indent_blankline_buftype_exclude,
+            vim.g.indent_blankline_bufname_exclude,
+            vim.fn["bufname"]("")
+        )
+     then
+        vim.b.__indent_blankline_active = false
         return
+    else
+        vim.b.__indent_blankline_active = true
     end
 
     local bufnr = vim.api.nvim_get_current_buf()

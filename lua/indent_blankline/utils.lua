@@ -1,5 +1,47 @@
 local M = {}
 
+M.memo =
+    setmetatable(
+    {
+        put = function(cache, params, result)
+            local node = cache
+            for i = 1, #params do
+                local param = vim.inspect(params[i])
+                node.children = node.children or {}
+                node.children[param] = node.children[param] or {}
+                node = node.children[param]
+            end
+            node.result = result
+        end,
+        get = function(cache, params)
+            local node = cache
+            for i = 1, #params do
+                local param = vim.inspect(params[i])
+                node = node.children and node.children[param]
+                if not node then
+                    return nil
+                end
+            end
+            return node.result
+        end
+    },
+    {
+        __call = function(memo, func)
+            local cache = {}
+
+            return function(...)
+                local params = {...}
+                local result = memo.get(cache, params)
+                if not result then
+                    result = {func(...)}
+                    memo.put(cache, params, result)
+                end
+                return unpack(result)
+            end
+        end
+    }
+)
+
 M.error_handler = function(err)
     if vim.g.indent_blankline_debug then
         vim.cmd("echohl Error")
@@ -8,41 +50,55 @@ M.error_handler = function(err)
     end
 end
 
-M.set_indent_blankline_enabled = function()
-    vim.b.indent_blankline_enabled = true
-
-    for i = 1, #vim.g.indent_blankline_filetype_exclude do
-        if vim.g.indent_blankline_filetype_exclude[i] == vim.bo.filetype then
-            vim.b.indent_blankline_enabled = false
+M.is_indent_blankline_enabled =
+    M.memo(
+    function(
+        b_enabled,
+        g_enabled,
+        filetype,
+        filetype_include,
+        filetype_exclude,
+        buftype,
+        buftype_exclude,
+        bufname_exclude,
+        bufname)
+        if b_enabled ~= nil then
+            return b_enabled
         end
-    end
-
-    for i = 1, #vim.g.indent_blankline_buftype_exclude do
-        if vim.g.indent_blankline_buftype_exclude[i] == vim.bo.buftype then
-            vim.b.indent_blankline_enabled = false
+        if g_enabled == false then
+            return false
         end
-    end
 
-    if #vim.g.indent_blankline_filetype > 0 then
-        vim.b.indent_blankline_enabled = false
-        for i = 1, #vim.g.indent_blankline_filetype do
-            if vim.g.indent_blankline_filetype[i] == vim.bo.filetype then
-                vim.b.indent_blankline_enabled = true
+        for _, ft in ipairs(filetype_exclude) do
+            if ft == filetype then
+                return false
             end
         end
-    end
 
-    local bufname = vim.fn["bufname"]("")
-    for i = 1, #vim.g.indent_blankline_bufname_exclude do
-        if vim.fn["matchstr"](bufname, vim.g.indent_blankline_bufname_exclude[i]) == bufname then
-            vim.b.indent_blankline_enabled = false
+        for _, bt in ipairs(buftype_exclude) do
+            if bt == buftype then
+                return false
+            end
         end
-    end
 
-    if vim.b.indentLine_enabled == false then
-        vim.b.indent_blankline_enabled = false
+        for _, bn in ipairs(bufname_exclude) do
+            if vim.fn["matchstr"](bufname, bn) == bufname then
+                return false
+            end
+        end
+
+        if #filetype_include > 0 then
+            for _, ft in ipairs(filetype_include) do
+                if ft == filetype then
+                    return true
+                end
+            end
+            return false
+        end
+
+        return true
     end
-end
+)
 
 M.clear_line_indent = function(buf, lnum)
     xpcall(vim.api.nvim_buf_clear_namespace, M.error_handler, buf, vim.g.indent_blankline_namespace, lnum - 1, lnum)
