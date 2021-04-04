@@ -420,7 +420,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
       5. |WinScrolled| *
       6. |BufWinEnter| *
       7. |Filetype| *
-      8. |OptionSet| shiftwidth,tabstop
+      8. |OptionSet| shiftwidth,tabstop,expandtab
 
     Example: >
 
