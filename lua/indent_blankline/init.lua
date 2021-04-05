@@ -77,7 +77,11 @@ local refresh = function()
                         utils._if(
                             i == 1 and blankline and end_of_line and #end_of_line_char > 0,
                             end_of_line_char,
-                            utils._if(#char_list > 0, utils.get_from_list(char_list, i), char)
+                            utils._if(
+                                #char_list > 0,
+                                utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
+                                char
+                            )
                         ),
                         utils._if(
                             context,
@@ -121,7 +125,11 @@ local refresh = function()
             table.insert(
                 virtual_text,
                 {
-                    utils._if(#char_list > 0, utils.get_from_list(char_list, index), char),
+                    utils._if(
+                        #char_list > 0,
+                        utils.get_from_list(char_list, index - utils._if(not first_indent, 1, 0)),
+                        char
+                    ),
                     utils._if(
                         context_active and context_indent == index,
                         utils._if(
