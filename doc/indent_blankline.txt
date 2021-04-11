@@ -391,6 +391,29 @@ g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
         let g:indent_blankline_context_patterns = ['class']
 
 ------------------------------------------------------------------------------
+g:indent_blankline_viewport_buffer        *g:indent_blankline_viewport_buffer*
+
+    Sets the buffer of extra lines before and after the current viewport that
+    are considered when generating indentation and the context.
+
+    Default: 10                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_viewport_buffer = 20
+
+------------------------------------------------------------------------------
+g:indent_blankline_disable_warning_message*g:indent_blankline_disable_warning_message*
+
+    Turns deprecation warning messages off.
+
+    Default: v:false                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_disable_warning_message = v:true
+
+------------------------------------------------------------------------------
 g:indent_blankline_debug                            *g:indent_blankline_debug*
 
     Turns on error logging.
@@ -472,6 +495,8 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     |g:indent_blankline_show_current_context|
     |g:indent_blankline_context_highlight_list|
     |g:indent_blankline_context_patterns|
+    |g:indent_blankline_viewport_buffer|
+    |g:indent_blankline_disable_warning_message|
  * Remove options:
     `indent_blankline_extra_indent_level`
 
