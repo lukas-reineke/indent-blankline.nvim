@@ -379,8 +379,12 @@ g:indent_blankline_context_highlight_list*g:indent_blankline_context_highlight_l
 ------------------------------------------------------------------------------
 g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
 
-    Specifies the treesitter |tsnode:type()| pattern for which determine the
-    current context.
+    Specifies a list of lua patterns that are used to match against the
+    treesitter |tsnode:type()| at the cursor position to find the current
+    context.
+
+    To learn more about how lua pattern work, see here:
+    https://www.lua.org/manual/5.1/manual.html#5.4.1
 
     Only used when |g:indent_blankline_show_current_context| is active
 
@@ -388,7 +392,7 @@ g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
 
     Example: >
 
-        let g:indent_blankline_context_patterns = ['class']
+        let g:indent_blankline_context_patterns = ['^if']
 
 ------------------------------------------------------------------------------
 g:indent_blankline_viewport_buffer        *g:indent_blankline_viewport_buffer*
