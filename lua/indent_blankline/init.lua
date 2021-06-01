@@ -100,7 +100,7 @@ local refresh = function()
                     }
                 )
             -- middle char in indent:
-                if g:indent_blankline_char_middle == ' ' then
+                if vim.g.indent_blankline_char_middle == " " then
                     table.insert(
                         virtual_text,
                         {
@@ -120,7 +120,7 @@ local refresh = function()
                             )
                         }
                     )
-                elseif g:indent_blankline_char_middle == '|' then
+                elseif vim.g.indent_blankline_char_middle == "|" then
                     table.insert(
                         virtual_text,
                         {
@@ -148,7 +148,7 @@ local refresh = function()
                     table.insert(
                         virtual_text,
                         {
-                            utils._if(1, g:indent_blankline_char_middle, 0):rep(space-2),
+                            utils._if(1, vim.g.indent_blankline_char_middle, 0):rep(space-2),
                             utils._if(
                                 context,
                                 utils._if(
@@ -166,7 +166,7 @@ local refresh = function()
                     )
                 end
             -- end char in indent:
-                if g:indent_blankline_char_end == ' ' then
+                if vim.g.indent_blankline_char_end == " " then
                     table.insert(
                         virtual_text,
                         {
@@ -186,7 +186,7 @@ local refresh = function()
                             )
                         }
                     )
-                elseif g:indent_blankline_char_end == '|' then
+                elseif vim.g.indent_blankline_char_end == "|" then
                     table.insert(
                         virtual_text,
                         {
@@ -214,7 +214,7 @@ local refresh = function()
                     table.insert(
                         virtual_text,
                         {
-                            utils._if(1, g:indent_blankline_char_end, 0):rep(space-2),
+                            utils._if(1, vim.g.indent_blankline_char_end, 0):rep(space-2),
                             utils._if(
                                 context,
                                 utils._if(
