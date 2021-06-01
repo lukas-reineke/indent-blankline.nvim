@@ -7,6 +7,9 @@ let g:loaded_indent_blankline = 1
 let g:indent_blankline_char = get(g:, 'indent_blankline_char', get(g:, 'indentLine_char', '|'))
 let g:indent_blankline_char_list = get(g:, 'indent_blankline_char_list', get(g:, 'indentLine_char_list', []))
 let g:indent_blankline_char_highlight_list = get(g:, 'indent_blankline_char_highlight_list', [])
+let g:indent_blankline_char_first = get(g:, 'indent_blankline_char_first', '|')
+let g:indent_blankline_char_middle = get(g:, 'indent_blankline_char_middle', ' ')
+let g:indent_blankline_char_end = get(g:, 'indent_blankline_char_end', g:indent_blankline_char_middle)
 
 let g:indent_blankline_space_char = get(g:, 'indent_blankline_space_char', indent_blankline#helper#GetListChar('space', ' '))
 let g:indent_blankline_space_char_highlight_list = get(g:, 'indent_blankline_space_char_highlight_list', [])
