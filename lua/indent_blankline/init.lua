@@ -69,7 +69,7 @@ local refresh = function()
         local virtual_text = {}
         -- first indent:
 
-        for i = 2, math.min(math.max(indent, 0), max_indent_level) do
+        for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             local context = context_active and context_indent == i
             -- first char in indent:
                 table.insert(
