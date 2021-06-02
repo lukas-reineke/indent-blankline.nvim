@@ -68,115 +68,115 @@ local refresh = function()
         context_status, context_start, context_end = utils.get_current_context(vim.g.indent_blankline_context_patterns)
     end
 
-	local insert_char_of_indent = function( virtual_text, current_char, current_indent_level, repetitons )
-		if current_char == " " then
-			table.insert(
-				virtual_text,
-				{
-					utils._if(blankline, space_char_blankline, space_char):rep(repetitons),
-					utils._if(
-						blankline,
-						utils._if(
-							#space_char_blankline_highlight_list > 0,
-								utils.get_from_list(space_char_blankline_highlight_list, current_indent_level),
-								space_char_blankline_highlight
-						),
-						utils._if(
-							#space_char_highlight_list > 0,
-							utils.get_from_list(space_char_highlight_list, current_indent_level),
-							space_char_highlight
-						)
-					)
-				}
-			)
-		elseif current_char == "|" then
-			table.insert(
-				virtual_text,
-				{
-					utils._if(
-						#char_list > 0,
-						utils.get_from_list(char_list, current_indent_level - utils._if(not first_indent, 1, 0)),
-						char
-					):rep(repetitons),
-					utils._if(
-						context,
-						utils._if(
-							#context_highlight_list > 0,
-							utils.get_from_list(context_highlight_list, current_indent_level),
-							context_highlight
-						),
-						utils._if(
-							#char_highlight_list > 0,
-							utils.get_from_list(char_highlight_list, current_indent_level),
-							char_highlight
-						)
-					)
-				}
-			)
-		else
-			table.insert(
-				virtual_text,
-				{
-					--utils._if(1, current_char, 0):rep(repetitons),
-					current_char:rep(repetitons),
-					utils._if(
-						context,
-						utils._if(
-							#context_highlight_list > 0,
-							utils.get_from_list(context_highlight_list, current_indent_level),
-							context_highlight
-						),
-						utils._if(
-							#char_highlight_list > 0,
-							utils.get_from_list(char_highlight_list, current_indent_level),
-							char_highlight
-						)
-					)
-				}
-			)
-		end
-	end
+    local insert_char_of_indent = function( virtual_text, current_char, current_indent_level, repetitons )
+        if current_char == " " then
+            table.insert(
+                virtual_text,
+                {
+                    utils._if(blankline, space_char_blankline, space_char):rep(repetitons),
+                    utils._if(
+                        blankline,
+                        utils._if(
+                            #space_char_blankline_highlight_list > 0,
+                                utils.get_from_list(space_char_blankline_highlight_list, current_indent_level),
+                                space_char_blankline_highlight
+                        ),
+                        utils._if(
+                            #space_char_highlight_list > 0,
+                            utils.get_from_list(space_char_highlight_list, current_indent_level),
+                            space_char_highlight
+                        )
+                    )
+                }
+            )
+        elseif current_char == "|" then
+            table.insert(
+                virtual_text,
+                {
+                    utils._if(
+                        #char_list > 0,
+                        utils.get_from_list(char_list, current_indent_level - utils._if(not first_indent, 1, 0)),
+                        char
+                    ):rep(repetitons),
+                    utils._if(
+                        context,
+                        utils._if(
+                            #context_highlight_list > 0,
+                            utils.get_from_list(context_highlight_list, current_indent_level),
+                            context_highlight
+                        ),
+                        utils._if(
+                            #char_highlight_list > 0,
+                            utils.get_from_list(char_highlight_list, current_indent_level),
+                            char_highlight
+                        )
+                    )
+                }
+            )
+        else
+            table.insert(
+                virtual_text,
+                {
+                    --utils._if(1, current_char, 0):rep(repetitons),
+                    current_char:rep(repetitons),
+                    utils._if(
+                        context,
+                        utils._if(
+                            #context_highlight_list > 0,
+                            utils.get_from_list(context_highlight_list, current_indent_level),
+                            context_highlight
+                        ),
+                        utils._if(
+                            #char_highlight_list > 0,
+                            utils.get_from_list(char_highlight_list, current_indent_level),
+                            char_highlight
+                        )
+                    )
+                }
+            )
+        end
+    end
 
     local get_virtual_text = function(indent, extra, blankline, context_active, context_indent)
         local virtual_text = {}
         -- first indent:
-		--note: i am temporarily setting the first indent with the others
+        --note: i am temporarily setting the first indent with the others
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             local context = context_active and context_indent == i
             -- first char in indent:
-				if( i == 1 and blankline and end_of_line and #end_of_line_char > 0 ) then
-					table.insert(
-						virtual_text,
-						{
-							end_of_line_char,
-							utils._if(
-								context,
-								utils._if(
-									#context_highlight_list > 0,
-									utils.get_from_list(context_highlight_list, i),
-									context_highlight
-								),
-								utils._if(
-									#char_highlight_list > 0,
-									utils.get_from_list(char_highlight_list, i),
-									char_highlight
-								)
-							)
-						}
-					)
-				elseif( char_end == '' or space > 1 ) then
-					insert_char_of_indent( virtual_text, char_first, i, 1 )
+                if( i == 1 and blankline and end_of_line and #end_of_line_char > 0 ) then
+                    table.insert(
+                        virtual_text,
+                        {
+                            end_of_line_char,
+                            utils._if(
+                                context,
+                                utils._if(
+                                    #context_highlight_list > 0,
+                                    utils.get_from_list(context_highlight_list, i),
+                                    context_highlight
+                                ),
+                                utils._if(
+                                    #char_highlight_list > 0,
+                                    utils.get_from_list(char_highlight_list, i),
+                                    char_highlight
+                                )
+                            )
+                        }
+                    )
+                elseif( char_end == '' or space > 1 ) then
+                    insert_char_of_indent( virtual_text, char_first, i, 1 )
                 end
             -- middle char in indent:
-				insert_char_of_indent( virtual_text, char_middle, i, space-2 )
+                insert_char_of_indent( virtual_text, char_middle, i, space-2 )
             -- end char in indent:
-				if( char_end == '' ) then
-					insert_char_of_indent( virtual_text, char_middle, i, 1 )
-				else
-					insert_char_of_indent( virtual_text, char_end, i, 1 )
-				end
+                if( char_end == '' ) then
+                    insert_char_of_indent( virtual_text, char_middle, i, 1 )
+                else
+                    insert_char_of_indent( virtual_text, char_end, i, 1 )
+                end
         end
-		
+        
  --       if ((blankline and trail_indent) or extra) and (first_indent or #virtual_text > 0) then
  --           local index = math.ceil(#virtual_text / 2) + 1
  --           table.insert(
