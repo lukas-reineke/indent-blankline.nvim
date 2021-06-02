@@ -68,7 +68,7 @@ local refresh = function()
         context_status, context_start, context_end = utils.get_current_context(vim.g.indent_blankline_context_patterns)
     end
 
-	local insert_char_of_indent = function( virtual_text, current_char, repetitons )
+	local insert_char_of_indent = function( virtual_text, current_char, current_indent_level repetitons )
 		if current_char == " " then
 			table.insert(
 				virtual_text,
@@ -78,12 +78,12 @@ local refresh = function()
 						blankline,
 						utils._if(
 							#space_char_blankline_highlight_list > 0,
-								utils.get_from_list(space_char_blankline_highlight_list, i),
+								utils.get_from_list(space_char_blankline_highlight_list, current_indent_level),
 								space_char_blankline_highlight
 						),
 						utils._if(
 							#space_char_highlight_list > 0,
-							utils.get_from_list(space_char_highlight_list, i),
+							utils.get_from_list(space_char_highlight_list, current_indent_level),
 							space_char_highlight
 						)
 					)
@@ -95,19 +95,19 @@ local refresh = function()
 				{
 					utils._if(
 						#char_list > 0,
-						utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
+						utils.get_from_list(char_list, current_indent_level - utils._if(not first_indent, 1, 0)),
 						char
 					):rep(repetitons),
 					utils._if(
 						context,
 						utils._if(
 							#context_highlight_list > 0,
-							utils.get_from_list(context_highlight_list, i),
+							utils.get_from_list(context_highlight_list, current_indent_level),
 							context_highlight
 						),
 						utils._if(
 							#char_highlight_list > 0,
-							utils.get_from_list(char_highlight_list, i),
+							utils.get_from_list(char_highlight_list, current_indent_level),
 							char_highlight
 						)
 					)
@@ -117,18 +117,18 @@ local refresh = function()
 			table.insert(
 				virtual_text,
 				{
---					utils._if(1, current_char, 0):rep(repetitons),
+					--utils._if(1, current_char, 0):rep(repetitons),
 					current_char:rep(repetitons),
 					utils._if(
 						context,
 						utils._if(
 							#context_highlight_list > 0,
-							utils.get_from_list(context_highlight_list, i),
+							utils.get_from_list(context_highlight_list, current_indent_level),
 							context_highlight
 						),
 						utils._if(
 							#char_highlight_list > 0,
-							utils.get_from_list(char_highlight_list, i),
+							utils.get_from_list(char_highlight_list, current_indent_level),
 							char_highlight
 						)
 					)
@@ -165,12 +165,12 @@ local refresh = function()
 						}
 					)
 				else
-					insert_char_of_indent( virtual_text, char_first, 1 )
+					insert_char_of_indent( virtual_text, char_first, i, 1 )
                 end
             -- middle char in indent:
-				insert_char_of_indent( virtual_text, char_middle, space-2 )
+				insert_char_of_indent( virtual_text, char_middle, i, space-2 )
             -- end char in indent:
-				insert_char_of_indent( virtual_text, char_end, 1 )
+				insert_char_of_indent( virtual_text, char_end, i, 1 )
         end
 		
  --       if ((blankline and trail_indent) or extra) and (first_indent or #virtual_text > 0) then
