@@ -68,7 +68,7 @@ local refresh = function()
         context_status, context_start, context_end = utils.get_current_context(vim.g.indent_blankline_context_patterns)
     end
 
-	local insert_char_of_indent = function( virtual_text, current_char, current_indent_level repetitons )
+	local insert_char_of_indent = function( virtual_text, current_char, current_indent_level, repetitons )
 		if current_char == " " then
 			table.insert(
 				virtual_text,
