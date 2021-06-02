@@ -68,6 +68,75 @@ local refresh = function()
         context_status, context_start, context_end = utils.get_current_context(vim.g.indent_blankline_context_patterns)
     end
 
+	local insert_char_of_indent = function( virtual_text, current_char, repetitons )
+		if current_char == " " then
+			table.insert(
+				virtual_text,
+				{
+					utils._if(blankline, space_char_blankline, space_char):rep(repetitons),
+					utils._if(
+						blankline,
+						utils._if(
+							#space_char_blankline_highlight_list > 0,
+								utils.get_from_list(space_char_blankline_highlight_list, i),
+								space_char_blankline_highlight
+						),
+						utils._if(
+							#space_char_highlight_list > 0,
+							utils.get_from_list(space_char_highlight_list, i),
+							space_char_highlight
+						)
+					)
+				}
+			)
+		elseif current_char == "|" then
+			table.insert(
+				virtual_text,
+				{
+					utils._if(
+						#char_list > 0,
+						utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
+						char
+					):rep(repetitons),
+					utils._if(
+						context,
+						utils._if(
+							#context_highlight_list > 0,
+							utils.get_from_list(context_highlight_list, i),
+							context_highlight
+						),
+						utils._if(
+							#char_highlight_list > 0,
+							utils.get_from_list(char_highlight_list, i),
+							char_highlight
+						)
+					)
+				}
+			)
+		else
+			table.insert(
+				virtual_text,
+				{
+--					utils._if(1, current_char, 0):rep(repetitons),
+					current_char:rep(repetitons),
+					utils._if(
+						context,
+						utils._if(
+							#context_highlight_list > 0,
+							utils.get_from_list(context_highlight_list, i),
+							context_highlight
+						),
+						utils._if(
+							#char_highlight_list > 0,
+							utils.get_from_list(char_highlight_list, i),
+							char_highlight
+						)
+					)
+				}
+			)
+		end
+	end
+
     local get_virtual_text = function(indent, extra, blankline, context_active, context_indent)
         local virtual_text = {}
         -- first indent:
@@ -95,203 +164,13 @@ local refresh = function()
 							)
 						}
 					)
-				elseif char_first == " " then
-                    table.insert(
-                        virtual_text,
-                        {
-                            utils._if(blankline, space_char_blankline, space_char),
-                            utils._if(
-                                blankline,
-                                utils._if(
-                                    #space_char_blankline_highlight_list > 0,
-                                    utils.get_from_list(space_char_blankline_highlight_list, i),
-                                    space_char_blankline_highlight
-                                ),
-                                utils._if(
-                                    #space_char_highlight_list > 0,
-                                    utils.get_from_list(space_char_highlight_list, i),
-                                    space_char_highlight
-                                )
-                            )
-                        }
-                    )
-                elseif char_first == "|" then
-                    table.insert(
-                        virtual_text,
-                        {
-                            utils._if(
-                                #char_list > 0,
-                                utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-                                char
-                            ),
-                            utils._if(
-                                context,
-                                utils._if(
-                                    #context_highlight_list > 0,
-                                    utils.get_from_list(context_highlight_list, i),
-                                    context_highlight
-                                ),
-                                utils._if(
-                                    #char_highlight_list > 0,
-                                    utils.get_from_list(char_highlight_list, i),
-                                    char_highlight
-                                )
-                            )
-                        }
-                    )
-                else
-                    table.insert(
-                        virtual_text,
-                        {
-                            char_first,
-                            utils._if(
-                                context,
-                                utils._if(
-                                    #context_highlight_list > 0,
-                                    utils.get_from_list(context_highlight_list, i),
-                                    context_highlight
-                                ),
-                                utils._if(
-                                    #char_highlight_list > 0,
-                                    utils.get_from_list(char_highlight_list, i),
-                                    char_highlight
-                                )
-                            )
-                        }
-                    )
+				else
+					insert_char_of_indent( virtual_text, char_first, 1 )
                 end
             -- middle char in indent:
-                if char_middle == " " then
-                    table.insert(
-                        virtual_text,
-                        {
-                            utils._if(blankline, space_char_blankline, space_char):rep(space-2),
-                            utils._if(
-                                blankline,
-                                utils._if(
-                                    #space_char_blankline_highlight_list > 0,
-                                    utils.get_from_list(space_char_blankline_highlight_list, i),
-                                    space_char_blankline_highlight
-                                ),
-                                utils._if(
-                                    #space_char_highlight_list > 0,
-                                    utils.get_from_list(space_char_highlight_list, i),
-                                    space_char_highlight
-                                )
-                            )
-                        }
-                    )
-                elseif char_middle == "|" then
-                    table.insert(
-                        virtual_text,
-                        {
-                            utils._if(
-                                #char_list > 0,
-                                utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-                                char
-                            ):rep(space-2),
-                            utils._if(
-                                context,
-                                utils._if(
-                                    #context_highlight_list > 0,
-                                    utils.get_from_list(context_highlight_list, i),
-                                    context_highlight
-                                ),
-                                utils._if(
-                                    #char_highlight_list > 0,
-                                    utils.get_from_list(char_highlight_list, i),
-                                    char_highlight
-                                )
-                            )
-                        }
-                    )
-                else
-                    table.insert(
-                        virtual_text,
-                        {
-                            utils._if(1, char_middle, 0):rep(space-2),
-                            utils._if(
-                                context,
-                                utils._if(
-                                    #context_highlight_list > 0,
-                                    utils.get_from_list(context_highlight_list, i),
-                                    context_highlight
-                                ),
-                                utils._if(
-                                    #char_highlight_list > 0,
-                                    utils.get_from_list(char_highlight_list, i),
-                                    char_highlight
-                                )
-                            )
-                        }
-                    )
-                end
+				insert_char_of_indent( virtual_text, char_middle, space-2 )
             -- end char in indent:
-                if char_end == " " then
-                    table.insert(
-                        virtual_text,
-                        {
-                            utils._if(blankline, space_char_blankline, space_char),
-                            utils._if(
-                                blankline,
-                                utils._if(
-                                    #space_char_blankline_highlight_list > 0,
-                                    utils.get_from_list(space_char_blankline_highlight_list, i),
-                                    space_char_blankline_highlight
-                                ),
-                                utils._if(
-                                    #space_char_highlight_list > 0,
-                                    utils.get_from_list(space_char_highlight_list, i),
-                                    space_char_highlight
-                                )
-                            )
-                        }
-                    )
-                elseif char_end == "|" then
-                    table.insert(
-                        virtual_text,
-                        {
-                            utils._if(
-                                #char_list > 0,
-                                utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-                                char
-                            ),
-                            utils._if(
-                                context,
-                                utils._if(
-                                    #context_highlight_list > 0,
-                                    utils.get_from_list(context_highlight_list, i),
-                                    context_highlight
-                                ),
-                                utils._if(
-                                    #char_highlight_list > 0,
-                                    utils.get_from_list(char_highlight_list, i),
-                                    char_highlight
-                                )
-                            )
-                        }
-                    )
-                else
-                    table.insert(
-                        virtual_text,
-                        {
-                            char_end,
-                            utils._if(
-                                context,
-                                utils._if(
-                                    #context_highlight_list > 0,
-                                    utils.get_from_list(context_highlight_list, i),
-                                    context_highlight
-                                ),
-                                utils._if(
-                                    #char_highlight_list > 0,
-                                    utils.get_from_list(char_highlight_list, i),
-                                    char_highlight
-                                )
-                            )
-                        }
-                    )
-                end
+				insert_char_of_indent( virtual_text, char_end, 1 )
         end
 		
  --       if ((blankline and trail_indent) or extra) and (first_indent or #virtual_text > 0) then
