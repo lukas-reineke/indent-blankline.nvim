@@ -164,13 +164,17 @@ local refresh = function()
 							)
 						}
 					)
-				else
+				elseif( char_end == '' or space > 1 ) then
 					insert_char_of_indent( virtual_text, char_first, i, 1 )
                 end
             -- middle char in indent:
 				insert_char_of_indent( virtual_text, char_middle, i, space-2 )
             -- end char in indent:
-				insert_char_of_indent( virtual_text, char_end, i, 1 )
+				if( char_end == '' ) then
+					insert_char_of_indent( virtual_text, char_middle, i, 1 )
+				else
+					insert_char_of_indent( virtual_text, char_end, i, 1 )
+				end
         end
 		
  --       if ((blankline and trail_indent) or extra) and (first_indent or #virtual_text > 0) then
