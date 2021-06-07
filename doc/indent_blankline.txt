@@ -251,6 +251,10 @@ g:indent_blankline_show_foldtext            *g:indent_blankline_show_foldtext*
 
     Displays the full fold text instead of the indent guide on folded lines.
 
+    Note: there is no autocommand to subscribe to changes in folding. This
+          might lead to unexpected results. A possible solution for this is to
+          remap folding bindings to also call |IndentBlanklineRefresh|
+
     Default: v:true                                                         ~
 
     Example: >
