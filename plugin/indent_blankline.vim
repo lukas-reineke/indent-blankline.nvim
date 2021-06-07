@@ -27,6 +27,7 @@ let g:indent_blankline_disable_warning_message = get(g:, 'indent_blankline_disab
 let g:indent_blankline_show_first_indent_level = get(g:, 'indent_blankline_show_first_indent_level', v:true)
 let g:indent_blankline_show_trailing_blankline_indent = get(g:, 'indent_blankline_show_trailing_blankline_indent', v:true)
 let g:indent_blankline_show_end_of_line = get(g:, 'indent_blankline_show_end_of_line', v:false)
+let g:indent_blankline_show_foldtext = get(g:, 'indent_blankline_show_foldtext', v:true)
 let g:indent_blankline_show_current_context = get(g:, 'indent_blankline_show_current_context', v:false)
 let g:indent_blankline_context_highlight_list = get(g:, 'indent_blankline_context_highlight_list', [])
 let g:indent_blankline_context_patterns = get(g:, 'indent_blankline_context_patterns', ['class', 'function', 'method'])

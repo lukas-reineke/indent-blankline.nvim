@@ -247,6 +247,17 @@ g:indent_blankline_show_end_of_line      *g:indent_blankline_show_end_of_line*
         let g:indent_blankline_show_end_of_line = v:true
 
 ------------------------------------------------------------------------------
+g:indent_blankline_show_foldtext            *g:indent_blankline_show_foldtext*
+
+    Displays the full fold text instead of the indent guide on folded lines.
+
+    Default: v:true                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_show_foldtext = v:false
+
+------------------------------------------------------------------------------
 g:indent_blankline_enabled                        *g:indent_blankline_enabled*
 
     Turns this plugin on or off globally.
@@ -496,6 +507,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     |g:indent_blankline_char_highlight_list|
     |g:indent_blankline_space_char_highlight_list|
     |g:indent_blankline_show_end_of_line|
+    |g:indent_blankline_show_foldtext|
     |g:indent_blankline_show_current_context|
     |g:indent_blankline_context_highlight_list|
     |g:indent_blankline_context_patterns|
