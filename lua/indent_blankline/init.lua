@@ -139,9 +139,7 @@ local refresh = function()
 
     local get_virtual_text = function(indent, extra, blankline, context_active, context_indent)
         local virtual_text = {}
-        -- first indent:
-        --note: i am temporarily setting the first indent with the others
-        for i = 1, math.min(math.max(indent, 0), max_indent_level) do
+        for i = utils.if(first_indent, 1, 2), math.min(math.max(indent, 0), max_indent_level) do
             local context = context_active and context_indent == i
             -- first char in indent:
                 if( i == 1 and blankline and end_of_line and #end_of_line_char > 0 ) then
