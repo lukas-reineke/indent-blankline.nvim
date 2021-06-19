@@ -175,7 +175,7 @@ local refresh = function()
                 end
         end
         
-        if ((blankline and trail_indent) or extra) and (first_indent or #virtual_text > 0) then
+        if ((blankline or extra) and trail_indent) and (first_indent or #virtual_text > 0) then
             local index = math.ceil(#virtual_text / 2) + 1
             table.insert(
                 virtual_text,
