@@ -174,7 +174,7 @@ local refresh = function()
                     insert_char_of_indent( virtual_text, char_end, i, 1 )
                 end
         end
-        
+
         if ((blankline or extra) and trail_indent) and (first_indent or #virtual_text > 0) then
             local index = math.ceil(#virtual_text / 2) + 1
             table.insert(

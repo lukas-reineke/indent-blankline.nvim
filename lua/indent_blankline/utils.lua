@@ -117,17 +117,25 @@ M._if = function(bool, a, b)
 end
 
 M.find_indent = function(line, shiftwidth, strict_tabs)
-    local _, whitespace_count = line:find("^%s+")
-    if not whitespace_count or whitespace_count == 0 then
-        return 0, false
+    local indent = 0
+    local spaces = 0
+    for ch in line:gmatch(".") do
+        if ch == "	" then
+            if strict_tabs and indent == 0 and spaces ~= 0 then
+                return 0, false
+            end
+            indent = indent + math.floor(spaces / shiftwidth) + 1
+            spaces = 0
+        elseif ch == " " then
+            if strict_tabs and indent ~= 0 then
+                return indent, true
+            end
+            spaces = spaces + 1
+        else
+            break
+        end
     end
-    local whitespace_string = line:sub(1, whitespace_count)
-    local _, spaces = whitespace_string:gsub(" ", "")
-    local _, tabs = whitespace_string:gsub("	", "")
-    if strict_tabs and tabs > 0 then
-        return tabs, spaces > 0
-    end
-    local indent = tabs + (spaces / shiftwidth)
+    indent = indent + math.floor(spaces / shiftwidth)
     return indent, spaces % shiftwidth ~= 0
 end
 
