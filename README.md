@@ -14,6 +14,35 @@ should work out of the box.
 
 Please see `:help indent_blankline.txt`for more details.
 
+## Install
+
+Use your favourit plugin manager to install.
+Make sure to specify the branch `lua` until Neovim 0.5 is released.
+
+#### Example with Packer
+
+[wbthomason/packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+-- init.lua
+require("packer").startup(
+    function()
+        use {"lukas-reineke/indent-blankline.nvim", branch = "lua"}
+    end
+)
+```
+
+#### Example with Plug
+
+[junegunn/vim-plug](https://github.com/junegunn/vim-plug)
+
+```vim
+" init.vim
+call plug#begin('~/.vim/plugged')
+Plug 'lukas-reineke/indent-blankline.nvim', {branch = 'lua'}
+call plug#end()
+```
+
 ## Screenshots
 
 #### Default settings
