@@ -2,8 +2,6 @@
 
 This plugin adds indentation guides to empty lines.
 
-It is recommended, but not required, to use it together with [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine).
-
 This plugin requires Neovim 0.4.0 or higher. It makes use of Neovim only
 features so it will not work in Vim.
 
