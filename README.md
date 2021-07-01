@@ -45,9 +45,6 @@ endif
 
 ## IndentLine dependency
 
-indent-blankline does not require the [indentLine](https://github.com/Yggdroot/indentLine)
-Plugin. But it is recommended to use the two together.
-
 Almost all settings from indentLine will work seamlessly with indent-blankline
 as well without any setup.
 
