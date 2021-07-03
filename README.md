@@ -6,6 +6,8 @@ It uses Neovims virtual text feature and **no conceal**
 
 This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
 features so it will not work in Vim.
+There is a legacy version of the plugin that supports Neovim 0.4 under the
+branch `version-1`
 
 ## Settings
 
@@ -16,8 +18,7 @@ Please see `:help indent_blankline.txt`for more details.
 
 ## Install
 
-Use your favourit plugin manager to install.
-Make sure to specify the branch `lua` until Neovim 0.5 is released.
+Use your favourite plugin manager to install.
 
 #### Example with Packer
 
@@ -27,7 +28,7 @@ Make sure to specify the branch `lua` until Neovim 0.5 is released.
 -- init.lua
 require("packer").startup(
     function()
-        use {"lukas-reineke/indent-blankline.nvim", branch = "lua"}
+        use "lukas-reineke/indent-blankline.nvim"
     end
 )
 ```
@@ -39,7 +40,7 @@ require("packer").startup(
 ```vim
 " init.vim
 call plug#begin('~/.vim/plugged')
-Plug 'lukas-reineke/indent-blankline.nvim', {branch = 'lua'}
+Plug 'lukas-reineke/indent-blankline.nvim'
 call plug#end()
 ```
 
