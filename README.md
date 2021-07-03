@@ -1,70 +1,71 @@
 # Indent Blankline
 
-This plugin adds indentation guides to empty lines.
+This plugin adds indentation guides to all lines (including empty lines).
 
-It is recommended, but not required, to use it together with [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine).
+It uses Neovims virtual text feature and **no conceal**
 
-This plugin requires Neovim 0.4.0 or higher. It makes use of Neovim only
+This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
 features so it will not work in Vim.
-
-## Note
-
-**If you are using Neomvim 0.5, you should use the `lua` branch.**  
-It is much faster and has real-time update support.  
-It will become the default once Neovim 0.5 is released.
-
-## Details
-
-indent-blankline uses the virtual text feature from Neovim to display
-indentation guides on empty lines.\
-Virtual text can currently only be added after the end of the line, so it is not
-possible to use this to display indentation guides on lines with text.
-
-The indentation level is generated like Neovim would generate normal
-indentation.\
-If `indentexpr` is empty, it uses `cindent()`.\
-If `indentexpr` is set to `lisp`, it uses `lispindent()`.\
-If `indentexpr` is set to anything else, it uses that function.
-
-**The lines to indent and the level of indentation is computed asynchronously with
-an embedded read-only instance of Neovim.**
-
-This makes generation of indentation not affect normal editing. But it could be
-resource intensive.\
-indent-blankline needs to open buffers in read-only mode with autocommands, to
-set up the correct `indentexpr`. In most cases this should not cause issues, but
-if you have side effects defined for opening buffers, this might lead to undesired
-execution of those.
-
-A possible solution for this would be to check if Neovim has a UI attached
-before running such side effects.
-
-```vim
-if len(nvim_list_uis())
-    " your side effect code
-endif
-```
-
-## IndentLine dependency
-
-indent-blankline does not require the [indentLine](https://github.com/Yggdroot/indentLine)
-Plugin. But it is recommended to use the two together.
-
-Almost all settings from indentLine will work seamlessly with indent-blankline
-as well without any setup.
+There is a legacy version of the plugin that supports Neovim 0.4 under the
+branch `version-1`
 
 ## Settings
 
-Please see `:help indent_blankline.txt`
+A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options
+should work out of the box.
+
+Please see `:help indent_blankline.txt`for more details.
+
+## Install
+
+Use your favourite plugin manager to install.
+
+#### Example with Packer
+
+[wbthomason/packer.nvim](https://github.com/wbthomason/packer.nvim)
+
+```lua
+-- init.lua
+require("packer").startup(
+    function()
+        use "lukas-reineke/indent-blankline.nvim"
+    end
+)
+```
+
+#### Example with Plug
+
+[junegunn/vim-plug](https://github.com/junegunn/vim-plug)
+
+```vim
+" init.vim
+call plug#begin('~/.vim/plugged')
+Plug 'lukas-reineke/indent-blankline.nvim'
+call plug#end()
+```
 
 ## Screenshots
 
-Screenshots are made together with indentLine
-
 #### Default settings
 
-![Screenshot](https://i.imgur.com/3gRG5qI.png)
+<img width="900" src="https://i.imgur.com/3gRG5qI.png" alt="Screenshot" />
 
 #### With custom `listchars` and `g:indent_blankline_space_char`
 
-![Screenshot](https://i.imgur.com/VxCThMu.png)
+<img width="900" src="https://i.imgur.com/VxCThMu.png" alt="Screenshot" />
+
+#### With custom `g:indent_blankline_char_highlight_list`
+
+<img width="900" src="https://i.imgur.com/E3B0PUb.png" alt="Screenshot" />
+
+#### With custom background highlight
+
+<img width="900" src="https://i.imgur.com/DukMZGk.png" alt="Screenshot" />
+
+#### With context indent highlighted by treesitter
+
+<img width="900" src="https://i.imgur.com/mkyGPZZ.png" alt="Screenshot" />
+
+## Thanks
+
+Special thanks to [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine)
