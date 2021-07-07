@@ -55,6 +55,7 @@ local refresh = function()
     local end_of_line_char = vim.fn["indent_blankline#helper#GetListChar"]("eol", "")
     local strict_tabs = vim.g.indent_blankline_strict_tabs
     local foldtext = vim.g.indent_blankline_show_foldtext
+    local priority = vim.g.indent_blankline_extmark_priority
 
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
     local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
@@ -192,7 +193,12 @@ local refresh = function()
                                     vim.g.indent_blankline_namespace,
                                     i - 1 + offset,
                                     0,
-                                    {virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine"}
+                                    {
+                                        virt_text = virtual_text,
+                                        virt_text_pos = "overlay",
+                                        hl_mode = "combine",
+                                        priority = priority
+                                    }
                                 )
                             end
                         )()
@@ -242,7 +248,12 @@ local refresh = function()
                                 vim.g.indent_blankline_namespace,
                                 i - 1 + offset,
                                 0,
-                                {virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine"}
+                                {
+                                    virt_text = virtual_text,
+                                    virt_text_pos = "overlay",
+                                    hl_mode = "combine",
+                                    priority = priority
+                                }
                             )
                         end
                     )()

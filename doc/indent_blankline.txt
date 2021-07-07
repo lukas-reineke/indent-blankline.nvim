@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.0.0
+Version: 2.1.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -363,6 +363,18 @@ g:indent_blankline_strict_tabs                *g:indent_blankline_strict_tabs*
         let g:indent_blankline_strict_tabs = v:true
 
 ------------------------------------------------------------------------------
+g:indent_blankline_extmark_priority      *g:indent_blankline_extmark_priority*
+
+    Sets the priority of the extmarks used to display the indent guides.
+    Set it to a lower value if the indent guides cover other virtual text.
+
+    Default: 100                                                             ~
+
+    Example: >
+
+        let g:indent_blankline_extmark_priority = 50
+
+------------------------------------------------------------------------------
 g:indent_blankline_show_current_context*g:indent_blankline_show_current_context*
 
     When on, use treesitter to determine the current context. Then show the
@@ -495,6 +507,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  5. CHANGELOG                                     *indent-blankline-changelog*
+
+2.1.0
+ * Add |g:indent_blankline_extmark_priority| option
 
 2.0.0
  * Complete lua rewrite
