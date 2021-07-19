@@ -27,7 +27,7 @@ There is a legacy version of the plugin that supports Neovim 0.4 under the
 branch `version-1`
 
 ==============================================================================
- 3. HIGHLIGHTS                                   *indent-blankline-highlights*
+ 2. HIGHLIGHTS                                   *indent-blankline-highlights*
 
 To change the highlighting of either the indent character, or the whitespace
 between indent characters, define or update these highlight groups.
