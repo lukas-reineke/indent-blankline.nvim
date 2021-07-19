@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.0.0
+Version: 2.0.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -495,6 +495,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  5. CHANGELOG                                     *indent-blankline-changelog*
+
+2.0.1
+ * Fix typo in docs
 
 2.0.0
  * Complete lua rewrite
