@@ -8,23 +8,86 @@ local space_char_highlight = "IndentBlanklineSpaceChar"
 local space_char_blankline_highlight = "IndentBlanklineSpaceCharBlankline"
 local context_highlight = "IndentBlanklineContextChar"
 
-M.setup = function()
+M.init = function()
     vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace("indent_blankline")
 
     utils.reset_highlights()
 end
 
+M.setup = function(options)
+    if options == nil then
+        options = {}
+    end
+
+    local o = utils.first_not_nil
+
+    vim.g.indent_blankline_char = o(options.char, vim.g.indent_blankline_char, vim.g.indentLine_char, "│")
+    vim.g.indent_blankline_char_list =
+        o(options.char_list, vim.g.indent_blankline_char_list, vim.g.indentLine_char_list, {})
+    vim.g.indent_blankline_char_highlight_list =
+        o(options.char_highlight_list, vim.g.indent_blankline_char_highlight_list, {})
+    vim.g.indent_blankline_space_char =
+        o(options.space_char, vim.g.indent_blankline_space_char, vim.opt.listchars:get().space, " ")
+    vim.g.indent_blankline_space_char_highlight_list =
+        o(options.space_char_highlight_list, vim.g.indent_blankline_space_char_highlight_list, {})
+    vim.g.indent_blankline_space_char_blankline =
+        o(options.space_char_blankline, vim.g.indent_blankline_space_char_blankline, vim.g.indent_blankline_space_char)
+    vim.g.indent_blankline_space_char_blankline =
+        o(
+        options.space_char_blankline,
+        vim.g.indent_blankline_space_char_blankline,
+        vim.g.indent_blankline_space_char_highlight_list
+    )
+    vim.g.indent_blankline_space_char_blankline_highlight_list =
+        o(
+        options.space_char_blankline_highlight_list,
+        vim.g.indent_blankline_space_char_blankline_highlight_list,
+        vim.g.indent_blankline_space_char_highlight_list
+    )
+    vim.g.indent_blankline_indent_level = o(options.indent_level, vim.g.indent_blankline_indent_level, 20)
+    vim.g.indent_blankline_enabled = o(options.enabled, vim.g.indent_blankline_enabled, true)
+    vim.g.indent_blankline_filetype =
+        o(options.filetype, vim.g.indent_blankline_filetype, vim.g.indentLine_fileType, {})
+    vim.g.indent_blankline_filetype_exclude =
+        o(options.filetype_exclude, vim.g.indent_blankline_filetype_exclude, vim.g.indentLine_fileTypeExclude, {})
+    vim.g.indent_blankline_bufname_exclude =
+        o(options.bufname_exclude, vim.g.indent_blankline_bufname_exclude, vim.g.indentLine_bufNameExclude, {})
+    vim.g.indent_blankline_buftype_exclude =
+        o(options.buftype_exclude, vim.g.indent_blankline_buftype_exclude, vim.g.indentLine_bufTypeExclude, {})
+    vim.g.indent_blankline_viewport_buffer = o(options.viewport_buffer, vim.g.indent_blankline_viewport_buffer, 10)
+    vim.g.indent_blankline_use_treesitter = o(options.use_treesitter, vim.g.indent_blankline_use_treesitter, false)
+    vim.g.indent_blankline_show_first_indent_level =
+        o(options.show_first_indent_level, vim.g.indent_blankline_show_first_indent_level, true)
+    vim.g.indent_blankline_show_trailing_blankline_indent =
+        o(options.show_trailing_blankline_indent, vim.g.indent_blankline_show_trailing_blankline_indent, true)
+    vim.g.indent_blankline_show_end_of_line =
+        o(options.show_end_of_line, vim.g.indent_blankline_show_end_of_line, false)
+    vim.g.indent_blankline_show_foldtext = o(options.show_foldtext, vim.g.indent_blankline_show_foldtext, true)
+    vim.g.indent_blankline_show_current_context =
+        o(options.show_current_context, vim.g.indent_blankline_show_current_context, false)
+    vim.g.indent_blankline_context_highlight_list =
+        o(options.context_highlight_list, vim.g.indent_blankline_context_highlight_list, {})
+    vim.g.indent_blankline_context_patterns =
+        o(options.context_patterns, vim.g.indent_blankline_context_patterns, {"class", "function", "method"})
+    vim.g.indent_blankline_strict_tabs = o(options.strict_tabs, vim.g.indent_blankline_strict_tabs, false)
+
+    vim.g.indent_blankline_disable_warning_message =
+        o(options.disable_warning_message, vim.g.indent_blankline_disable_warning_message, false)
+    vim.g.indent_blankline_debug = o(options.debug, vim.g.indent_blankline_debug, false)
+end
+
 local refresh = function()
+    local v = utils.get_variable
     if
         not utils.is_indent_blankline_enabled(
             vim.b.indent_blankline_enabled,
             vim.g.indent_blankline_enabled,
             vim.bo.filetype,
-            vim.g.indent_blankline_filetype,
-            vim.g.indent_blankline_filetype_exclude,
+            v("indent_blankline_filetype"),
+            v("indent_blankline_filetype_exclude"),
             vim.bo.buftype,
-            vim.g.indent_blankline_buftype_exclude,
-            vim.g.indent_blankline_bufname_exclude,
+            v("indent_blankline_buftype_exclude"),
+            v("indent_blankline_bufname_exclude"),
             vim.fn["bufname"]("")
         )
      then
@@ -35,34 +98,34 @@ local refresh = function()
     end
 
     local bufnr = vim.api.nvim_get_current_buf()
-    local offset = math.max(vim.fn.line("w0") - 1 - vim.g.indent_blankline_viewport_buffer, 0)
+    local offset = math.max(vim.fn.line("w0") - 1 - v("indent_blankline_viewport_buffer"), 0)
     local range =
-        math.min(vim.fn.line("w$") + vim.g.indent_blankline_viewport_buffer, vim.api.nvim_buf_line_count(bufnr))
+        math.min(vim.fn.line("w$") + v("indent_blankline_viewport_buffer"), vim.api.nvim_buf_line_count(bufnr))
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
-    local char = vim.g.indent_blankline_char
-    local char_list = vim.g.indent_blankline_char_list
-    local char_highlight_list = vim.g.indent_blankline_char_highlight_list
-    local space_char_highlight_list = vim.g.indent_blankline_space_char_highlight_list
-    local space_char_blankline_highlight_list = vim.g.indent_blankline_space_char_blankline_highlight_list
-    local space_char = vim.g.indent_blankline_space_char
-    local space_char_blankline = vim.g.indent_blankline_space_char_blankline
-    local max_indent_level = vim.g.indent_blankline_indent_level
+    local char = v("indent_blankline_char")
+    local char_list = v("indent_blankline_char_list")
+    local char_highlight_list = v("indent_blankline_char_highlight_list")
+    local space_char_highlight_list = v("indent_blankline_space_char_highlight_list")
+    local space_char_blankline_highlight_list = v("indent_blankline_space_char_blankline_highlight_list")
+    local space_char = v("indent_blankline_space_char")
+    local space_char_blankline = v("indent_blankline_space_char_blankline")
+    local max_indent_level = v("indent_blankline_indent_level")
     local expandtab = vim.bo.expandtab
-    local use_ts_indent = vim.g.indent_blankline_use_treesitter and ts_status and ts_query.has_indents(vim.bo.filetype)
-    local first_indent = vim.g.indent_blankline_show_first_indent_level
-    local trail_indent = vim.g.indent_blankline_show_trailing_blankline_indent
-    local end_of_line = vim.g.indent_blankline_show_end_of_line
-    local end_of_line_char = vim.fn["indent_blankline#helper#GetListChar"]("eol", "")
-    local strict_tabs = vim.g.indent_blankline_strict_tabs
-    local foldtext = vim.g.indent_blankline_show_foldtext
+    local use_ts_indent = v("indent_blankline_use_treesitter") and ts_status and ts_query.has_indents(vim.bo.filetype)
+    local first_indent = v("indent_blankline_show_first_indent_level")
+    local trail_indent = v("indent_blankline_show_trailing_blankline_indent")
+    local end_of_line = v("indent_blankline_show_end_of_line")
+    local end_of_line_char = vim.opt.listchars:get().eol or ""
+    local strict_tabs = v("indent_blankline_strict_tabs")
+    local foldtext = v("indent_blankline_show_foldtext")
 
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
     local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
 
-    local context_highlight_list = vim.g.indent_blankline_context_highlight_list
+    local context_highlight_list = v("indent_blankline_context_highlight_list")
     local context_status, context_start, context_end = false, 0, 0
-    if vim.g.indent_blankline_show_current_context then
-        context_status, context_start, context_end = utils.get_current_context(vim.g.indent_blankline_context_patterns)
+    if v("indent_blankline_show_current_context") then
+        context_status, context_start, context_end = utils.get_current_context(v("indent_blankline_context_patterns"))
     end
 
     local get_virtual_text = function(indent, extra, blankline, context_active, context_indent)
