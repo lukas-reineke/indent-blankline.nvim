@@ -74,6 +74,17 @@ M.setup = function(options)
     vim.g.indent_blankline_disable_warning_message =
         o(options.disable_warning_message, vim.g.indent_blankline_disable_warning_message, false)
     vim.g.indent_blankline_debug = o(options.debug, vim.g.indent_blankline_debug, false)
+
+    if vim.g.indent_blankline_show_current_context then
+        vim.cmd [[
+            augroup IndentBlanklineContextAutogroup
+                autocmd!
+                autocmd CursorMoved * IndentBlanklineRefresh
+            augroup END
+        ]]
+    end
+
+    vim.g.__indent_blankline_setup_completed = true
 end
 
 local refresh = function()
