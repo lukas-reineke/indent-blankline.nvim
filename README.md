@@ -9,13 +9,6 @@ features so it will not work in Vim.
 There is a legacy version of the plugin that supports Neovim 0.4 under the
 branch `version-1`
 
-## Settings
-
-A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options
-should work out of the box.
-
-Please see `:help indent_blankline.txt`for more details.
-
 ## Install
 
 Use your favourite plugin manager to install.
@@ -43,6 +36,22 @@ call plug#begin('~/.vim/plugged')
 Plug 'lukas-reineke/indent-blankline.nvim'
 call plug#end()
 ```
+
+## Setup
+
+To configure indent-blankline, either run the setup function, or set variables manually.
+The setup function has a single table as argument, keys of the table match the `:help indent-blankline-variables` without the `indent_blankline_` part.
+
+```lua
+require("indent_blankline").setup {
+    char = "|",
+    buftype_exclude = {"terminal"}
+}
+```
+
+Please see `:help indent_blankline.txt`for more details and all possible values.
+
+A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options should work out of the box.
 
 ## Screenshots
 

@@ -65,7 +65,7 @@ M.is_indent_blankline_enabled =
         if b_enabled ~= nil then
             return b_enabled
         end
-        if g_enabled == false then
+        if g_enabled ~= true then
             return false
         end
 
@@ -193,6 +193,22 @@ M.reset_highlights = function()
             )
         end
     end
+end
+
+M.first_not_nil = function(...)
+    for _, value in pairs({...}) do
+        return value
+    end
+end
+
+M.get_variable = function(key)
+    if vim.b[key] ~= nil then
+        return vim.b[key]
+    end
+    if vim.t[key] ~= nil then
+        return vim.t[key]
+    end
+    return vim.g[key]
 end
 
 return M
