@@ -2,17 +2,18 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.0.1
+Version: 2.1.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
 
   1. Introduction                          |indent-blankline-introduction|
   2. Highlights                            |indent-blankline-highlights|
-  3. Variables                             |indent-blankline-variables|
-  4. Commands                              |indent-blankline-commands|
-  5. Changelog                             |indent-blankline-changelog|
-  6. License                               |indent-blankline-license|
+  3. Setup                                 |indent-blankline-setup|
+  4. Variables                             |indent-blankline-variables|
+  5. Commands                              |indent-blankline-commands|
+  6. Changelog                             |indent-blankline-changelog|
+  7. License                               |indent-blankline-license|
 
 ==============================================================================
  1. INTRODUCTION                               *indent-blankline-introduction*
@@ -32,6 +33,7 @@ branch `version-1`
 To change the highlighting of either the indent character, or the whitespace
 between indent characters, define or update these highlight groups.
 
+------------------------------------------------------------------------------
 IndentBlanklineChar                                   *hl-IndentBlanklineChar*
 
     Highlight of indent character.
@@ -42,6 +44,7 @@ IndentBlanklineChar                                   *hl-IndentBlanklineChar*
 
         highlight IndentBlanklineChar guifg=#00FF00 gui=nocombine
 
+------------------------------------------------------------------------------
 IndentBlanklineSpaceChar                         *hl-IndentBlanklineSpaceChar*
 
     Highlight of space character.
@@ -52,6 +55,7 @@ IndentBlanklineSpaceChar                         *hl-IndentBlanklineSpaceChar*
 
         highlight IndentBlanklineSpaceChar guifg=#00FF00 gui=nocombine
 
+------------------------------------------------------------------------------
 IndentBlanklineSpaceCharBlankline       *hl-IndentBlanklineSpaceCharBlankline*
 
     Highlight of space character on blank lines.
@@ -62,6 +66,7 @@ IndentBlanklineSpaceCharBlankline       *hl-IndentBlanklineSpaceCharBlankline*
 
         highlight IndentBlanklineSpaceCharBlankline guifg=#00FF00 gui=nocombine
 
+------------------------------------------------------------------------------
 IndentBlanklineContextChar                     *hl-IndentBlanklineContextChar*
 
     Highlight of indent character when base of current context.
@@ -87,8 +92,26 @@ see:
 |g:indent_blankline_space_char_blankline_highlight_list|
 
 ==============================================================================
- 3. VARIABLES                                     *indent-blankline-variables*
+ 3. SETUP                                             *indent-blankline-setup*
 
+To configure indent-blankline, either run the setup function, or set variables
+manually.
+The setup function has a single table as argument, keys of the table match the
+|indent-blankline-variables| without the `indent_blankline_` part.
+
+Example: >
+
+    require("indent_blankline").setup {
+      char = "|",
+      buftype_exclude = {"terminal"}
+    }
+
+==============================================================================
+ 4. VARIABLES                                     *indent-blankline-variables*
+
+All variables can be set gobally |g:var|, per tab |t:var|, or per buffer |b:var|
+
+------------------------------------------------------------------------------
 g:indent_blankline_char                              *g:indent_blankline_char*
 
     Specifies the character to be used as indent line.
@@ -96,7 +119,7 @@ g:indent_blankline_char                              *g:indent_blankline_char*
 
     Also set by |g:indentLine_char|
 
-    Default: '|'                                                             ~
+    Default: '│'                                                             ~
 
     Example: >
 
@@ -266,28 +289,18 @@ g:indent_blankline_show_foldtext            *g:indent_blankline_show_foldtext*
 ------------------------------------------------------------------------------
 g:indent_blankline_enabled                        *g:indent_blankline_enabled*
 
-    Turns this plugin on or off globally.
+    Turns this plugin on or off.
 
     Also set by |g:indentLine_enabled|
+
+    Note: the buffer version of this variable overwrites all other
+          enabled/disalbed checks.
 
     Default: v:true                                                          ~
 
     Example: >
 
         let g:indent_blankline_enabled = v:false
-
-------------------------------------------------------------------------------
-b:indent_blankline_enabled                        *b:indent_blankline_enabled*
-
-    Turns this plugin on or off for the buffer.
-
-    Also set by |b:indentLine_enabled|
-
-    Default: v:true                                                          ~
-
-    Example: >
-
-        let b:indent_blankline_enabled = v:false
 
 ------------------------------------------------------------------------------
 g:indent_blankline_filetype                      *g:indent_blankline_filetype*
@@ -446,8 +459,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
         let g:indent_blankline_debug = v:true
 
 ==============================================================================
- 4. COMMANDS                                       *indent-blankline-commands*
+ 5. COMMANDS                                       *indent-blankline-commands*
 
+------------------------------------------------------------------------------
 :IndentBlanklineRefresh[!]                            *IndentBlanklineRefresh*
 
     Refreshes the indent guides for the current buffer.
@@ -494,7 +508,12 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     With bang (IndentBlanklineToggle!) toggles globally
 
 ==============================================================================
- 5. CHANGELOG                                     *indent-blankline-changelog*
+ 6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.1.0
+ * Added setup function
+ * Added buffer variables
+ * Fix horizontal scroll
 
 2.0.1
  * Fix typo in docs
@@ -574,7 +593,7 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
   * First release
 
 ==============================================================================
- 6. LICENSE                                         *indent-blankline-license*
+ 7. LICENSE                                         *indent-blankline-license*
 
 The MIT Licence
 http://www.opensource.org/licenses/mit-license.php
