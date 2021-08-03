@@ -24,9 +24,10 @@ function s:IndentBlanklineInit()
         echohl None
     endif
     lua require("indent_blankline").init()
-    if !exists('g:indent_blankline_enabled')
+    if !exists('g:__indent_blankline_setup_completed')
         lua require("indent_blankline").setup {}
     endif
+
     IndentBlanklineRefresh!
 endfunction
 
@@ -38,9 +39,3 @@ augroup IndentBlanklineAutogroup
     autocmd ColorScheme * lua require("indent_blankline.utils").reset_highlights()
 augroup END
 
-if g:indent_blankline_show_current_context
-    augroup IndentBlanklineContextAutogroup
-        autocmd!
-        autocmd CursorMoved * IndentBlanklineRefresh
-    augroup END
-endif
