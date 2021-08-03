@@ -99,6 +99,7 @@ local refresh = function()
 
     local bufnr = vim.api.nvim_get_current_buf()
     local offset = math.max(vim.fn.line("w0") - 1 - v("indent_blankline_viewport_buffer"), 0)
+    local left_offset = vim.fn.winsaveview().leftcol
     local range =
         math.min(vim.fn.line("w$") + v("indent_blankline_viewport_buffer"), vim.api.nvim_buf_line_count(bufnr))
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
@@ -130,61 +131,73 @@ local refresh = function()
 
     local get_virtual_text = function(indent, extra, blankline, context_active, context_indent)
         local virtual_text = {}
+        local current_left_offset = left_offset
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             local space_count = space
             local context = context_active and context_indent == i
             if i ~= 1 or first_indent then
                 space_count = space_count - 1
+                if current_left_offset > 0 then
+                    current_left_offset = current_left_offset - 1
+                else
+                    table.insert(
+                        virtual_text,
+                        {
+                            utils._if(
+                                i == 1 and blankline and end_of_line and #end_of_line_char > 0,
+                                end_of_line_char,
+                                utils._if(
+                                    #char_list > 0,
+                                    utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
+                                    char
+                                )
+                            ),
+                            utils._if(
+                                context,
+                                utils._if(
+                                    #context_highlight_list > 0,
+                                    utils.get_from_list(context_highlight_list, i),
+                                    context_highlight
+                                ),
+                                utils._if(
+                                    #char_highlight_list > 0,
+                                    utils.get_from_list(char_highlight_list, i),
+                                    char_highlight
+                                )
+                            )
+                        }
+                    )
+                end
+            end
+            if current_left_offset > 0 then
+                local current_space_count = space_count
+                space_count = space_count - current_left_offset
+                current_left_offset = current_left_offset - current_space_count
+            end
+            if space_count > 0 then
                 table.insert(
                     virtual_text,
                     {
+                        utils._if(blankline, space_char_blankline, space_char):rep(space_count),
                         utils._if(
-                            i == 1 and blankline and end_of_line and #end_of_line_char > 0,
-                            end_of_line_char,
+                            blankline,
                             utils._if(
-                                #char_list > 0,
-                                utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-                                char
-                            )
-                        ),
-                        utils._if(
-                            context,
-                            utils._if(
-                                #context_highlight_list > 0,
-                                utils.get_from_list(context_highlight_list, i),
-                                context_highlight
+                                #space_char_blankline_highlight_list > 0,
+                                utils.get_from_list(space_char_blankline_highlight_list, i),
+                                space_char_blankline_highlight
                             ),
                             utils._if(
-                                #char_highlight_list > 0,
-                                utils.get_from_list(char_highlight_list, i),
-                                char_highlight
+                                #space_char_highlight_list > 0,
+                                utils.get_from_list(space_char_highlight_list, i),
+                                space_char_highlight
                             )
                         )
                     }
                 )
             end
-            table.insert(
-                virtual_text,
-                {
-                    utils._if(blankline, space_char_blankline, space_char):rep(space_count),
-                    utils._if(
-                        blankline,
-                        utils._if(
-                            #space_char_blankline_highlight_list > 0,
-                            utils.get_from_list(space_char_blankline_highlight_list, i),
-                            space_char_blankline_highlight
-                        ),
-                        utils._if(
-                            #space_char_highlight_list > 0,
-                            utils.get_from_list(space_char_highlight_list, i),
-                            space_char_highlight
-                        )
-                    )
-                }
-            )
         end
 
-        if ((blankline or extra) and trail_indent) and (first_indent or #virtual_text > 0) then
+        if ((blankline or extra) and trail_indent) and (first_indent or #virtual_text > 0) and current_left_offset < 1 then
             local index = math.ceil(#virtual_text / 2) + 1
             table.insert(
                 virtual_text,
