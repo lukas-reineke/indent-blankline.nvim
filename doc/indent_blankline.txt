@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.1.1
+Version: 2.1.2
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -509,6 +509,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.1.2
+ * Fix lazy loading
 
 2.1.1
  * Fix bug were setup function is not run

@@ -12,6 +12,8 @@ M.init = function()
     vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace("indent_blankline")
 
     utils.reset_highlights()
+
+    require("indent_blankline.commands").refresh(true)
 end
 
 M.setup = function(options)
