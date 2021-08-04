@@ -17,25 +17,22 @@ command! -bang IndentBlanklineEnable call s:try('lua require("indent_blankline.c
 command! -bang IndentBlanklineDisable call s:try('lua require("indent_blankline.commands").disable("<bang>" == "!")')
 command! -bang IndentBlanklineToggle call s:try('lua require("indent_blankline.commands").toggle("<bang>" == "!")')
 
-function s:IndentBlanklineInit()
-    if exists(':IndentLinesEnable') && !g:indent_blankline_disable_warning_message
-        echohl Error
-        echom 'indent-blankline does not require IndentLine anymore, please remove it.'
-        echohl None
-    endif
-    lua require("indent_blankline").init()
-    if !exists('g:__indent_blankline_setup_completed')
-        lua require("indent_blankline").setup {}
-    endif
+if exists(':IndentLinesEnable') && !g:indent_blankline_disable_warning_message
+    echohl Error
+    echom 'indent-blankline does not require IndentLine anymore, please remove it.'
+    echohl None
+endif
 
-    IndentBlanklineRefresh!
-endfunction
+if !exists('g:__indent_blankline_setup_completed')
+    lua require("indent_blankline").setup {}
+endif
+
+lua require("indent_blankline").init()
 
 augroup IndentBlanklineAutogroup
     autocmd!
     autocmd OptionSet shiftwidth,tabstop,expandtab IndentBlanklineRefresh
     autocmd FileChangedShellPost,TextChanged,TextChangedI,WinScrolled,BufWinEnter,Filetype * IndentBlanklineRefresh
-    autocmd VimEnter * call s:IndentBlanklineInit()
     autocmd ColorScheme * lua require("indent_blankline.utils").reset_highlights()
 augroup END
 
