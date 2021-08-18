@@ -328,7 +328,7 @@ g:indent_blankline_filetype_exclude      *g:indent_blankline_filetype_exclude*
 
     Example: >
 
-        let g:indent_blankline_filetype_exclude = ['help']
+        let g:indent_blankline_filetype_exclude = {'help', 'ruby'}
 
 ------------------------------------------------------------------------------
 g:indent_blankline_buftype_exclude        *g:indent_blankline_buftype_exclude*
