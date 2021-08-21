@@ -104,6 +104,10 @@ M.clear_line_indent = function(buf, lnum)
     xpcall(vim.api.nvim_buf_clear_namespace, M.error_handler, buf, vim.g.indent_blankline_namespace, lnum - 1, lnum)
 end
 
+M.clear_buf_indent = function(buf)
+    xpcall(vim.api.nvim_buf_clear_namespace, M.error_handler, buf, vim.g.indent_blankline_namespace, 0, -1)
+end
+
 M.get_from_list = function(list, i)
     return list[((i - 1) % #list) + 1]
 end
