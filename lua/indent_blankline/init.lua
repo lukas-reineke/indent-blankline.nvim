@@ -91,6 +91,8 @@ end
 
 local refresh = function()
     local v = utils.get_variable
+    local bufnr = vim.api.nvim_get_current_buf()
+
     if
         not utils.is_indent_blankline_enabled(
             vim.b.indent_blankline_enabled,
@@ -104,13 +106,15 @@ local refresh = function()
             vim.fn["bufname"]("")
         )
      then
+        if vim.b.__indent_blankline_active then
+            vim.schedule_wrap(utils.clear_buf_indent)(bufnr)
+        end
         vim.b.__indent_blankline_active = false
         return
     else
         vim.b.__indent_blankline_active = true
     end
 
-    local bufnr = vim.api.nvim_get_current_buf()
     local offset = math.max(vim.fn.line("w0") - 1 - v("indent_blankline_viewport_buffer"), 0)
     local left_offset = vim.fn.winsaveview().leftcol
     local range =
