@@ -94,7 +94,7 @@ local refresh = function()
     local bufnr = vim.api.nvim_get_current_buf()
 
     if
-        not utils.is_indent_blankline_enabled(
+        not     utils.is_indent_blankline_enabled(
             vim.b.indent_blankline_enabled,
             vim.g.indent_blankline_enabled,
             vim.bo.filetype,
