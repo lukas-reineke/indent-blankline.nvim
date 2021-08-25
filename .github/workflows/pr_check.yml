@@ -1,0 +1,24 @@
+name: Pull request check
+
+on:
+    pull_request:
+
+jobs:
+    format:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: actions/setup-node@v2
+              with:
+                  node-version: '14'
+            - run: npm install -g lua-fmt
+            - run: find . -name "*.lua" | xargs -n 1 luafmt -i 4 -w replace
+            - run: git diff --quiet . || (echo 'luafmt failed' && exit 1)
+
+    block-fixup:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Block Fixup Commit Merge
+              uses: 13rac1/block-fixup-merge-action@v2.0.0
