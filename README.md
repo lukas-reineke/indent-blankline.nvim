@@ -55,23 +55,98 @@ A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options s
 
 ## Screenshots
 
-#### Default settings
+All screenshots use [my custom onedark color scheme](https://github.com/lukas-reineke/onedark.nvim).
+
+### Simple
+
+```lua
+vim.opt.listchars = {
+    eol = "↴",
+}
+
+require("indent_blankline").setup {
+    show_end_of_line = true,
+}
+```
 
 <img width="900" src="https://i.imgur.com/3gRG5qI.png" alt="Screenshot" />
 
 #### With custom `listchars` and `g:indent_blankline_space_char`
 
+```lua
+vim.opt.listchars = {
+    space = "⋅",
+    eol = "↴",
+}
+
+require("indent_blankline").setup {
+    show_end_of_line = true,
+    space_char_blankline = " ",
+}
+```
+
 <img width="900" src="https://i.imgur.com/VxCThMu.png" alt="Screenshot" />
 
 #### With custom `g:indent_blankline_char_highlight_list`
+
+```lua
+vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 guibg=NONE gui=NONE blend=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B guibg=NONE gui=NONE blend=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 guibg=NONE gui=NONE blend=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 guibg=NONE gui=NONE blend=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF guibg=NONE gui=NONE blend=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD guibg=NONE gui=NONE blend=nocombine]]
+
+vim.opt.listchars = {
+    space = "⋅",
+    eol = "↴",
+}
+
+require("indent_blankline").setup {
+    space_char_blankline = " ",
+    char_highlight_list = {
+        "IndentBlanklineIndent1",
+        "IndentBlanklineIndent2",
+        "IndentBlanklineIndent3",
+        "IndentBlanklineIndent4",
+        "IndentBlanklineIndent5",
+        "IndentBlanklineIndent6",
+    },
+}
+```
 
 <img width="900" src="https://i.imgur.com/E3B0PUb.png" alt="Screenshot" />
 
 #### With custom background highlight
 
+```lua
+vim.cmd [[highlight IndentBlanklineIndent1 guifg=NONE guibg=#1f1f1f gui=NONE blend=nocombine]]
+vim.cmd [[highlight IndentBlanklineIndent2 guifg=NONE guibg=#1a1a1a gui=NONE blend=nocombine]]
+
+require("indent_blankline").setup {
+    char_highlight_list = {
+        "IndentBlanklineIndent1",
+        "IndentBlanklineIndent2",
+    },
+    show_trailing_blankline_indent = false,
+}
+```
+
 <img width="900" src="https://i.imgur.com/DukMZGk.png" alt="Screenshot" />
 
 #### With context indent highlighted by treesitter
+
+```lua
+vim.opt.listchars = {
+    space = "⋅",
+    eol = "↴",
+}
+
+require("indent_blankline").setup {
+    space_char_blankline = " ",
+    show_current_context = true,
+}
+```
 
 <img width="900" src="https://i.imgur.com/mkyGPZZ.png" alt="Screenshot" />
 
