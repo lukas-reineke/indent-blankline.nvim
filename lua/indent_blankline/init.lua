@@ -116,7 +116,7 @@ local refresh = function()
     end
 
     local offset = math.max(vim.fn.line("w0") - 1 - v("indent_blankline_viewport_buffer"), 0)
-    local left_offset = vim.fn.winsaveview().leftcol
+    local left_offset = vim.fn.winsaveview().leftcol + 1
     local range =
         math.min(vim.fn.line("w$") + v("indent_blankline_viewport_buffer"), vim.api.nvim_buf_line_count(bufnr))
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
