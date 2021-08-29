@@ -47,27 +47,27 @@ M.setup = function(options)
         vim.g.indent_blankline_space_char_highlight_list
     )
 
-	-- Neovim still uses Lua 5.1 which doesn't have UTF-8 support (was only introduced in Lua 5.3)
-	-- Because of that there is no reliable way to differentiate between tab listchars
-	-- string.sub() acts on bytes, not "characters"
-	-- consider `listchars=tab:›\ ‹`; these chars are SINGLE RIGHT-POINTING ANGLE QUOTATION MARK and left equivalent
-	-- Each is a 3 byte long character, the entire sequence is <e2><80><b8><20><e2><80><b9>
-	-- string.sub() will grab each byte individually instead of a whole character
-	-- without a proper UTF-8 library there is too much guess work to finding the correct sequence
-	-- Hence, we don't source listchars at all and rely on global plugin specific variables
+    -- Neovim still uses Lua 5.1 which doesn't have UTF-8 support (was only introduced in Lua 5.3)
+    -- Because of that there is no reliable way to differentiate between tab listchars
+    -- string.sub() acts on bytes, not "characters"
+    -- consider `listchars=tab:›\ ‹`; these chars are SINGLE RIGHT-POINTING ANGLE QUOTATION MARK and left equivalent
+    -- Each is a 3 byte long character, the entire sequence is <e2><80><b8><20><e2><80><b9>
+    -- string.sub() will grab each byte individually instead of a whole character
+    -- without a proper UTF-8 library there is too much guess work to finding the correct sequence
+    -- Hence, we don't source listchars at all and rely on global plugin specific variables
     vim.g.indent_blankline_tab_char_start = o(options.tab_char_start, vim.g.indent_blankline_tab_char_start, " ")
     vim.g.indent_blankline_tab_char_fill = o(options.tab_char_fill, vim.g.indent_blankline_tab_char_fill, " ")
     vim.g.indent_blankline_tab_char_end = o(options.tab_char_end, vim.g.indent_blankline_tab_char_end, " ")
 
-	-- trail char is displayed if line containes only whitespace and nothing else (default value is set by space_char)
+    -- trail char is displayed if line containes only whitespace and nothing else (default value is set by space_char)
     vim.g.indent_blankline_trail_char =
-		o(options.trail_char,
-		  vim.g.indent_blankline_trail_char,
-		  vim.opt.listchars:get().trail,
-		  vim.g.indent_blankline_space_char
-		)
+        o(options.trail_char,
+          vim.g.indent_blankline_trail_char,
+          vim.opt.listchars:get().trail,
+          vim.g.indent_blankline_space_char
+        )
 
-	vim.g.indent_blankline_indent_level = o(options.indent_level, vim.g.indent_blankline_indent_level, 20)
+    vim.g.indent_blankline_indent_level = o(options.indent_level, vim.g.indent_blankline_indent_level, 20)
     vim.g.indent_blankline_enabled = o(options.enabled, vim.g.indent_blankline_enabled, true)
     vim.g.indent_blankline_filetype =
         o(options.filetype, vim.g.indent_blankline_filetype, vim.g.indentLine_fileType, {})
@@ -147,10 +147,10 @@ local refresh = function()
     local space_char_highlight_list = v("indent_blankline_space_char_highlight_list")
     local space_char_blankline_highlight_list = v("indent_blankline_space_char_blankline_highlight_list")
     local space_char = v("indent_blankline_space_char")
-	local trail_char = v("indent_blankline_trail_char")
-	local tab_char_start = v("indent_blankline_tab_char_start")
-	local tab_char_fill = v("indent_blankline_tab_char_fill")
-	local tab_char_end = v("indent_blankline_tab_char_end")
+    local trail_char = v("indent_blankline_trail_char")
+    local tab_char_start = v("indent_blankline_tab_char_start")
+    local tab_char_fill = v("indent_blankline_tab_char_fill")
+    local tab_char_end = v("indent_blankline_tab_char_end")
     local max_indent_level = v("indent_blankline_indent_level")
     local expandtab = vim.bo.expandtab
     local first_indent = v("indent_blankline_show_first_indent_level")
@@ -173,22 +173,22 @@ local refresh = function()
         local ret_string = ""
         local mod_string = ""
 
-		-- if this is a blank line, don't display misleading listchars
-		if blankline then
-	 		ret_string = string.rep(" ", number)
-			mod_string = string.gsub(base_string, "^.", "", number)
-	  	else
-			-- get substring of given length, then remove that substring from original (added ^ anchor to match only beginning of line)
-  			ret_string = string.sub(base_string,1,number)
-			mod_string = string.gsub(base_string, "^"..ret_string, "")
+        -- if this is a blank line, don't display misleading listchars
+        if blankline then
+            ret_string = string.rep(" ", number)
+            mod_string = string.gsub(base_string, "^.", "", number)
+        else
+            -- get substring of given length, then remove that substring from original (added ^ anchor to match only beginning of line)
+            ret_string = string.sub(base_string,1,number)
+            mod_string = string.gsub(base_string, "^"..ret_string, "")
 
-			--replace placeholders with actual display chars
- 			ret_string = string.gsub(ret_string, "s", space_char)
-  			ret_string = string.gsub(ret_string, "r", trail_char)
-	   	  	ret_string = string.gsub(ret_string, "t", tab_char_start)
-	   		ret_string = string.gsub(ret_string, "a", tab_char_fill)
-  			ret_string = string.gsub(ret_string, "b", tab_char_end)
-		end
+            --replace placeholders with actual display chars
+            ret_string = string.gsub(ret_string, "s", space_char)
+            ret_string = string.gsub(ret_string, "r", trail_char)
+            ret_string = string.gsub(ret_string, "t", tab_char_start)
+            ret_string = string.gsub(ret_string, "a", tab_char_fill)
+            ret_string = string.gsub(ret_string, "b", tab_char_end)
+        end
 
         -- return both the substring and the modified original
         return ret_string, mod_string
@@ -201,42 +201,42 @@ local refresh = function()
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             local space_count = space
             local context = context_active and context_indent == i
-			if current_left_offset > 0 then
-				current_left_offset = current_left_offset - 1
-			else
+            if current_left_offset > 0 then
+                current_left_offset = current_left_offset - 1
+            else
 
-				table.insert(
-					virtual_text,
-					{
-						utils._if(
-							i == 1 and first_indent and blankline and end_of_line and end_of_line_char,
-							end_of_line_char,
-							utils._if(
-								#char_list > 0,
-								utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-								char
-							)
-						),
-						utils._if(
-							context,
-							utils._if(
-								#context_highlight_list > 0,
-								utils.get_from_list(context_highlight_list, i),
-								context_highlight
-							),
-							utils._if(
-								#char_highlight_list > 0,
-								utils.get_from_list(char_highlight_list, i),
-								char_highlight
-							)
-						)
-					}
-				)
-				-- We set the first char with a special one above, replacing the first of virt_string
-				virtual_string = string.gsub(virtual_string, "^.", "")
-				space_count = space_count - 1
+                table.insert(
+                    virtual_text,
+                    {
+                        utils._if(
+                            i == 1 and first_indent and blankline and end_of_line and end_of_line_char,
+                            end_of_line_char,
+                            utils._if(
+                                #char_list > 0,
+                                utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
+                                char
+                            )
+                        ),
+                        utils._if(
+                            context,
+                            utils._if(
+                                #context_highlight_list > 0,
+                                utils.get_from_list(context_highlight_list, i),
+                                context_highlight
+                            ),
+                            utils._if(
+                                #char_highlight_list > 0,
+                                utils.get_from_list(char_highlight_list, i),
+                                char_highlight
+                            )
+                        )
+                    }
+                )
+                -- We set the first char with a special one above, replacing the first of virt_string
+                virtual_string = string.gsub(virtual_string, "^.", "")
+                space_count = space_count - 1
 
-			end
+            end
 
             if current_left_offset > 0 then
                 local current_space_count = space_count
@@ -315,8 +315,8 @@ local refresh = function()
                         context_active = offset + i > context_start and offset + i <= context_end
                     end
 
-                    local tab_width="nil"
-                    local tab = "t"
+                    local tab_width
+                    local tab
                     local virtual_string = ""
 
                     if blankline then
@@ -329,16 +329,19 @@ local refresh = function()
                                 -- to acurately determine the necessary width of potential tabs
                                 local test_char = string.sub(whitespace, n+1, n+1)
                                 if test_char == "\t" then
+                                    -- replace dynamic-width tab with fixed-width string
                                     tab_width = space - virtual_string:len() % space
                                     if tab_width > 1 then
                                         -- replace whitespace chars with something with a fixed length
                                         tab = "t"..string.rep("a", tab_width - 2).."b"
+                                    else
+                                        tab = "t"
                                     end
                                     virtual_string = virtual_string..tab
                                 elseif whitespace == line then
-									-- if the whitespace is the entire line use trail_char instead of space_char
+                                    -- if the whitespace is the entire line use trail_char instead of space_char
                                     virtual_string = virtual_string.."r"
-								else
+                                else
                                     virtual_string = virtual_string.."s"
                                 end
                             end
@@ -346,7 +349,9 @@ local refresh = function()
                         prev_virt_string = virtual_string
                     end
 
-                    local indent = math.floor( string.len(virtual_string) / space )
+                    -- print("ln:"..(i+offset).."; line:"..line.."; virt_string:"..virtual_string)
+
+                    local indent = math.ceil( virtual_string:len() / space )
 
                     if offset + i == context_start then
                         context_indent = (indent or 0) + 1
