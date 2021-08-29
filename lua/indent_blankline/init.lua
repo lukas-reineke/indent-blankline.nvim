@@ -59,7 +59,15 @@ M.setup = function(options)
     vim.g.indent_blankline_tab_char_fill = o(options.tab_char_fill, vim.g.indent_blankline_tab_char_fill, " ")
     vim.g.indent_blankline_tab_char_end = o(options.tab_char_end, vim.g.indent_blankline_tab_char_end, " ")
 
-    vim.g.indent_blankline_indent_level = o(options.indent_level, vim.g.indent_blankline_indent_level, 20)
+	-- trail char is displayed if line containes only whitespace and nothing else (default value is set by space_char)
+    vim.g.indent_blankline_trail_char =
+		o(options.trail_char,
+		  vim.g.indent_blankline_trail_char,
+		  vim.opt.listchars:get().trail,
+		  vim.g.indent_blankline_space_char
+		)
+
+	vim.g.indent_blankline_indent_level = o(options.indent_level, vim.g.indent_blankline_indent_level, 20)
     vim.g.indent_blankline_enabled = o(options.enabled, vim.g.indent_blankline_enabled, true)
     vim.g.indent_blankline_filetype =
         o(options.filetype, vim.g.indent_blankline_filetype, vim.g.indentLine_fileType, {})
@@ -139,6 +147,7 @@ local refresh = function()
     local space_char_highlight_list = v("indent_blankline_space_char_highlight_list")
     local space_char_blankline_highlight_list = v("indent_blankline_space_char_blankline_highlight_list")
     local space_char = v("indent_blankline_space_char")
+	local trail_char = v("indent_blankline_trail_char")
 	local tab_char_start = v("indent_blankline_tab_char_start")
 	local tab_char_fill = v("indent_blankline_tab_char_fill")
 	local tab_char_end = v("indent_blankline_tab_char_end")
@@ -164,21 +173,22 @@ local refresh = function()
         local ret_string = ""
         local mod_string = ""
 
-        -- if this is a blank line, don't display misleading listchars
-        if blankline then
-            ret_string = string.rep(" ", number)
-            mod_string = string.gsub(base_string, "^.", "", number)
-        else
-            -- get substring of given length, then remove that substring from original
-            ret_string = string.sub(base_string,1,number)
-            mod_string = string.gsub(base_string, ret_string, "",1)
+		-- if this is a blank line, don't display misleading listchars
+		if blankline then
+	 		ret_string = string.rep(" ", number)
+			mod_string = string.gsub(base_string, "^.", "", number)
+	  	else
+			-- get substring of given length, then remove that substring from original (added ^ anchor to match only beginning of line)
+  			ret_string = string.sub(base_string,1,number)
+			mod_string = string.gsub(base_string, "^"..ret_string, "")
 
 			--replace placeholders with actual display chars
-			ret_string = string.gsub(ret_string, "s", space_char)
-			ret_string = string.gsub(ret_string, "t", tab_char_start)
-			ret_string = string.gsub(ret_string, "a", tab_char_fill)
-			ret_string = string.gsub(ret_string, "b", tab_char_end)
-        end
+ 			ret_string = string.gsub(ret_string, "s", space_char)
+  			ret_string = string.gsub(ret_string, "r", trail_char)
+	   	  	ret_string = string.gsub(ret_string, "t", tab_char_start)
+	   		ret_string = string.gsub(ret_string, "a", tab_char_fill)
+  			ret_string = string.gsub(ret_string, "b", tab_char_end)
+		end
 
         -- return both the substring and the modified original
         return ret_string, mod_string
@@ -325,7 +335,10 @@ local refresh = function()
                                         tab = "t"..string.rep("a", tab_width - 2).."b"
                                     end
                                     virtual_string = virtual_string..tab
-                                else
+                                elseif whitespace == line then
+									-- if the whitespace is the entire line use trail_char instead of space_char
+                                    virtual_string = virtual_string.."r"
+								else
                                     virtual_string = virtual_string.."s"
                                 end
                             end
