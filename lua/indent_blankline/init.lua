@@ -1,5 +1,3 @@
-local ts_status, ts_query = pcall(require, "nvim-treesitter.query")
-local ts_status, ts_indent = pcall(require, "nvim-treesitter.indent")
 local utils = require "indent_blankline/utils"
 local M = {}
 
@@ -34,18 +32,12 @@ M.setup = function(options)
         o(options.space_char_highlight_list, vim.g.indent_blankline_space_char_highlight_list, {})
     vim.g.indent_blankline_space_char_blankline =
         o(options.space_char_blankline, vim.g.indent_blankline_space_char_blankline, vim.g.indent_blankline_space_char)
-    vim.g.indent_blankline_space_char_blankline =
-        o(
-        options.space_char_blankline,
-        vim.g.indent_blankline_space_char_blankline,
-        vim.g.indent_blankline_space_char_highlight_list
-    )
     vim.g.indent_blankline_space_char_blankline_highlight_list =
         o(
         options.space_char_blankline_highlight_list,
         vim.g.indent_blankline_space_char_blankline_highlight_list,
         vim.g.indent_blankline_space_char_highlight_list
-    )
+        )
 
     -- Neovim still uses Lua 5.1 which doesn't have UTF-8 support (was only introduced in Lua 5.3)
     -- Because of that there is no reliable way to differentiate between tab listchars
@@ -78,7 +70,6 @@ M.setup = function(options)
     vim.g.indent_blankline_buftype_exclude =
         o(options.buftype_exclude, vim.g.indent_blankline_buftype_exclude, vim.g.indentLine_bufTypeExclude, {})
     vim.g.indent_blankline_viewport_buffer = o(options.viewport_buffer, vim.g.indent_blankline_viewport_buffer, 10)
-    vim.g.indent_blankline_use_treesitter = o(options.use_treesitter, vim.g.indent_blankline_use_treesitter, false)
     vim.g.indent_blankline_show_first_indent_level =
         o(options.show_first_indent_level, vim.g.indent_blankline_show_first_indent_level, true)
     vim.g.indent_blankline_show_trailing_blankline_indent =
@@ -92,7 +83,6 @@ M.setup = function(options)
         o(options.context_highlight_list, vim.g.indent_blankline_context_highlight_list, {})
     vim.g.indent_blankline_context_patterns =
         o(options.context_patterns, vim.g.indent_blankline_context_patterns, {"class", "function", "method"})
-    vim.g.indent_blankline_strict_tabs = o(options.strict_tabs, vim.g.indent_blankline_strict_tabs, false)
 
     vim.g.indent_blankline_disable_warning_message =
         o(options.disable_warning_message, vim.g.indent_blankline_disable_warning_message, false)
@@ -147,6 +137,7 @@ local refresh = function()
     local space_char_highlight_list = v("indent_blankline_space_char_highlight_list")
     local space_char_blankline_highlight_list = v("indent_blankline_space_char_blankline_highlight_list")
     local space_char = v("indent_blankline_space_char")
+    local space_char_blankline = v("indent_blankline_space_char_blankline")
     local trail_char = v("indent_blankline_trail_char")
     local tab_char_start = v("indent_blankline_tab_char_start")
     local tab_char_fill = v("indent_blankline_tab_char_fill")
@@ -175,7 +166,7 @@ local refresh = function()
 
         -- if this is a blank line, don't display misleading listchars
         if blankline then
-            ret_string = string.rep(" ", number)
+            ret_string = string.rep(space_char_blankline, number)
             mod_string = string.gsub(base_string, "^.", "", number)
         else
             -- get substring of given length, then remove that substring from original (added ^ anchor to match only beginning of line)
@@ -315,6 +306,8 @@ local refresh = function()
                         context_active = offset + i > context_start and offset + i <= context_end
                     end
 
+
+                    -- get leading whitespace of line and convert it to fixed-width placeholder string
                     local tab_width
                     local tab
                     local virtual_string = ""
@@ -363,6 +356,7 @@ local refresh = function()
                         return async:close()
                     end
 
+                    -- get real virtual text that should be overlayed
                     local virtual_text = get_virtual_text(blankline, context_active, context_indent, virtual_string, indent)
                     vim.schedule_wrap(
                         function()

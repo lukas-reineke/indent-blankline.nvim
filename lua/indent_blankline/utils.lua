@@ -120,31 +120,6 @@ M._if = function(bool, a, b)
     end
 end
 
-M.find_indent = function(line, shiftwidth, strict_tabs)
-    local indent = 0
-    local spaces = 0
-    if line then
-        for ch in line:gmatch(".") do
-            if ch == "	" then
-                if strict_tabs and indent == 0 and spaces ~= 0 then
-                    return 0, false
-                end
-                indent = indent + math.floor(spaces / shiftwidth) + 1
-                spaces = 0
-            elseif ch == " " then
-                if strict_tabs and indent ~= 0 then
-                    return indent, true
-                end
-                spaces = spaces + 1
-            else
-                break
-            end
-        end
-    end
-    indent = indent + math.floor(spaces / shiftwidth)
-    return indent, spaces % shiftwidth ~= 0
-end
-
 M.get_current_context = function(type_patterns)
     local ts_utils = require "nvim-treesitter.ts_utils"
     local cursor_node = ts_utils.get_node_at_cursor()
