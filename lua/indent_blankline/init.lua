@@ -46,6 +46,19 @@ M.setup = function(options)
         vim.g.indent_blankline_space_char_blankline_highlight_list,
         vim.g.indent_blankline_space_char_highlight_list
     )
+
+	-- Neovim still uses Lua 5.1 which doesn't have UTF-8 support (was only introduced in Lua 5.3)
+	-- Because of that there is no reliable way to differentiate between tab listchars
+	-- string.sub() acts on bytes, not "characters"
+	-- consider `listchars=tab:›\ ‹`; these chars are SINGLE RIGHT-POINTING ANGLE QUOTATION MARK and left equivalent
+	-- Each is a 3 byte long character, the entire sequence is <e2><80><b8><20><e2><80><b9>
+	-- string.sub() will grab each byte individually instead of a whole character
+	-- without a proper UTF-8 library there is too much guess work to finding the correct sequence
+	-- Hence, we don't source listchars at all and rely on global plugin specific variables
+    vim.g.indent_blankline_tab_char_start = o(options.tab_char_start, vim.g.indent_blankline_tab_char_start, " ")
+    vim.g.indent_blankline_tab_char_fill = o(options.tab_char_fill, vim.g.indent_blankline_tab_char_fill, " ")
+    vim.g.indent_blankline_tab_char_end = o(options.tab_char_end, vim.g.indent_blankline_tab_char_end, " ")
+
     vim.g.indent_blankline_indent_level = o(options.indent_level, vim.g.indent_blankline_indent_level, 20)
     vim.g.indent_blankline_enabled = o(options.enabled, vim.g.indent_blankline_enabled, true)
     vim.g.indent_blankline_filetype =
@@ -105,7 +118,7 @@ local refresh = function()
             v("indent_blankline_bufname_exclude"),
             vim.fn["bufname"]("")
         )
-     then
+    then
         if vim.b.__indent_blankline_active then
             vim.schedule_wrap(utils.clear_buf_indent)(bufnr)
         end
@@ -126,15 +139,15 @@ local refresh = function()
     local space_char_highlight_list = v("indent_blankline_space_char_highlight_list")
     local space_char_blankline_highlight_list = v("indent_blankline_space_char_blankline_highlight_list")
     local space_char = v("indent_blankline_space_char")
-    local space_char_blankline = v("indent_blankline_space_char_blankline")
+	local tab_char_start = v("indent_blankline_tab_char_start")
+	local tab_char_fill = v("indent_blankline_tab_char_fill")
+	local tab_char_end = v("indent_blankline_tab_char_end")
     local max_indent_level = v("indent_blankline_indent_level")
     local expandtab = vim.bo.expandtab
-    local use_ts_indent = v("indent_blankline_use_treesitter") and ts_status and ts_query.has_indents(vim.bo.filetype)
     local first_indent = v("indent_blankline_show_first_indent_level")
     local trail_indent = v("indent_blankline_show_trailing_blankline_indent")
     local end_of_line = v("indent_blankline_show_end_of_line")
     local end_of_line_char = vim.opt.listchars:get().eol or ""
-    local strict_tabs = v("indent_blankline_strict_tabs")
     local foldtext = v("indent_blankline_show_foldtext")
 
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
@@ -146,21 +159,27 @@ local refresh = function()
         context_status, context_start, context_end = utils.get_current_context(v("indent_blankline_context_patterns"))
     end
 
-
     local get_virtual_substring = function(blankline, number, base_string)
         -- gets first few characters and returns substring plus reduced original string
         local ret_string = ""
         local mod_string = ""
+
+        -- if this is a blank line, don't display misleading listchars
         if blankline then
             ret_string = string.rep(" ", number)
             mod_string = string.gsub(base_string, "^.", "", number)
         else
-            for _=1,number do
-                -- get substring of given length, then remove that substring from original
-                ret_string = string.sub(base_string,1,number)
-                mod_string = string.gsub(base_string, ret_string, "",1)
-            end
+            -- get substring of given length, then remove that substring from original
+            ret_string = string.sub(base_string,1,number)
+            mod_string = string.gsub(base_string, ret_string, "",1)
+
+			--replace placeholders with actual display chars
+			ret_string = string.gsub(ret_string, "s", space_char)
+			ret_string = string.gsub(ret_string, "t", tab_char_start)
+			ret_string = string.gsub(ret_string, "a", tab_char_fill)
+			ret_string = string.gsub(ret_string, "b", tab_char_end)
         end
+
         -- return both the substring and the modified original
         return ret_string, mod_string
     end
@@ -172,43 +191,42 @@ local refresh = function()
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
             local space_count = space
             local context = context_active and context_indent == i
-            if i ~= 1 or first_indent then
-                space_count = space_count - 1
-                if current_left_offset > 0 then
-                    current_left_offset = current_left_offset - 1
-                else
+			if current_left_offset > 0 then
+				current_left_offset = current_left_offset - 1
+			else
 
-                    table.insert(
-                        virtual_text,
-                        {
-                            utils._if(
-                                i == 1 and blankline and end_of_line and #end_of_line_char > 0,
-                                end_of_line_char,
-                                utils._if(
-                                    #char_list > 0,
-                                    utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-                                    char
-                                )
-                            ),
-                            utils._if(
-                                context,
-                                utils._if(
-                                    #context_highlight_list > 0,
-                                    utils.get_from_list(context_highlight_list, i),
-                                    context_highlight
-                                ),
-                                utils._if(
-                                    #char_highlight_list > 0,
-                                    utils.get_from_list(char_highlight_list, i),
-                                    char_highlight
-                                )
-                            )
-                        }
-                    )
-                    -- We set the first char with a special one above, replacing the first of virt_string
-                    virtual_string = string.gsub(virtual_string, "^.", "")
-                end
-            end
+				table.insert(
+					virtual_text,
+					{
+						utils._if(
+							i == 1 and first_indent and blankline and end_of_line and end_of_line_char,
+							end_of_line_char,
+							utils._if(
+								#char_list > 0,
+								utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
+								char
+							)
+						),
+						utils._if(
+							context,
+							utils._if(
+								#context_highlight_list > 0,
+								utils.get_from_list(context_highlight_list, i),
+								context_highlight
+							),
+							utils._if(
+								#char_highlight_list > 0,
+								utils.get_from_list(char_highlight_list, i),
+								char_highlight
+							)
+						)
+					}
+				)
+				-- We set the first char with a special one above, replacing the first of virt_string
+				virtual_string = string.gsub(virtual_string, "^.", "")
+				space_count = space_count - 1
+
+			end
 
             if current_left_offset > 0 then
                 local current_space_count = space_count
