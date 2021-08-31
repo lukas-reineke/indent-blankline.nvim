@@ -28,18 +28,12 @@ M.setup = function(options)
         o(options.char_list, vim.g.indent_blankline_char_list, vim.g.indentLine_char_list, {})
     vim.g.indent_blankline_char_highlight_list =
         o(options.char_highlight_list, vim.g.indent_blankline_char_highlight_list, {})
-    vim.g.indent_blankline_space_char =
-        o(options.space_char, vim.g.indent_blankline_space_char, vim.opt.listchars:get().space, " ")
     vim.g.indent_blankline_space_char_highlight_list =
         o(options.space_char_highlight_list, vim.g.indent_blankline_space_char_highlight_list, {})
     vim.g.indent_blankline_space_char_blankline =
         o(options.space_char_blankline, vim.g.indent_blankline_space_char_blankline, vim.g.indent_blankline_space_char)
     vim.g.indent_blankline_space_char_blankline =
-        o(
-        options.space_char_blankline,
-        vim.g.indent_blankline_space_char_blankline,
-        vim.g.indent_blankline_space_char_highlight_list
-    )
+        o(options.space_char_blankline, vim.g.indent_blankline_space_char_blankline, " ")
     vim.g.indent_blankline_space_char_blankline_highlight_list =
         o(
         options.space_char_blankline_highlight_list,
@@ -125,20 +119,37 @@ local refresh = function()
     local char_highlight_list = v("indent_blankline_char_highlight_list")
     local space_char_highlight_list = v("indent_blankline_space_char_highlight_list")
     local space_char_blankline_highlight_list = v("indent_blankline_space_char_blankline_highlight_list")
-    local space_char = v("indent_blankline_space_char")
     local space_char_blankline = v("indent_blankline_space_char_blankline")
+
+    local space_character = vim.opt.listchars:get().space or " "
+    -- source tab chars in a way that works with UTF-8 characters
+    local tab_characters
+    if vim.opt.listchars:get().tab then
+        tab_characters = vim.fn.split(vim.opt.listchars:get().tab, "\\zs")
+    else
+        tab_characters = {}
+    end
+    local list_chars = {
+        space_char = space_character,
+        trail_char = vim.opt.listchars:get().trail or space_character,
+        lead_char = vim.opt.listchars:get().lead or space_character,
+        tab_char_start = tab_characters[1] or space_character,
+        tab_char_fill = tab_characters[2] or space_character,
+        tab_char_end = tab_characters[3],
+        eol_char = vim.opt.listchars:get().eol
+    }
+
     local max_indent_level = v("indent_blankline_indent_level")
     local expandtab = vim.bo.expandtab
     local use_ts_indent = v("indent_blankline_use_treesitter") and ts_status and ts_query.has_indents(vim.bo.filetype)
     local first_indent = v("indent_blankline_show_first_indent_level")
     local trail_indent = v("indent_blankline_show_trailing_blankline_indent")
     local end_of_line = v("indent_blankline_show_end_of_line")
-    local end_of_line_char = vim.opt.listchars:get().eol or ""
     local strict_tabs = v("indent_blankline_strict_tabs")
     local foldtext = v("indent_blankline_show_foldtext")
 
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
-    local space = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
+    local shiftwidth = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
 
     local context_highlight_list = v("indent_blankline_context_highlight_list")
     local context_status, context_start, context_end = false, 0, 0
@@ -146,11 +157,11 @@ local refresh = function()
         context_status, context_start, context_end = utils.get_current_context(v("indent_blankline_context_patterns"))
     end
 
-    local get_virtual_text = function(indent, extra, blankline, context_active, context_indent)
+    local get_virtual_text = function(indent, extra, blankline, context_active, context_indent, virtual_string)
         local virtual_text = {}
         local current_left_offset = left_offset
         for i = 1, math.min(math.max(indent, 0), max_indent_level) do
-            local space_count = space
+            local space_count = shiftwidth
             local context = context_active and context_indent == i
             if i ~= 1 or first_indent then
                 space_count = space_count - 1
@@ -161,8 +172,8 @@ local refresh = function()
                         virtual_text,
                         {
                             utils._if(
-                                i == 1 and blankline and end_of_line and #end_of_line_char > 0,
-                                end_of_line_char,
+                                i == 1 and blankline and end_of_line and list_chars["eol_char"],
+                                list_chars["eol_char"],
                                 utils._if(
                                     #char_list > 0,
                                     utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
@@ -192,10 +203,27 @@ local refresh = function()
                 current_left_offset = current_left_offset - current_space_count
             end
             if space_count > 0 then
+                -- ternary operator below in table.insert() doesn't work because it would evaluate each option regardless
+                local tmp_string
+                local index = 1 + (i - 1) * shiftwidth
+                if i ~= 1 or first_indent then
+                    if table.maxn(virtual_string) >= index + space_count then
+                        -- first char was already set above
+                        tmp_string = table.concat(virtual_string, "", index + 1, index + space_count)
+                    end
+                else
+                    if table.maxn(virtual_string) >= index + space_count - 1 then
+                        tmp_string = table.concat(virtual_string, "", index, index + space_count - 1)
+                    end
+                end
                 table.insert(
                     virtual_text,
                     {
-                        utils._if(blankline, space_char_blankline, space_char):rep(space_count),
+                        utils._if(
+                            tmp_string,
+                            tmp_string,
+                            utils._if(blankline, space_char_blankline, list_chars["lead_char"]):rep(space_count)
+                        ),
                         utils._if(
                             blankline,
                             utils._if(
@@ -270,13 +298,13 @@ local refresh = function()
                                     utils.clear_line_indent(bufnr, i + offset)
                                     return
                                 end
-                                indent = indent / space
+                                indent = indent / shiftwidth
                                 if offset + i == context_start then
                                     context_indent = (indent or 0) + 1
                                 end
 
                                 local virtual_text =
-                                    get_virtual_text(indent, false, blankline, context_active, context_indent)
+                                    get_virtual_text(indent, false, blankline, context_active, context_indent, {})
                                 utils.clear_line_indent(bufnr, i + offset)
                                 xpcall(
                                     vim.api.nvim_buf_set_extmark,
@@ -293,8 +321,10 @@ local refresh = function()
                     end
 
                     local indent, extra
+                    local virtual_string = {}
                     if not blankline then
-                        indent, extra = utils.find_indent(lines[i], space, strict_tabs)
+                        indent, extra, virtual_string =
+                            utils.find_indent(lines[i], shiftwidth, strict_tabs, blankline, list_chars)
                     elseif empty_line_counter > 0 then
                         empty_line_counter = empty_line_counter - 1
                         indent = next_indent
@@ -309,7 +339,8 @@ local refresh = function()
                                 j = j + 1
                                 empty_line_counter = empty_line_counter + 1
                             end
-                            indent, extra = utils.find_indent(lines[j], space, strict_tabs)
+                            indent, extra, virtual_string =
+                                utils.find_indent(lines[j], shiftwidth, strict_tabs, blankline, list_chars)
                         end
                         next_indent = indent
                         next_extra = extra
@@ -324,7 +355,8 @@ local refresh = function()
                         return async:close()
                     end
 
-                    local virtual_text = get_virtual_text(indent, extra, blankline, context_active, context_indent)
+                    local virtual_text =
+                        get_virtual_text(indent, extra, blankline, context_active, context_indent, virtual_string)
                     vim.schedule_wrap(
                         function()
                             utils.clear_line_indent(bufnr, i + offset)
