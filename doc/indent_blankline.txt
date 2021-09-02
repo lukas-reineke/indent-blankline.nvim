@@ -154,26 +154,12 @@ g:indent_blankline_char_highlight_list*g:indent_blankline_char_highlight_list*
         let g:indent_blankline_char_highlight_list = ['Error', 'Function']
 
 ------------------------------------------------------------------------------
-g:indent_blankline_space_char                  *g:indent_blankline_space_char*
-
-    Specifies the character to be used as the space value in between indent
-    lines.
-
-    Default: The listchars space value                                       ~
-
-    Example: >
-
-        let g:indent_blankline_space_char = ' '
-
-------------------------------------------------------------------------------
 g:indent_blankline_space_char_blankline*g:indent_blankline_space_char_blankline*
 
     Specifies the character to be used as the space value in between indent
     lines when the line is blank.
 
-    Also set by |g:indent_blankline_space_char|
-
-    Default: The listchars space value                                       ~
+    Default: An empty space character                                        ~
 
     Example: >
 
@@ -210,7 +196,6 @@ g:indent_blankline_space_char_blankline_highlight_list*g:indent_blankline_space_
         let g:indent_blankline_space_char_blankline_highlight_list = ['Error', 'Function']
 
 ------------------------------------------------------------------------------
-
 g:indent_blankline_use_treesitter          *g:indent_blankline_use_treesitter*
 
     Use treesitter to calculate indentation when possible.
