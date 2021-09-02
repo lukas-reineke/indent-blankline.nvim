@@ -120,27 +120,59 @@ M._if = function(bool, a, b)
     end
 end
 
-M.find_indent = function(line, shiftwidth, strict_tabs)
+M.find_indent = function(line, shiftwidth, strict_tabs, blankline, list_chars)
     local indent = 0
     local spaces = 0
-    for ch in line:gmatch(".") do
-        if ch == "	" then
-            if strict_tabs and indent == 0 and spaces ~= 0 then
-                return 0, false
+    local tab_width
+    local virtual_string = {}
+
+    -- get leading whitespace of line and convert it to fixed-width string in table form
+    local whitespace = string.match(line, "^%s+")
+    if whitespace then
+        for ch in whitespace:gmatch(".") do
+            if ch == "\t" then
+                if strict_tabs and indent == 0 and spaces ~= 0 then
+                    return 0, false, {}
+                end
+                indent = indent + math.floor(spaces / shiftwidth) + 1
+                spaces = 0
+                -- replace dynamic-width tab with fixed-width string (ta..ab)
+                tab_width = shiftwidth - table.maxn(virtual_string) % shiftwidth
+                -- check if tab_char_end is set, see :help listchars
+                if list_chars["tab_char_end"] then
+                    if tab_width == 1 then
+                        table.insert(virtual_string, list_chars["tab_char_end"])
+                    else
+                        table.insert(virtual_string, list_chars["tab_char_start"])
+                        for _ = 1, (tab_width - 2) do
+                            table.insert(virtual_string, list_chars["tab_char_fill"])
+                        end
+                        table.insert(virtual_string, list_chars["tab_char_end"])
+                    end
+                else
+                    table.insert(virtual_string, list_chars["tab_char_start"])
+                    for _ = 1, (tab_width - 1) do
+                        table.insert(virtual_string, list_chars["tab_char_fill"])
+                    end
+                end
+            else
+                if strict_tabs and indent ~= 0 then
+                    -- return early when no more tabs are found
+                    return indent, true, virtual_string
+                end
+                if whitespace == line then
+                    -- if the entire line is only whitespace use trail_char instead of lead_char
+                    table.insert(virtual_string, list_chars["trail_char"])
+                else
+                    table.insert(virtual_string, list_chars["lead_char"])
+                end
+                spaces = spaces + 1
             end
-            indent = indent + math.floor(spaces / shiftwidth) + 1
-            spaces = 0
-        elseif ch == " " then
-            if strict_tabs and indent ~= 0 then
-                return indent, true
-            end
-            spaces = spaces + 1
-        else
-            break
         end
     end
     indent = indent + math.floor(spaces / shiftwidth)
-    return indent, spaces % shiftwidth ~= 0
+    -- return indent level; bool whether there are extra chars or not; and whitespace table
+    return indent, table.maxn(virtual_string) % shiftwidth ~= 0, M._if(blankline, {}, virtual_string)
 end
 
 M.get_current_context = function(type_patterns)
