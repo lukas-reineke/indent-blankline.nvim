@@ -42,6 +42,7 @@ M.setup = function(options)
     )
     vim.g.indent_blankline_indent_level = o(options.indent_level, vim.g.indent_blankline_indent_level, 20)
     vim.g.indent_blankline_enabled = o(options.enabled, vim.g.indent_blankline_enabled, true)
+    vim.g.indent_blankline_respect_list = o(options.respect_list, vim.g.indent_blankline_respect_list, false)
     vim.g.indent_blankline_filetype =
         o(options.filetype, vim.g.indent_blankline_filetype, vim.g.indentLine_fileType, {})
     vim.g.indent_blankline_filetype_exclude =
@@ -91,6 +92,8 @@ local refresh = function()
         not utils.is_indent_blankline_enabled(
             vim.b.indent_blankline_enabled,
             vim.g.indent_blankline_enabled,
+            v("indent_blankline_respect_list"),
+            vim.opt.list:get(),
             vim.bo.filetype,
             v("indent_blankline_filetype"),
             v("indent_blankline_filetype_exclude"),

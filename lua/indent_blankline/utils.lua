@@ -55,6 +55,8 @@ M.is_indent_blankline_enabled =
     function(
         b_enabled,
         g_enabled,
+        respect_list,
+        opt_list,
         filetype,
         filetype_include,
         filetype_exclude,
@@ -66,6 +68,9 @@ M.is_indent_blankline_enabled =
             return b_enabled
         end
         if g_enabled ~= true then
+            return false
+        end
+        if respect_list and not opt_list then
             return false
         end
 
