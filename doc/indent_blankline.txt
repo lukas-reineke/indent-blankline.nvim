@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.2.2
+Version: 2.3.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -288,9 +288,9 @@ g:indent_blankline_enabled                        *g:indent_blankline_enabled*
         let g:indent_blankline_enabled = v:false
 
 ------------------------------------------------------------------------------
-g:indent_blankline_respect_list            *g:indent_blankline_respect_list*
+g:indent_blankline_respect_list              *g:indent_blankline_respect_list*
 
-    Automatically turn off if the 'list' option is off.
+    Automatically turns this plugin off when the 'list' option is off.
 
     Default: v:false                                                         ~
 
@@ -505,6 +505,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.3.0
+ * Add |g:indent_blankline_respect_list| option
 
 2.2.2
  * Remove old vimscript code
