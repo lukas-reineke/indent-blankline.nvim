@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.2.1
+Version: 2.2.2
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -494,6 +494,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.2.2
+ * Remove old vimscript code
 
 2.2.1
  * Fix first indent on a line with whitespace less than the current shift
