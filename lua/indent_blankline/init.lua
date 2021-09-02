@@ -350,7 +350,7 @@ local refresh = function()
                         context_indent = (indent or 0) + 1
                     end
 
-                    if not indent or indent == 0 then
+                    if (not indent or indent == 0) and #virtual_string == 0 then
                         vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                         return async:close()
                     end
