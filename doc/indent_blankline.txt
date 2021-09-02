@@ -288,6 +288,17 @@ g:indent_blankline_enabled                        *g:indent_blankline_enabled*
         let g:indent_blankline_enabled = v:false
 
 ------------------------------------------------------------------------------
+g:indent_blankline_respect_list            *g:indent_blankline_respect_list*
+
+    Automatically turn off if the 'list' option is off.
+
+    Default: v:false                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_enabled = v:true
+
+------------------------------------------------------------------------------
 g:indent_blankline_filetype                      *g:indent_blankline_filetype*
 
     Specifies a list of |filetype| values for which this plugin is enabled.
