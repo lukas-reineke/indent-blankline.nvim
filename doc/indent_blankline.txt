@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.1.4
+Version: 2.2.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -494,6 +494,13 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.2.0
+ * Correctly display listchars under the indent guides
+   Huge thanks to @Daxtorim
+ * Remove options:
+    `indent_blankline_space_char` - listchars is used to get the correct space
+    character
 
 2.1.4
  * Fix race condition in `is_indent_blankline_enabled`
