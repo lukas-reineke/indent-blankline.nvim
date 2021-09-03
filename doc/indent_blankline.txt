@@ -221,6 +221,23 @@ g:indent_blankline_indent_level              *g:indent_blankline_indent_level*
         let g:indent_blankline_indent_level = 4
 
 ------------------------------------------------------------------------------
+g:indent_blankline_max_indent_increase  *g:indent_blankline_max_indent_increase*
+
+    The maximum indent level increase compared to the last normally indented
+    line that make a line a normally indented line. For an abnormally indented
+    line, the indent level is shown like a blank line in its position.
+    This option doesn't apply to lines where treesitter is used (currently
+    only blank lines).
+    Set this option to 1 to make aligned trailing comments that occupy the
+    whole line look less ugly.
+
+    Default: g:indent_blankline_indent_level                                 ~
+
+    Example: >
+
+        let g:indent_blankline_max_indent_increase = 1
+
+------------------------------------------------------------------------------
 g:indent_blankline_show_first_indent_level*g:indent_blankline_show_first_indent_level*
 
     Displays indentation in the first column.
