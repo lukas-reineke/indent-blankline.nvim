@@ -42,7 +42,8 @@ M.setup = function(options)
     )
     vim.g.indent_blankline_indent_level = o(options.indent_level, vim.g.indent_blankline_indent_level, 20)
     vim.g.indent_blankline_enabled = o(options.enabled, vim.g.indent_blankline_enabled, true)
-    vim.g.indent_blankline_respect_list = o(options.respect_list, vim.g.indent_blankline_respect_list, false)
+    vim.g.indent_blankline_disable_with_nolist =
+        o(options.disable_with_nolist, vim.g.indent_blankline_disable_with_nolist, false)
     vim.g.indent_blankline_filetype =
         o(options.filetype, vim.g.indent_blankline_filetype, vim.g.indentLine_fileType, {})
     vim.g.indent_blankline_filetype_exclude =
@@ -92,7 +93,7 @@ local refresh = function()
         not utils.is_indent_blankline_enabled(
             vim.b.indent_blankline_enabled,
             vim.g.indent_blankline_enabled,
-            v("indent_blankline_respect_list"),
+            v("indent_blankline_disable_with_nolist"),
             vim.opt.list:get(),
             vim.bo.filetype,
             v("indent_blankline_filetype"),
@@ -124,23 +125,39 @@ local refresh = function()
     local space_char_blankline_highlight_list = v("indent_blankline_space_char_blankline_highlight_list")
     local space_char_blankline = v("indent_blankline_space_char_blankline")
 
-    local space_character = vim.opt.listchars:get().space or " "
-    -- source tab chars in a way that works with UTF-8 characters
-    local tab_characters
-    if vim.opt.listchars:get().tab then
-        tab_characters = vim.fn.split(vim.opt.listchars:get().tab, "\\zs")
+    local list_chars = {}
+    -- No need to check for disable_with_nolist as this part would never be executed if "true" && nolist
+    if vim.opt.list:get() then
+        -- list is set, get listchars
+        local tab_characters
+        local space_character = vim.opt.listchars:get().space or " "
+        if vim.opt.listchars:get().tab then
+            -- tab characters can be any UTF-8 character, Lua 5.1 cannot handle this without external libraries
+            tab_characters = vim.fn.split(vim.opt.listchars:get().tab, "\\zs")
+        else
+            tab_characters = {}
+        end
+        list_chars = {
+            space_char = space_character,
+            trail_char = vim.opt.listchars:get().trail or space_character,
+            lead_char = vim.opt.listchars:get().lead or space_character,
+            tab_char_start = tab_characters[1] or space_character,
+            tab_char_fill = tab_characters[2] or space_character,
+            tab_char_end = tab_characters[3],
+            eol_char = vim.opt.listchars:get().eol
+        }
     else
-        tab_characters = {}
+        -- nolist is set, replace all listchars with empty space
+        list_chars = {
+            space_char = " ",
+            trail_char = " ",
+            lead_char = " ",
+            tab_char_start = " ",
+            tab_char_fill = " ",
+            tab_char_end = nil,
+            eol_char = nil
+        }
     end
-    local list_chars = {
-        space_char = space_character,
-        trail_char = vim.opt.listchars:get().trail or space_character,
-        lead_char = vim.opt.listchars:get().lead or space_character,
-        tab_char_start = tab_characters[1] or space_character,
-        tab_char_fill = tab_characters[2] or space_character,
-        tab_char_end = tab_characters[3],
-        eol_char = vim.opt.listchars:get().eol
-    }
 
     local max_indent_level = v("indent_blankline_indent_level")
     local expandtab = vim.bo.expandtab
