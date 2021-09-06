@@ -54,6 +54,8 @@ M.setup = function(options)
         o(options.buftype_exclude, vim.g.indent_blankline_buftype_exclude, vim.g.indentLine_bufTypeExclude, {})
     vim.g.indent_blankline_viewport_buffer = o(options.viewport_buffer, vim.g.indent_blankline_viewport_buffer, 10)
     vim.g.indent_blankline_use_treesitter = o(options.use_treesitter, vim.g.indent_blankline_use_treesitter, false)
+    vim.g.indent_blankline_max_indent_increase =
+        o(options.max_indent_increase, vim.g.indent_blankline_max_indent_increase, vim.g.indent_blankline_indent_level)
     vim.g.indent_blankline_show_first_indent_level =
         o(options.show_first_indent_level, vim.g.indent_blankline_show_first_indent_level, true)
     vim.g.indent_blankline_show_trailing_blankline_indent =
@@ -160,6 +162,7 @@ local refresh = function()
     end
 
     local max_indent_level = v("indent_blankline_indent_level")
+    local max_indent_increase = v("indent_blankline_max_indent_increase")
     local expandtab = vim.bo.expandtab
     local use_ts_indent = v("indent_blankline_use_treesitter") and ts_status and ts_query.has_indents(vim.bo.filetype)
     local first_indent = v("indent_blankline_show_first_indent_level")
@@ -177,10 +180,18 @@ local refresh = function()
         context_status, context_start, context_end = utils.get_current_context(v("indent_blankline_context_patterns"))
     end
 
-    local get_virtual_text = function(indent, extra, blankline, context_active, context_indent, virtual_string)
+    local get_virtual_text = function(
+        indent,
+        extra,
+        blankline,
+        context_active,
+        context_indent,
+        prev_indent,
+        virtual_string)
         local virtual_text = {}
         local current_left_offset = left_offset
-        for i = 1, math.min(math.max(indent, 0), max_indent_level) do
+        local local_max_indent_level = math.min(max_indent_level, prev_indent + max_indent_increase)
+        for i = 1, math.min(math.max(indent, 0), local_max_indent_level) do
             local space_count = shiftwidth
             local context = context_active and context_indent == i
             if i ~= 1 or first_indent then
@@ -262,7 +273,10 @@ local refresh = function()
             end
         end
 
-        if ((blankline or extra) and trail_indent) and (first_indent or #virtual_text > 0) and current_left_offset < 1 then
+        if
+            ((blankline or extra) and trail_indent) and (first_indent or #virtual_text > 0) and current_left_offset < 1 and
+                indent < local_max_indent_level
+         then
             local index = math.ceil(#virtual_text / 2) + 1
             table.insert(
                 virtual_text,
@@ -292,6 +306,7 @@ local refresh = function()
         return virtual_text
     end
 
+    local prev_indent
     local next_indent
     local next_extra
     local empty_line_counter = 0
@@ -320,11 +335,19 @@ local refresh = function()
                                 end
                                 indent = indent / shiftwidth
                                 if offset + i == context_start then
-                                    context_indent = (indent or 0) + 1
+                                    context_indent = indent + 1
                                 end
 
                                 local virtual_text =
-                                    get_virtual_text(indent, false, blankline, context_active, context_indent, {})
+                                    get_virtual_text(
+                                    indent,
+                                    false,
+                                    blankline,
+                                    context_active,
+                                    context_indent,
+                                    max_indent_level,
+                                    {}
+                                )
                                 utils.clear_line_indent(bufnr, i + offset)
                                 xpcall(
                                     vim.api.nvim_buf_set_extmark,
@@ -371,12 +394,25 @@ local refresh = function()
                     end
 
                     if (not indent or indent == 0) and #virtual_string == 0 then
+                        prev_indent = 0
                         vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                         return async:close()
                     end
 
+                    if not prev_indent or indent + (extra and 1 or 0) <= prev_indent + max_indent_increase then
+                        prev_indent = indent
+                    end
+
                     local virtual_text =
-                        get_virtual_text(indent, extra, blankline, context_active, context_indent, virtual_string)
+                        get_virtual_text(
+                        indent,
+                        extra,
+                        blankline,
+                        context_active,
+                        context_indent,
+                        prev_indent - utils._if(trail_indent, 0, 1),
+                        virtual_string
+                    )
                     vim.schedule_wrap(
                         function()
                             utils.clear_line_indent(bufnr, i + offset)
