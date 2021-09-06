@@ -8,12 +8,10 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            - uses: actions/setup-node@v2
+            - uses: JohnnyMorganz/stylua-action@1.0.0
               with:
-                  node-version: '14'
-            - run: npm install -g lua-fmt
-            - run: find . -name "*.lua" | xargs -n 1 luafmt -i 4 -w replace
-            - run: git diff --quiet . || (echo 'luafmt failed' && exit 1)
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  args: --check .
 
     block-fixup:
         runs-on: ubuntu-latest

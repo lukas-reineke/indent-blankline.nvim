@@ -1,57 +1,52 @@
 local M = {}
 
-M.memo =
-    setmetatable(
-    {
-        put = function(cache, params, result)
-            local node = cache
-            for i = 1, #params do
-                local param = vim.inspect(params[i])
-                node.children = node.children or {}
-                node.children[param] = node.children[param] or {}
-                node = node.children[param]
-            end
-            node.result = result
-        end,
-        get = function(cache, params)
-            local node = cache
-            for i = 1, #params do
-                local param = vim.inspect(params[i])
-                node = node.children and node.children[param]
-                if not node then
-                    return nil
-                end
-            end
-            return node.result
+M.memo = setmetatable({
+    put = function(cache, params, result)
+        local node = cache
+        for i = 1, #params do
+            local param = vim.inspect(params[i])
+            node.children = node.children or {}
+            node.children[param] = node.children[param] or {}
+            node = node.children[param]
         end
-    },
-    {
-        __call = function(memo, func)
-            local cache = {}
+        node.result = result
+    end,
+    get = function(cache, params)
+        local node = cache
+        for i = 1, #params do
+            local param = vim.inspect(params[i])
+            node = node.children and node.children[param]
+            if not node then
+                return nil
+            end
+        end
+        return node.result
+    end,
+}, {
+    __call = function(memo, func)
+        local cache = {}
 
-            return function(...)
-                local params = {...}
-                local result = memo.get(cache, params)
-                if not result then
-                    result = {func(...)}
-                    memo.put(cache, params, result)
-                end
-                return unpack(result)
+        return function(...)
+            local params = { ... }
+            local result = memo.get(cache, params)
+            if not result then
+                result = { func(...) }
+                memo.put(cache, params, result)
             end
+            return unpack(result)
         end
-    }
-)
+    end,
+})
 
 M.error_handler = function(err)
     if vim.g.indent_blankline_debug then
-        vim.cmd("echohl Error")
+        vim.cmd "echohl Error"
         vim.cmd('echomsg "' .. err .. '"')
-        vim.cmd("echohl None")
+        vim.cmd "echohl None"
     end
 end
 
-M.is_indent_blankline_enabled =
-    M.memo(
+M.is_indent_blankline_enabled = M.memo(
     function(
         b_enabled,
         g_enabled,
@@ -63,7 +58,8 @@ M.is_indent_blankline_enabled =
         buftype,
         buftype_exclude,
         bufname_exclude,
-        bufname)
+        bufname
+    )
         if b_enabled ~= nil then
             return b_enabled
         end
@@ -134,7 +130,7 @@ M.find_indent = function(line, shiftwidth, strict_tabs, blankline, list_chars)
     -- get leading whitespace of line and convert it to fixed-width string in table form
     local whitespace = string.match(line, "^%s+")
     if whitespace then
-        for ch in whitespace:gmatch(".") do
+        for ch in whitespace:gmatch "." do
             if ch == "\t" then
                 if strict_tabs and indent == 0 and spaces ~= 0 then
                     return 0, false, {}
@@ -202,26 +198,24 @@ M.get_current_context = function(type_patterns)
 end
 
 M.reset_highlights = function()
-    local whitespace_highlight = vim.fn.synIDtrans(vim.fn.hlID("Whitespace"))
-    local label_highlight = vim.fn.synIDtrans(vim.fn.hlID("Label"))
+    local whitespace_highlight = vim.fn.synIDtrans(vim.fn.hlID "Whitespace")
+    local label_highlight = vim.fn.synIDtrans(vim.fn.hlID "Label")
 
     local whitespace_fg = {
         vim.fn.synIDattr(whitespace_highlight, "fg", "gui"),
-        vim.fn.synIDattr(whitespace_highlight, "fg", "cterm")
+        vim.fn.synIDattr(whitespace_highlight, "fg", "cterm"),
     }
     local label_fg = {
         vim.fn.synIDattr(label_highlight, "fg", "gui"),
-        vim.fn.synIDattr(label_highlight, "fg", "cterm")
+        vim.fn.synIDattr(label_highlight, "fg", "cterm"),
     }
 
-    for highlight_name, highlight in pairs(
-        {
-            IndentBlanklineChar = whitespace_fg,
-            IndentBlanklineSpaceChar = whitespace_fg,
-            IndentBlanklineSpaceCharBlankline = whitespace_fg,
-            IndentBlanklineContextChar = label_fg
-        }
-    ) do
+    for highlight_name, highlight in pairs {
+        IndentBlanklineChar = whitespace_fg,
+        IndentBlanklineSpaceChar = whitespace_fg,
+        IndentBlanklineSpaceCharBlankline = whitespace_fg,
+        IndentBlanklineContextChar = label_fg,
+    } do
         local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
         if vim.fn.synIDattr(current_highlight, "fg") == "" and vim.fn.synIDattr(current_highlight, "bg") == "" then
             vim.cmd(
@@ -237,7 +231,7 @@ M.reset_highlights = function()
 end
 
 M.first_not_nil = function(...)
-    for _, value in pairs({...}) do
+    for _, value in pairs { ... } do
         return value
     end
 end
