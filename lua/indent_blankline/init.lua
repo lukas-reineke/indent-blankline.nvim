@@ -1,5 +1,3 @@
-local ts_status, ts_query = pcall(require, "nvim-treesitter.query")
-local ts_status, ts_indent = pcall(require, "nvim-treesitter.indent")
 local utils = require "indent_blankline/utils"
 local M = {}
 
@@ -221,7 +219,14 @@ local refresh = function()
     local max_indent_level = v "indent_blankline_indent_level"
     local max_indent_increase = v "indent_blankline_max_indent_increase"
     local expandtab = vim.bo.expandtab
-    local use_ts_indent = v "indent_blankline_use_treesitter" and ts_status and ts_query.has_indents(vim.bo.filetype)
+    local use_ts_indent = false
+    local ts_indent
+    if v "indent_blankline_use_treesitter" then
+        local ts_query_status, ts_query = pcall(require, "nvim-treesitter.query")
+        local ts_indent_status
+        ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
+        use_ts_indent = ts_query_status and ts_indent_status and ts_query.has_indents(vim.bo.filetype)
+    end
     local first_indent = v "indent_blankline_show_first_indent_level"
     local trail_indent = v "indent_blankline_show_trailing_blankline_indent"
     local end_of_line = v "indent_blankline_show_end_of_line"
