@@ -41,11 +41,6 @@ M.setup = function(options)
     vim.g.indent_blankline_space_char_blankline = o(
         options.space_char_blankline,
         vim.g.indent_blankline_space_char_blankline,
-        vim.g.indent_blankline_space_char
-    )
-    vim.g.indent_blankline_space_char_blankline = o(
-        options.space_char_blankline,
-        vim.g.indent_blankline_space_char_blankline,
         " "
     )
     vim.g.indent_blankline_space_char_blankline_highlight_list = o(
