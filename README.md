@@ -71,7 +71,7 @@ require("indent_blankline").setup {
 
 <img width="900" src="https://i.imgur.com/3gRG5qI.png" alt="Screenshot" />
 
-#### With custom `listchars` and `g:indent_blankline_space_char`
+#### With custom `listchars` and `g:indent_blankline_space_char_blankline`
 
 ```lua
 vim.opt.listchars = {
