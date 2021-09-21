@@ -60,6 +60,7 @@ All screenshots use [my custom onedark color scheme](https://github.com/lukas-re
 ### Simple
 
 ```lua
+vim.opt.list = true
 vim.opt.listchars = {
     eol = "↴",
 }
@@ -74,6 +75,7 @@ require("indent_blankline").setup {
 #### With custom `listchars` and `g:indent_blankline_space_char_blankline`
 
 ```lua
+vim.opt.list = true
 vim.opt.listchars = {
     space = "⋅",
     eol = "↴",
@@ -98,6 +100,7 @@ vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 blend=nocombine]]
 vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF blend=nocombine]]
 vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD blend=nocombine]]
 
+vim.opt.list = true
 vim.opt.listchars = {
     space = "⋅",
     eol = "↴",
@@ -144,6 +147,7 @@ require("indent_blankline").setup {
 #### With context indent highlighted by treesitter
 
 ```lua
+vim.opt.list = true
 vim.opt.listchars = {
     space = "⋅",
     eol = "↴",
