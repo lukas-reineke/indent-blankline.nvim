@@ -369,8 +369,8 @@ local refresh = function()
 
                 if blankline and use_ts_indent then
                     vim.schedule_wrap(function()
-                        local indent = ts_indent.get_indent(i + offset)
-                        if not indent or indent == 0 then
+                        local indent = ts_indent.get_indent(i + offset) or 0
+                        if indent == 0 then
                             utils.clear_line_indent(bufnr, i + offset)
                             return
                         end
@@ -439,16 +439,16 @@ local refresh = function()
                 end
 
                 if offset + i == context_start then
-                    context_indent = (indent or 0) + 1
+                    context_indent = indent + 1
                 end
 
-                if (not indent or indent == 0) and #virtual_string == 0 then
+                if indent == 0 and #virtual_string == 0 and not extra then
                     prev_indent = 0
                     vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
 
-                if not prev_indent or indent + (extra and 1 or 0) <= prev_indent + max_indent_increase then
+                if not prev_indent or indent + utils._if(extra, 1, 0) <= prev_indent + max_indent_increase then
                     prev_indent = indent
                 end
 
