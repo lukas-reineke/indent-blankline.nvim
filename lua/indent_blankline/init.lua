@@ -405,13 +405,7 @@ local refresh = function()
                 local indent, extra
                 local virtual_string = {}
                 if not blankline then
-                    indent, extra, virtual_string = utils.find_indent(
-                        lines[i],
-                        shiftwidth,
-                        strict_tabs,
-                        blankline,
-                        list_chars
-                    )
+                    indent, extra, virtual_string = utils.find_indent(lines[i], shiftwidth, strict_tabs, list_chars)
                 elseif empty_line_counter > 0 then
                     empty_line_counter = empty_line_counter - 1
                     indent = next_indent
@@ -426,13 +420,7 @@ local refresh = function()
                             j = j + 1
                             empty_line_counter = empty_line_counter + 1
                         end
-                        indent, extra, virtual_string = utils.find_indent(
-                            lines[j],
-                            shiftwidth,
-                            strict_tabs,
-                            blankline,
-                            list_chars
-                        )
+                        indent, extra, virtual_string = utils.find_indent(lines[j], shiftwidth, strict_tabs, list_chars)
                     end
                     next_indent = indent
                     next_extra = extra
