@@ -121,7 +121,7 @@ M._if = function(bool, a, b)
     end
 end
 
-M.find_indent = function(line, shiftwidth, strict_tabs, blankline, list_chars)
+M.find_indent = function(line, shiftwidth, strict_tabs, list_chars)
     local indent = 0
     local spaces = 0
     local tab_width
@@ -173,7 +173,7 @@ M.find_indent = function(line, shiftwidth, strict_tabs, blankline, list_chars)
     end
     indent = indent + math.floor(spaces / shiftwidth)
     -- return indent level; bool whether there are extra chars or not; and whitespace table
-    return indent, table.maxn(virtual_string) % shiftwidth ~= 0, M._if(blankline, {}, virtual_string)
+    return indent, table.maxn(virtual_string) % shiftwidth ~= 0, virtual_string
 end
 
 M.get_current_context = function(type_patterns)
