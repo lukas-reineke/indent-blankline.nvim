@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.5.4
+Version: 2.5.5
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -520,6 +520,11 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.5.5
+ * Fix typo in readme
+ * Fix initialization of |g:indent_blankline_space_char_blankline_highlight_list|
+ * Refactor `find_indent`
 
 2.5.4
  * Fix wrong indent for empty lines with only extra
