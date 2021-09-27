@@ -422,7 +422,7 @@ local refresh = function()
                             j = j + 1
                             empty_line_counter = empty_line_counter + 1
                         end
-                        indent, extra, virtual_string = utils.find_indent(lines[j], shiftwidth, strict_tabs, list_chars)
+                        indent, extra, _ = utils.find_indent(lines[j], shiftwidth, strict_tabs, list_chars)
                     end
                     next_indent = indent
                     next_extra = extra
