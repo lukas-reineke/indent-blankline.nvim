@@ -180,6 +180,7 @@ local refresh = function()
     local space_char_blankline = v "indent_blankline_space_char_blankline"
 
     local list_chars = {}
+    local no_tab_character = false
     -- No need to check for disable_with_nolist as this part would never be executed if "true" && nolist
     if vim.opt.list:get() then
         -- list is set, get listchars
@@ -189,7 +190,8 @@ local refresh = function()
             -- tab characters can be any UTF-8 character, Lua 5.1 cannot handle this without external libraries
             tab_characters = vim.fn.split(vim.opt.listchars:get().tab, "\\zs")
         else
-            tab_characters = {}
+            no_tab_character = true
+            tab_characters = { "^", "I" }
         end
         list_chars = {
             space_char = space_character,
@@ -231,7 +233,7 @@ local refresh = function()
     local foldtext = v "indent_blankline_show_foldtext"
 
     local tabs = vim.bo.shiftwidth == 0 or not expandtab
-    local shiftwidth = utils._if(tabs, vim.bo.tabstop, vim.bo.shiftwidth)
+    local shiftwidth = utils._if(tabs, utils._if(no_tab_character, 2, vim.bo.tabstop), vim.bo.shiftwidth)
 
     local context_highlight_list = v "indent_blankline_context_highlight_list"
     local context_status, context_start, context_end = false, 0, 0
