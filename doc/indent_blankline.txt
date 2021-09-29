@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.5.6
+Version: 2.5.7
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -520,6 +520,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.5.7
+ * Update the README to not overwrite all listchars
+ * Handle listchars without a tab character
 
 2.5.6
  * Fix trailing space for blanklines
