@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.5.7
+Version: 2.6.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -536,6 +536,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.6.0
+ * Add |g:indent_blankline_context_pattern_highlight|
 
 2.5.7
  * Update the README to not overwrite all listchars
