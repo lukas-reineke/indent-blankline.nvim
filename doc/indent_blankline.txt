@@ -436,6 +436,22 @@ g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
         let g:indent_blankline_context_patterns = ['^if']
 
 ------------------------------------------------------------------------------
+g:indent_blankline_context_pattern_highlight*g:indent_blankline_context_pattern_highlight*
+
+    Specifies a map of patterns set in
+    |g:indent_blankline_context_patterns| to highlight groups.
+    When the current matching context pattern is in the map, the context
+    will be highlighted with the corresponding highlight group.
+
+    Only used when |g:indent_blankline_show_current_context| is active
+
+    Default: {}                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_context_pattern_highlight = {'function': 'Function'}
+
+------------------------------------------------------------------------------
 g:indent_blankline_viewport_buffer        *g:indent_blankline_viewport_buffer*
 
     Sets the buffer of extra lines before and after the current viewport that

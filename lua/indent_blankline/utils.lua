@@ -186,7 +186,7 @@ M.get_current_context = function(type_patterns)
             if node_type:find(rgx) then
                 local node_start, _, node_end, _ = cursor_node:range()
                 if node_start ~= node_end then
-                    return true, node_start + 1, node_end + 1
+                    return true, node_start + 1, node_end + 1, rgx
                 end
                 node_start, node_end = nil, nil
             end
