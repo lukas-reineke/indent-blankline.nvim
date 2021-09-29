@@ -119,6 +119,11 @@ M.setup = function(options)
         vim.g.indent_blankline_context_patterns,
         { "class", "function", "method" }
     )
+    vim.g.indent_blankline_context_pattern_highlight = o(
+        options.context_pattern_highlight,
+        vim.g.indent_blankline_context_pattern_highlight,
+        {}
+    )
     vim.g.indent_blankline_strict_tabs = o(options.strict_tabs, vim.g.indent_blankline_strict_tabs, false)
 
     vim.g.indent_blankline_disable_warning_message = o(
@@ -236,9 +241,12 @@ local refresh = function()
     local shiftwidth = utils._if(tabs, utils._if(no_tab_character, 2, vim.bo.tabstop), vim.bo.shiftwidth)
 
     local context_highlight_list = v "indent_blankline_context_highlight_list"
-    local context_status, context_start, context_end = false, 0, 0
+    local context_pattern_highlight = v "indent_blankline_context_pattern_highlight"
+    local context_status, context_start, context_end, context_pattern = false, 0, 0, nil
     if v "indent_blankline_show_current_context" then
-        context_status, context_start, context_end = utils.get_current_context(v "indent_blankline_context_patterns")
+        context_status, context_start, context_end, context_pattern = utils.get_current_context(
+            v "indent_blankline_context_patterns"
+        )
     end
 
     local get_virtual_text =
@@ -267,9 +275,13 @@ local refresh = function()
                             utils._if(
                                 context,
                                 utils._if(
-                                    #context_highlight_list > 0,
-                                    utils.get_from_list(context_highlight_list, i),
-                                    context_highlight
+                                    context_pattern_highlight[context_pattern],
+                                    context_pattern_highlight[context_pattern],
+                                    utils._if(
+                                        #context_highlight_list > 0,
+                                        utils.get_from_list(context_highlight_list, i),
+                                        context_highlight
+                                    )
                                 ),
                                 utils._if(
                                     #char_highlight_list > 0,
