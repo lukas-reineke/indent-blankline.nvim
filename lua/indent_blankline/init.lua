@@ -149,6 +149,10 @@ local refresh = function()
     local v = utils.get_variable
     local bufnr = vim.api.nvim_get_current_buf()
 
+    if not vim.api.nvim_buf_is_loaded(bufnr) then
+        return
+    end
+
     if
         not utils.is_indent_blankline_enabled(
             vim.b.indent_blankline_enabled,
