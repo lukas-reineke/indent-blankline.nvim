@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.6.1
+Version: 2.6.2
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -536,6 +536,11 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.6.2
+ * Memoize the find indent function
+ * Run init on VimEnter to initialize indents in all open windows
+ * Run init on plugin load to work with lazy loading
 
 2.6.1
  * Wait until buffer is loaded before doing anything
