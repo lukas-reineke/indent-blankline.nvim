@@ -117,6 +117,13 @@ g:indent_blankline_char                              *g:indent_blankline_char*
     Specifies the character to be used as indent line.
     Not used if |g:indent_blankline_char_list| is not empty.
 
+    When set explicitly to empty string (""), no indentation character is
+    displayed at all, even when |g:indent_blankline_char_list| is not empty.
+    This can be useful in combination with
+    |g:indent_blankline_space_char_highlight_list| to only rely on different
+    highlighting of different indentation levels without needing to show a
+    special character.
+
     Also set by |g:indentLine_char|
 
     Default: '│'                                                             ~

@@ -250,14 +250,16 @@ local refresh = function()
             for i = 1, math.min(math.max(indent, 0), local_max_indent_level) do
                 local space_count = shiftwidth
                 local context = context_active and context_indent == i
-                if i ~= 1 or first_indent then
+                local show_end_of_line_char = i == 1 and blankline and end_of_line and list_chars["eol_char"]
+                local show_indent_or_eol_char = ((i ~= 1 or first_indent) and char ~= "") or show_end_of_line_char
+                if show_indent_or_eol_char then
                     space_count = space_count - 1
                     if current_left_offset > 0 then
                         current_left_offset = current_left_offset - 1
                     else
                         table.insert(virtual_text, {
                             utils._if(
-                                i == 1 and blankline and end_of_line and list_chars["eol_char"],
+                                show_end_of_line_char,
                                 list_chars["eol_char"],
                                 utils._if(
                                     #char_list > 0,
@@ -294,7 +296,7 @@ local refresh = function()
                     -- ternary operator below in table.insert() doesn't work because it would evaluate each option regardless
                     local tmp_string
                     local index = 1 + (i - 1) * shiftwidth
-                    if i ~= 1 or first_indent then
+                    if show_indent_or_eol_char then
                         if table.maxn(virtual_string) >= index + space_count then
                             -- first char was already set above
                             tmp_string = table.concat(virtual_string, "", index + 1, index + space_count)
@@ -328,7 +330,8 @@ local refresh = function()
             end
 
             if
-                ((blankline or extra) and trail_indent)
+                char ~= ""
+                and ((blankline or extra) and trail_indent)
                 and (first_indent or #virtual_text > 0)
                 and current_left_offset < 1
                 and indent < local_max_indent_level
