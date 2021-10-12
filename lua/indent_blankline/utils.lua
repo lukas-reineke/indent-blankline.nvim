@@ -121,7 +121,8 @@ M._if = function(bool, a, b)
     end
 end
 
-M.find_indent_from_whitespace = M.memo(function(whitespace, shiftwidth, strict_tabs, list_chars, only_whitespace)
+M.find_indent = function(line, shiftwidth, strict_tabs, list_chars)
+    local whitespace = string.match(line, "^%s+")
     local indent = 0
     local spaces = 0
     local tab_width
@@ -159,7 +160,7 @@ M.find_indent_from_whitespace = M.memo(function(whitespace, shiftwidth, strict_t
                     -- return early when no more tabs are found
                     return indent, true, virtual_string
                 end
-                if only_whitespace then
+                if whitespace == line then
                     -- if the entire line is only whitespace use trail_char instead of lead_char
                     table.insert(virtual_string, list_chars["trail_char"])
                 else
@@ -170,13 +171,7 @@ M.find_indent_from_whitespace = M.memo(function(whitespace, shiftwidth, strict_t
         end
     end
 
-    indent = indent + math.floor(spaces / shiftwidth)
-    return indent, table.maxn(virtual_string) % shiftwidth ~= 0, virtual_string
-end)
-
-M.find_indent = function(line, shiftwidth, strict_tabs, list_chars)
-    local whitespace = string.match(line, "^%s+")
-    return M.find_indent_from_whitespace(whitespace, shiftwidth, strict_tabs, list_chars, whitespace == line)
+    return indent + math.floor(spaces / shiftwidth), table.maxn(virtual_string) % shiftwidth ~= 0, virtual_string
 end
 
 M.get_current_context = function(type_patterns)
