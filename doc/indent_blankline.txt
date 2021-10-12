@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.6.2
+Version: 2.6.3
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -536,6 +536,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.6.3
+ * Fix issue when calling setup more than once
 
 2.6.2
  * Memoize the find indent function
