@@ -1,12 +1,13 @@
 local M = {}
 
-M.refresh = function(bang)
+M.refresh = function(bang, option)
+    option = option or ''
     if bang then
         local win = vim.api.nvim_get_current_win()
-        vim.cmd [[windo call indent_blankline#Refresh()]]
+        vim.cmd(string.format([[windo call indent_blankline#Refresh('%s')]], option))
         vim.api.nvim_set_current_win(win)
     else
-        vim.cmd [[call indent_blankline#Refresh()]]
+        vim.cmd(string.format([[call indent_blankline#Refresh('%s')]], option))
     end
 end
 

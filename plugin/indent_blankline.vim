@@ -13,6 +13,7 @@ function s:try(cmd)
 endfunction
 
 command! -bang IndentBlanklineRefresh call s:try('lua require("indent_blankline.commands").refresh("<bang>" == "!")')
+command! -bang IndentBlanklineRefreshScroll call s:try('lua require("indent_blankline.commands").refresh("<bang>" == "!", "scroll")')
 command! -bang IndentBlanklineEnable call s:try('lua require("indent_blankline.commands").enable("<bang>" == "!")')
 command! -bang IndentBlanklineDisable call s:try('lua require("indent_blankline.commands").disable("<bang>" == "!")')
 command! -bang IndentBlanklineToggle call s:try('lua require("indent_blankline.commands").toggle("<bang>" == "!")')
@@ -32,7 +33,8 @@ lua require("indent_blankline").init()
 augroup IndentBlanklineAutogroup
     autocmd!
     autocmd OptionSet list,shiftwidth,tabstop,expandtab IndentBlanklineRefresh
-    autocmd FileChangedShellPost,TextChanged,TextChangedI,CompleteChanged,WinScrolled,BufWinEnter,Filetype * IndentBlanklineRefresh
+    autocmd FileChangedShellPost,TextChanged,TextChangedI,CompleteChanged,BufWinEnter,Filetype * IndentBlanklineRefresh
+    autocmd WinScrolled * IndentBlanklineRefreshScroll
     autocmd ColorScheme * lua require("indent_blankline.utils").reset_highlights()
     autocmd VimEnter * lua require("indent_blankline").init()
 augroup END
