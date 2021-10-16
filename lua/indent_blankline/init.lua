@@ -134,12 +134,16 @@ M.setup = function(options)
     vim.g.__indent_blankline_setup_completed = true
 end
 
-local refresh = function()
+local refresh = function(option)
     local v = utils.get_variable
     local bufnr = vim.api.nvim_get_current_buf()
 
     if not vim.api.nvim_buf_is_loaded(bufnr) then
         return
+    end
+
+    if not vim.b.__indent_blankline_ranges then
+        vim.b.__indent_blankline_ranges = {}
     end
 
     if
@@ -166,9 +170,84 @@ local refresh = function()
         vim.b.__indent_blankline_active = true
     end
 
-    local offset = math.max(vim.fn.line "w0" - 1 - v "indent_blankline_viewport_buffer", 0)
+    local offset, range
+
+    -- check if we need to refresh while scrolling
+    if option == "scroll" then
+        local lower_range = vim.fn.line("w0")
+        local upper_range = vim.fn.line("w$")
+
+        local viewport_scroll = 100  -- hardcoded for now, will be an option later
+
+        offset = math.max(lower_range - 1 - viewport_scroll, 0)
+        range = math.min(upper_range + viewport_scroll, vim.api.nvim_buf_line_count(bufnr))
+
+        if #vim.b.__indent_blankline_ranges == 0 then
+            vim.b.__indent_blankline_ranges = {{offset, range}}
+        else
+            local blankline_ranges = vim.b.__indent_blankline_ranges
+            local need_to_update = true
+
+            -- compare current window view relative to the defined ranges
+            for i=1,#blankline_ranges do
+                local current_range = blankline_ranges[i]
+
+                -- does it fit inside a range?
+                if (lower_range >= current_range[1]) and (upper_range <= current_range[2]) then
+                    need_to_update = false
+                    break
+                end
+
+                -- should the current window view be above this range?
+                if lower_range < current_range[1] then
+                    table.insert(blankline_ranges, i, {offset, range})
+                    break
+                end
+
+                -- should the current window view be at the end?
+                if i == #blankline_ranges then
+                    table.insert(blankline_ranges, i + 1, {offset, range})
+                end
+
+            end
+
+            -- merge ranges, strategies are: contains or extends
+            local i = 1
+            while true do
+                local current_range = blankline_ranges[i]
+                local next_range = blankline_ranges[i + 1]
+
+                if not next_range then
+                    break
+                end
+
+                if current_range[2] >= next_range[1] then
+                    if current_range[2] < next_range[2] then
+                        current_range[2] = next_range[2]
+                    end
+                    table.remove(blankline_ranges, i + 1)
+                else
+                    i = i + 1
+                end
+            end
+
+            if not need_to_update then
+                return
+            end
+
+            -- update the range variable
+            vim.b.__indent_blankline_ranges = blankline_ranges
+        end
+
+    else
+        offset = math.max(vim.fn.line "w0" - 1 - v "indent_blankline_viewport_buffer", 0)
+        range = math.min(vim.fn.line "w$" + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
+
+        -- if the function was called due to changed text, reset the chunks for good measure
+        vim.b.__indent_blankline_ranges = {{offset, range}}
+    end
+
     local left_offset = vim.fn.winsaveview().leftcol
-    local range = math.min(vim.fn.line "w$" + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local char = v "indent_blankline_char"
     local char_list = v "indent_blankline_char_list" or {}
@@ -478,8 +557,8 @@ local refresh = function()
     end
 end
 
-M.refresh = function()
-    xpcall(refresh, utils.error_handler)
+M.refresh = function(option)
+    xpcall(refresh, utils.error_handler, option)
 end
 
 return M
