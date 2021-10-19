@@ -100,11 +100,11 @@ M.setup = function(options)
         vim.g.indent_blankline_show_current_context,
         false
     )
-		vim.g.indent_blankline_show_current_context_only = o(
-				options.show_current_context_only,
-				vim.g.indent_blankline_show_current_context_only,
-				false
-		)
+    vim.g.indent_blankline_show_current_context_only = o(
+        options.show_current_context_only,
+        vim.g.indent_blankline_show_current_context_only,
+        false
+    )
     vim.g.indent_blankline_context_highlight_list = o(
         options.context_highlight_list,
         vim.g.indent_blankline_context_highlight_list
@@ -240,7 +240,7 @@ local refresh = function()
 
     local context_highlight_list = v "indent_blankline_context_highlight_list" or {}
     local context_pattern_highlight = v "indent_blankline_context_pattern_highlight" or {}
-		local context_only = v "indent_blankline_show_current_context_only" or false
+    local context_only = v "indent_blankline_show_current_context_only" or false
     local context_status, context_start, context_end, context_pattern = false, 0, 0, nil
     if v "indent_blankline_show_current_context" then
         context_status, context_start, context_end, context_pattern = utils.get_current_context(
@@ -262,19 +262,19 @@ local refresh = function()
                         current_left_offset = current_left_offset - 1
                     else
                         table.insert(virtual_text, {
-														utils._if(
-															context_only and not context,
-															' ',
-															utils._if(
-																	i == 1 and blankline and end_of_line and list_chars["eol_char"],
-																	list_chars["eol_char"],
-																	utils._if(
-																			#char_list > 0,
-																			utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-																			char
-																	)
-															)
-														),
+                            utils._if(
+                                context_only and not context,
+                                ' ',
+                                utils._if(
+                                    i == 1 and blankline and end_of_line and list_chars["eol_char"],
+                                    list_chars["eol_char"],
+                                    utils._if(
+                                        #char_list > 0,
+                                        utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
+                                        char
+                                    )
+                                )
+                            ),
                             utils._if(
                                 context,
                                 utils._if(
