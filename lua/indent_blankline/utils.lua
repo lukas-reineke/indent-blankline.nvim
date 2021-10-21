@@ -244,6 +244,15 @@ M.get_variable = function(key)
     return vim.g[key]
 end
 
+M.shallow_table_to_viml = function(shallow_table)
+    local serialized = "{"
+    for name, val in pairs(shallow_table) do
+        serialized = string.format("%s %s=%s,", serialized, name, val)
+    end
+    serialized = serialized .. "}"
+    return vim.api.nvim_exec(string.format("echo luaeval('%s')", serialized), true)
+end
+
 M.merge_ranges = function(ranges)
     local i = 1
     while true do
