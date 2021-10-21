@@ -244,4 +244,25 @@ M.get_variable = function(key)
     return vim.g[key]
 end
 
+M.merge_ranges = function(ranges)
+    local i = 1
+    while true do
+        local current_range = ranges[i]
+        local next_range = ranges[i + 1]
+
+        if not next_range then
+            break
+        end
+
+        if current_range[2] >= next_range[1] then
+            if current_range[2] < next_range[2] then
+                current_range[2] = next_range[2]
+            end
+            table.remove(ranges, i + 1)
+        else
+            i = i + 1
+        end
+    end
+end
+
 return M

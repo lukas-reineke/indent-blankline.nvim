@@ -211,31 +211,14 @@ local refresh = function(option)
 
             end
 
-            -- merge ranges, strategies are: contains or extends
-            local i = 1
-            while true do
-                local current_range = blankline_ranges[i]
-                local next_range = blankline_ranges[i + 1]
-
-                if not next_range then
-                    break
-                end
-
-                if current_range[2] >= next_range[1] then
-                    if current_range[2] < next_range[2] then
-                        current_range[2] = next_range[2]
-                    end
-                    table.remove(blankline_ranges, i + 1)
-                else
-                    i = i + 1
-                end
-            end
-
             if not need_to_update then
                 return
             end
 
-            -- update the range variable
+            -- merge ranges inplace, strategies are: contains or extends
+            utils.merge_ranges(blankline_ranges)
+
+            -- update the ranges variable
             vim.b.__indent_blankline_ranges = blankline_ranges
         end
 
@@ -243,7 +226,7 @@ local refresh = function(option)
         offset = math.max(vim.fn.line "w0" - 1 - v "indent_blankline_viewport_buffer", 0)
         range = math.min(vim.fn.line "w$" + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
 
-        -- if the function was called due to changed text, reset the chunks for good measure
+        -- if the function was called due to changed text, reset the ranges for good measure
         vim.b.__indent_blankline_ranges = {{offset, range}}
     end
 
