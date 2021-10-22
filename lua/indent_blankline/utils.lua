@@ -245,28 +245,21 @@ M.get_variable = function(key)
 end
 
 M.merge_ranges = function(ranges)
-    ranges = vim.deepcopy(ranges)
+    local merged_ranges = { { unpack(ranges[1]) } }
 
-    local i = 1
-    while true do
-        local current_range = ranges[i]
-        local next_range = ranges[i + 1]
-
-        if not next_range then
-            break
-        end
-
-        if current_range[2] >= next_range[1] then
-            if current_range[2] < next_range[2] then
-                current_range[2] = next_range[2]
+    for i = 2, #ranges do
+        local current_end = merged_ranges[#merged_ranges][2]
+        local next_start, next_end = unpack(ranges[i])
+        if current_end >= next_start - 1 then
+            if current_end < next_end then
+                merged_ranges[#merged_ranges][2] = next_end
             end
-            table.remove(ranges, i + 1)
         else
-            i = i + 1
+            table.insert(merged_ranges, { next_start, next_end })
         end
     end
 
-    return ranges
+    return merged_ranges
 end
 
 return M
