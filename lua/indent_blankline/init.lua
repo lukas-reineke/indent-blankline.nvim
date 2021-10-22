@@ -134,7 +134,7 @@ M.setup = function(options)
     vim.g.__indent_blankline_setup_completed = true
 end
 
-local refresh = function(options)
+local refresh = function(scroll)
     local v = utils.get_variable
     local bufnr = vim.api.nvim_get_current_buf()
 
@@ -174,7 +174,7 @@ local refresh = function(options)
     local range = math.min(vim.fn.line "w$" + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
 
     -- check if we need to refresh while scrolling
-    if options.scroll then
+    if scroll then
         local win_lower = vim.fn.line("w0")
         local win_upper = vim.fn.line("w$")
 
@@ -553,8 +553,8 @@ local refresh = function(options)
     end
 end
 
-M.refresh = function(option)
-    xpcall(refresh, utils.error_handler, option)
+M.refresh = function(scroll)
+    xpcall(refresh, utils.error_handler, scroll)
 end
 
 return M

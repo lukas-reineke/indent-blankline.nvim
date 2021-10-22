@@ -1,15 +1,13 @@
-local utils = require "indent_blankline/utils"
-
 local M = {}
 
-M.refresh = function(bang, option)
-    option = utils.shallow_table_to_viml(option or {})
+M.refresh = function(bang, scroll)
+    scroll = scroll or false
     if bang then
         local win = vim.api.nvim_get_current_win()
-        vim.cmd(string.format([[windo call indent_blankline#Refresh(%s)]], option))
+        vim.cmd(string.format([[windo call indent_blankline#Refresh(v:%s)]], scroll))
         vim.api.nvim_set_current_win(win)
     else
-        vim.cmd(string.format([[call indent_blankline#Refresh(%s)]], option))
+        vim.cmd(string.format([[call indent_blankline#Refresh(v:%s)]], scroll))
     end
 end
 

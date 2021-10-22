@@ -13,7 +13,7 @@ function s:try(cmd)
 endfunction
 
 command! -bang IndentBlanklineRefresh call s:try('lua require("indent_blankline.commands").refresh("<bang>" == "!")')
-command! -bang IndentBlanklineRefreshScroll call s:try('lua require("indent_blankline.commands").refresh("<bang>" == "!", {scroll=true})')
+command! -bang IndentBlanklineRefreshScroll call s:try('lua require("indent_blankline.commands").refresh("<bang>" == "!", true)')
 command! -bang IndentBlanklineEnable call s:try('lua require("indent_blankline.commands").enable("<bang>" == "!")')
 command! -bang IndentBlanklineDisable call s:try('lua require("indent_blankline.commands").disable("<bang>" == "!")')
 command! -bang IndentBlanklineToggle call s:try('lua require("indent_blankline.commands").toggle("<bang>" == "!")')
