@@ -232,11 +232,8 @@ local refresh = function(scroll)
                 return
             end
 
-            -- merge ranges inplace, strategies are: contains or extends
-            blankline_ranges = utils.merge_ranges(blankline_ranges)
-
-            -- update the ranges variable
-            vim.b.__indent_blankline_ranges = blankline_ranges
+            -- merge ranges and update the variable, strategies are: contains or extends
+            vim.b.__indent_blankline_ranges  = utils.merge_ranges(blankline_ranges)
         end
     else
         -- if the function was called due to changed text, reset the ranges for good measure
