@@ -191,20 +191,18 @@ local refresh = function(scroll)
 
             local range_low, range_high
 
-            -- only perform binary search if there's more than one range
-            if idx_high > 1 then
-                while idx_low < idx_high do
-                    idx_mid = math.ceil((idx_low + idx_high) / 2)
-                    range_low = blankline_ranges[idx_mid][1]
+            -- perform binary search
+            while idx_low < idx_high do
+                idx_mid = math.ceil((idx_low + idx_high) / 2)
+                range_low = blankline_ranges[idx_mid][1]
 
-                    if range_low == win_lower then
-                        exact_match = true
-                        break
-                    elseif range_low < win_lower then
-                        idx_low = idx_mid  -- it's important to make the low-end inclusive
-                    else
-                        idx_high = idx_mid - 1
-                    end
+                if range_low == win_lower then
+                    exact_match = true
+                    break
+                elseif range_low < win_lower then
+                    idx_low = idx_mid  -- it's important to make the low-end inclusive
+                else
+                    idx_high = idx_mid - 1
                 end
             end
 
