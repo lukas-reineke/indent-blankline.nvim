@@ -262,4 +262,35 @@ M.merge_ranges = function(ranges)
     return merged_ranges
 end
 
+M.binary_search_ranges = function(ranges, target_range)
+    local exact_match = false
+    local idx_start = 1
+    local idx_end = #ranges
+    local idx_mid
+
+    local range_start
+    local target_start = target_range[1]
+
+    while idx_start < idx_end do
+        idx_mid = math.ceil((idx_start + idx_end) / 2)
+        range_start = ranges[idx_mid][1]
+
+        if range_start == target_start then
+            exact_match = true
+            break
+        elseif range_start < target_start then
+            idx_start = idx_mid  -- it's important to make the low-end inclusive
+        else
+            idx_end = idx_mid - 1
+        end
+    end
+
+    -- if we don't have an exact match, choose the smallest index
+    if not exact_match then
+        idx_mid = idx_start
+    end
+
+    return idx_mid
+end
+
 return M

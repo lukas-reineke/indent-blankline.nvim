@@ -183,45 +183,19 @@ local refresh = function(scroll)
             local blankline_ranges = vim.b.__indent_blankline_ranges
             local need_to_update = true
 
-            -- binary search through the ranges to find a candidate that could contain the window
-            local exact_match = false
-            local idx_start = 1
-            local idx_end = #blankline_ranges
-            local idx_mid
+            -- find a candidate that could contain the window
+            local idx_candidate = utils.binary_search_ranges(blankline_ranges, { win_start, win_end })
+            local candidate_start, candidate_end = unpack(blankline_ranges[idx_candidate])
 
-            local range_start, range_end
-
-            -- perform binary search
-            while idx_start < idx_end do
-                idx_mid = math.ceil((idx_start + idx_end) / 2)
-                range_start = blankline_ranges[idx_mid][1]
-
-                if range_start == win_start then
-                    exact_match = true
-                    break
-                elseif range_start < win_start then
-                    idx_start = idx_mid  -- it's important to make the low-end inclusive
-                else
-                    idx_end = idx_mid - 1
-                end
-            end
-
-            -- if we don't have an exact match, choose the smallest index
-            if not exact_match then
-                idx_mid = idx_start
-            end
-
-            range_start, range_end = unpack(blankline_ranges[idx_mid])
-
-            -- check if the window is contained or if a new range needs to be created
-            if range_start <= win_start then
-                if range_end >= win_end then
+            -- check if the current window is contained or if a new range needs to be created
+            if candidate_start <= win_start then
+                if candidate_end >= win_end then
                     need_to_update = false
                 else
-                    table.insert(blankline_ranges, idx_mid + 1, {offset, range})
+                    table.insert(blankline_ranges, idx_candidate + 1, {offset, range})
                 end
             else
-                table.insert(blankline_ranges, idx_mid, {offset, range})
+                table.insert(blankline_ranges, idx_candidate, {offset, range})
             end
 
             if not need_to_update then
