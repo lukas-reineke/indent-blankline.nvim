@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.6.4
+Version: 2.7.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -543,6 +543,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.7.0
+ * Add support for 0 width |g:indent_blankline_char|
 
 2.6.4
  * Remove memo from `find_indent`, it made the performance worse
