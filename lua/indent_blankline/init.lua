@@ -170,10 +170,10 @@ local refresh = function(scroll)
         vim.b.__indent_blankline_active = true
     end
 
-    local win_lower = vim.fn.line("w0")
-    local win_upper = vim.fn.line("w$")
-    local offset = math.max(win_lower - 1 - v "indent_blankline_viewport_buffer", 0)
-    local range = math.min(win_upper + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
+    local win_start = vim.fn.line("w0")
+    local win_end = vim.fn.line("w$")
+    local offset = math.max(win_start - 1 - v "indent_blankline_viewport_buffer", 0)
+    local range = math.min(win_end + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
 
     -- check if we need to refresh while scrolling
     if scroll then
@@ -185,37 +185,37 @@ local refresh = function(scroll)
 
             -- binary search through the ranges to find a candidate that could contain the window
             local exact_match = false
-            local idx_low = 1
-            local idx_high = #blankline_ranges
+            local idx_start = 1
+            local idx_end = #blankline_ranges
             local idx_mid
 
-            local range_low, range_high
+            local range_start, range_end
 
             -- perform binary search
-            while idx_low < idx_high do
-                idx_mid = math.ceil((idx_low + idx_high) / 2)
-                range_low = blankline_ranges[idx_mid][1]
+            while idx_start < idx_end do
+                idx_mid = math.ceil((idx_start + idx_end) / 2)
+                range_start = blankline_ranges[idx_mid][1]
 
-                if range_low == win_lower then
+                if range_start == win_start then
                     exact_match = true
                     break
-                elseif range_low < win_lower then
-                    idx_low = idx_mid  -- it's important to make the low-end inclusive
+                elseif range_start < win_start then
+                    idx_start = idx_mid  -- it's important to make the low-end inclusive
                 else
-                    idx_high = idx_mid - 1
+                    idx_end = idx_mid - 1
                 end
             end
 
             -- if we don't have an exact match, choose the smallest index
             if not exact_match then
-                idx_mid = idx_low
+                idx_mid = idx_start
             end
 
-            range_low, range_high = unpack(blankline_ranges[idx_mid])
+            range_start, range_end = unpack(blankline_ranges[idx_mid])
 
             -- check if the window is contained or if a new range needs to be created
-            if range_low <= win_lower then
-                if range_high >= win_upper then
+            if range_start <= win_start then
+                if range_end >= win_end then
                     need_to_update = false
                 else
                     table.insert(blankline_ranges, idx_mid + 1, {offset, range})
