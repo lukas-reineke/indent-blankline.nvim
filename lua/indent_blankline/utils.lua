@@ -254,6 +254,8 @@ M.shallow_table_to_viml = function(shallow_table)
 end
 
 M.merge_ranges = function(ranges)
+    ranges = vim.deepcopy(ranges)
+
     local i = 1
     while true do
         local current_range = ranges[i]
@@ -272,6 +274,8 @@ M.merge_ranges = function(ranges)
             i = i + 1
         end
     end
+
+    return ranges
 end
 
 return M

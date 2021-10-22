@@ -233,7 +233,7 @@ local refresh = function(options)
             end
 
             -- merge ranges inplace, strategies are: contains or extends
-            utils.merge_ranges(blankline_ranges)
+            blankline_ranges = utils.merge_ranges(blankline_ranges)
 
             -- update the ranges variable
             vim.b.__indent_blankline_ranges = blankline_ranges
