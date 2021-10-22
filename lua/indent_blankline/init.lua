@@ -211,8 +211,7 @@ local refresh = function(scroll)
                 idx_mid = idx_low
             end
 
-            range_low = blankline_ranges[idx_mid][1]
-            range_high = blankline_ranges[idx_mid][2]
+            range_low, range_high = unpack(blankline_ranges[idx_mid])
 
             -- check if the window is contained or if a new range needs to be created
             if range_low <= win_lower then
