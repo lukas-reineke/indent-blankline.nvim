@@ -170,17 +170,13 @@ local refresh = function(options)
         vim.b.__indent_blankline_active = true
     end
 
-    local offset, range
+    local offset = math.max(vim.fn.line "w0" - 1 - v "indent_blankline_viewport_buffer", 0)
+    local range = math.min(vim.fn.line "w$" + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
 
     -- check if we need to refresh while scrolling
     if options.scroll then
         local win_lower = vim.fn.line("w0")
         local win_upper = vim.fn.line("w$")
-
-        local viewport_scroll = 100  -- hardcoded for now, will be an option later
-
-        offset = math.max(win_lower - 1 - viewport_scroll, 0)
-        range = math.min(win_upper + viewport_scroll, vim.api.nvim_buf_line_count(bufnr))
 
         if #vim.b.__indent_blankline_ranges == 0 then
             vim.b.__indent_blankline_ranges = {{offset, range}}
@@ -243,9 +239,6 @@ local refresh = function(options)
             vim.b.__indent_blankline_ranges = blankline_ranges
         end
     else
-        offset = math.max(vim.fn.line "w0" - 1 - v "indent_blankline_viewport_buffer", 0)
-        range = math.min(vim.fn.line "w$" + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
-
         -- if the function was called due to changed text, reset the ranges for good measure
         vim.b.__indent_blankline_ranges = {{offset, range}}
     end
