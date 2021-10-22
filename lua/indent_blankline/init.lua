@@ -174,13 +174,13 @@ local refresh = function(options)
 
     -- check if we need to refresh while scrolling
     if options.scroll then
-        local lower_range = vim.fn.line("w0")
-        local upper_range = vim.fn.line("w$")
+        local win_lower = vim.fn.line("w0")
+        local win_upper = vim.fn.line("w$")
 
         local viewport_scroll = 100  -- hardcoded for now, will be an option later
 
-        offset = math.max(lower_range - 1 - viewport_scroll, 0)
-        range = math.min(upper_range + viewport_scroll, vim.api.nvim_buf_line_count(bufnr))
+        offset = math.max(win_lower - 1 - viewport_scroll, 0)
+        range = math.min(win_upper + viewport_scroll, vim.api.nvim_buf_line_count(bufnr))
 
         if #vim.b.__indent_blankline_ranges == 0 then
             vim.b.__indent_blankline_ranges = {{offset, range}}
@@ -188,27 +188,48 @@ local refresh = function(options)
             local blankline_ranges = vim.b.__indent_blankline_ranges
             local need_to_update = true
 
-            -- compare current window view relative to the defined ranges
-            for i=1,#blankline_ranges do
-                local current_range = blankline_ranges[i]
+            -- binary search through the ranges to find a candidate that could contain the window
+            local exact_match = false
+            local idx_low = 1
+            local idx_high = #blankline_ranges
+            local idx_mid
 
-                -- does it fit inside a range?
-                if (lower_range >= current_range[1]) and (upper_range <= current_range[2]) then
+            local range_low, range_high
+
+            -- only perform binary search if there's more than one range
+            if idx_high > 1 then
+                while idx_low < idx_high do
+                    idx_mid = math.ceil((idx_low + idx_high) / 2)
+                    range_low = blankline_ranges[idx_mid][1]
+
+                    if range_low == win_lower then
+                        exact_match = true
+                        break
+                    elseif range_low < win_lower then
+                        idx_low = idx_mid  -- it's important to make the low-end inclusive
+                    else
+                        idx_high = idx_mid - 1
+                    end
+                end
+            end
+
+            -- if we don't have an exact match, choose the smallest index
+            if not exact_match then
+                idx_mid = idx_low
+            end
+
+            range_low = blankline_ranges[idx_mid][1]
+            range_high = blankline_ranges[idx_mid][2]
+
+            -- check if the window is contained or if a new range needs to be created
+            if range_low <= win_lower then
+                if range_high >= win_upper then
                     need_to_update = false
-                    break
+                else
+                    table.insert(blankline_ranges, idx_mid + 1, {offset, range})
                 end
-
-                -- should the current window view be above this range?
-                if lower_range < current_range[1] then
-                    table.insert(blankline_ranges, i, {offset, range})
-                    break
-                end
-
-                -- should the current window view be at the end?
-                if i == #blankline_ranges then
-                    table.insert(blankline_ranges, i + 1, {offset, range})
-                end
-
+            else
+                table.insert(blankline_ranges, idx_mid, {offset, range})
             end
 
             if not need_to_update then
@@ -221,7 +242,6 @@ local refresh = function(options)
             -- update the ranges variable
             vim.b.__indent_blankline_ranges = blankline_ranges
         end
-
     else
         offset = math.max(vim.fn.line "w0" - 1 - v "indent_blankline_viewport_buffer", 0)
         range = math.min(vim.fn.line "w$" + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
