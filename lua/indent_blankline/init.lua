@@ -29,6 +29,11 @@ M.setup = function(options)
         vim.g.indent_blankline_char_list,
         vim.g.indentLine_char_list
     )
+    vim.g.indent_blankline_context_char = o(options.context_char, vim.g.indent_blankline_context_char, vim.g.indent_blankline_char)
+    vim.g.indent_blankline_context_char_list = o(
+        options.context_char_list,
+        vim.g.indent_blankline_context_char_list
+    )
     vim.g.indent_blankline_char_highlight_list = o(
         options.char_highlight_list,
         vim.g.indent_blankline_char_highlight_list
@@ -210,6 +215,8 @@ local refresh = function(scroll)
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local char = v "indent_blankline_char"
     local char_list = v "indent_blankline_char_list" or {}
+    local context_char = v "indent_blankline_context_char"
+    local context_char_list = v "indent_blankline_context_char_list" or {}
     local char_highlight_list = v "indent_blankline_char_highlight_list" or {}
     local space_char_highlight_list = v "indent_blankline_space_char_highlight_list" or {}
     local space_char_blankline_highlight_list = v "indent_blankline_space_char_blankline_highlight_list" or {}
@@ -288,8 +295,10 @@ local refresh = function(scroll)
             for i = 1, math.min(math.max(indent, 0), local_max_indent_level) do
                 local space_count = shiftwidth
                 local context = context_active and context_indent == i
+                local show_indent_char = (i ~= 1 or first_indent) and char ~= ""
+                local show_context_indent_char = context and (i ~= 1 or first_indent) and context_char ~= ""
                 local show_end_of_line_char = i == 1 and blankline and end_of_line and list_chars["eol_char"]
-                local show_indent_or_eol_char = ((i ~= 1 or first_indent) and char ~= "") or show_end_of_line_char
+                local show_indent_or_eol_char = show_indent_char or show_context_indent_char or show_end_of_line_char
                 if show_indent_or_eol_char then
                     space_count = space_count - 1
                     if current_left_offset > 0 then
@@ -300,9 +309,17 @@ local refresh = function(scroll)
                                 show_end_of_line_char,
                                 list_chars["eol_char"],
                                 utils._if(
-                                    #char_list > 0,
-                                    utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-                                    char
+                                    context,
+                                    utils._if(
+                                        #context_char_list > 0,
+                                        utils.get_from_list(context_char_list, i - utils._if(not first_indent, 1, 0)),
+                                        context_char
+                                    ),
+                                    utils._if(
+                                        #char_list > 0,
+                                        utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
+                                        char
+                                    )
                                 )
                             ),
                             utils._if(
