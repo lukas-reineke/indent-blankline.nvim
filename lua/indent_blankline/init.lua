@@ -166,15 +166,15 @@ local refresh = function(scroll)
         vim.b.__indent_blankline_active = true
     end
 
-    local win_start = vim.fn.line("w0")
-    local win_end = vim.fn.line("w$")
+    local win_start = vim.fn.line "w0"
+    local win_end = vim.fn.line "w$"
     local offset = math.max(win_start - 1 - v "indent_blankline_viewport_buffer", 0)
     local range = math.min(win_end + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
 
     -- check if we need to refresh while scrolling
     if scroll then
         if not vim.b.__indent_blankline_ranges then
-            vim.b.__indent_blankline_ranges = {{offset, range}}
+            vim.b.__indent_blankline_ranges = { { offset, range } }
         else
             local blankline_ranges = vim.b.__indent_blankline_ranges
             local need_to_update = true
@@ -188,10 +188,10 @@ local refresh = function(scroll)
                 if candidate_end >= win_end then
                     need_to_update = false
                 else
-                    table.insert(blankline_ranges, idx_candidate + 1, {offset, range})
+                    table.insert(blankline_ranges, idx_candidate + 1, { offset, range })
                 end
             else
-                table.insert(blankline_ranges, idx_candidate, {offset, range})
+                table.insert(blankline_ranges, idx_candidate, { offset, range })
             end
 
             if not need_to_update then
@@ -199,11 +199,11 @@ local refresh = function(scroll)
             end
 
             -- merge ranges and update the variable, strategies are: contains or extends
-            vim.b.__indent_blankline_ranges  = utils.merge_ranges(blankline_ranges)
+            vim.b.__indent_blankline_ranges = utils.merge_ranges(blankline_ranges)
         end
     else
         -- if the function was called due to changed text, reset the ranges for good measure
-        vim.b.__indent_blankline_ranges = {{offset, range}}
+        vim.b.__indent_blankline_ranges = { { offset, range } }
     end
 
     local left_offset = vim.fn.winsaveview().leftcol

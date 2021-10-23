@@ -279,7 +279,7 @@ M.binary_search_ranges = function(ranges, target_range)
             exact_match = true
             break
         elseif range_start < target_start then
-            idx_start = idx_mid  -- it's important to make the low-end inclusive
+            idx_start = idx_mid -- it's important to make the low-end inclusive
         else
             idx_end = idx_mid - 1
         end
