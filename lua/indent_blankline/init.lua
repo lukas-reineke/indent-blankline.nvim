@@ -142,10 +142,6 @@ local refresh = function(scroll)
         return
     end
 
-    if not vim.b.__indent_blankline_ranges then
-        vim.b.__indent_blankline_ranges = {}
-    end
-
     if
         not utils.is_indent_blankline_enabled(
             vim.b.indent_blankline_enabled,
@@ -177,7 +173,7 @@ local refresh = function(scroll)
 
     -- check if we need to refresh while scrolling
     if scroll then
-        if #vim.b.__indent_blankline_ranges == 0 then
+        if not vim.b.__indent_blankline_ranges then
             vim.b.__indent_blankline_ranges = {{offset, range}}
         else
             local blankline_ranges = vim.b.__indent_blankline_ranges
