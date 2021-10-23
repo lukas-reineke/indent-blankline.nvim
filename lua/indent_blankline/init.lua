@@ -384,17 +384,19 @@ local refresh = function(scroll)
                 end
             end
 
+            local index = math.ceil(#virtual_text / 2) + 1
+            local extra_context_active = context_active and context_indent == index
+
             if
-                char ~= ""
+                (char ~= "" or (extra_context_active and context_char ~=""))
                 and ((blankline or extra) and trail_indent)
                 and (first_indent or #virtual_text > 0)
                 and current_left_offset < 1
                 and indent < local_max_indent_level
             then
-                local index = math.ceil(#virtual_text / 2) + 1
                 table.insert(virtual_text, {
                     utils._if(
-                        context_active and context_indent == index,
+                        extra_context_active,
                         utils._if(
                             #context_char_list > 0,
                             utils.get_from_list(context_char_list, index - utils._if(not first_indent, 1, 0)),
@@ -407,7 +409,7 @@ local refresh = function(scroll)
                         )
                     ),
                     utils._if(
-                        context_active and context_indent == index,
+                        extra_context_active,
                         utils._if(
                             #context_highlight_list > 0,
                             utils.get_from_list(context_highlight_list, index),
