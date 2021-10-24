@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.7.0
+Version: 2.8.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -535,18 +535,33 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
     With bang (IndentBlanklineRefresh!) refreshes the indent guides globally.
 
     By default it is run for:
-      1. |VimEnter| *  [bang]
-      2. |FileChangedShellPost| *
-      3. |TextChanged| *
-      4. |TextChangedI| *
-      5. |WinScrolled| *
-      6. |BufWinEnter| *
-      7. |Filetype| *
-      8. |OptionSet| shiftwidth,tabstop,expandtab
+      1. |FileChangedShellPost| *
+      2. |TextChanged| *
+      3. |TextChangedI| *
+      4. |CompleteChanged| *
+      5. |BufWinEnter| *
+      6. |Filetype| *
+      7. |OptionSet| shiftwidth,tabstop,expandtab
 
     Example: >
 
         autocmd User ALEFixPost IndentBlanklineRefresh
+
+------------------------------------------------------------------------------
+:IndentBlanklineRefreshScroll[!]                *IndentBlanklineRefreshScroll*
+
+    Refreshes the indent guides for the current buffer. But tries to reuse as
+    indent guides that already exist. Only used if we are sure the buffer
+    content did not change.
+
+    With bang (IndentBlanklineRefresh!) refreshes the indent guides globally.
+
+    By default it is run for:
+      1. |WinScrolled| *
+
+    Example: >
+
+        autocmd WinScrolled * IndentBlanklineRefreshScroll
 
 ------------------------------------------------------------------------------
 :IndentBlanklineEnable[!]                               *IndentBlanklineEnable*
@@ -573,6 +588,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.8.0
+ * Add |IndentBlanklineRefreshScroll|
 
 2.7.0
  * Add support for 0 width |g:indent_blankline_char|

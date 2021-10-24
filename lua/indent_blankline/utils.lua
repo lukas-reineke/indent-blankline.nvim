@@ -244,4 +244,53 @@ M.get_variable = function(key)
     return vim.g[key]
 end
 
+M.merge_ranges = function(ranges)
+    local merged_ranges = { { unpack(ranges[1]) } }
+
+    for i = 2, #ranges do
+        local current_end = merged_ranges[#merged_ranges][2]
+        local next_start, next_end = unpack(ranges[i])
+        if current_end >= next_start - 1 then
+            if current_end < next_end then
+                merged_ranges[#merged_ranges][2] = next_end
+            end
+        else
+            table.insert(merged_ranges, { next_start, next_end })
+        end
+    end
+
+    return merged_ranges
+end
+
+M.binary_search_ranges = function(ranges, target_range)
+    local exact_match = false
+    local idx_start = 1
+    local idx_end = #ranges
+    local idx_mid
+
+    local range_start
+    local target_start = target_range[1]
+
+    while idx_start < idx_end do
+        idx_mid = math.ceil((idx_start + idx_end) / 2)
+        range_start = ranges[idx_mid][1]
+
+        if range_start == target_start then
+            exact_match = true
+            break
+        elseif range_start < target_start then
+            idx_start = idx_mid -- it's important to make the low-end inclusive
+        else
+            idx_end = idx_mid - 1
+        end
+    end
+
+    -- if we don't have an exact match, choose the smallest index
+    if not exact_match then
+        idx_mid = idx_start
+    end
+
+    return idx_mid
+end
+
 return M
