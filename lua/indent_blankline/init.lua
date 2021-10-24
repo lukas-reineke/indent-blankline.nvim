@@ -29,11 +29,12 @@ M.setup = function(options)
         vim.g.indent_blankline_char_list,
         vim.g.indentLine_char_list
     )
-    vim.g.indent_blankline_context_char = o(options.context_char, vim.g.indent_blankline_context_char, vim.g.indent_blankline_char)
-    vim.g.indent_blankline_context_char_list = o(
-        options.context_char_list,
-        vim.g.indent_blankline_context_char_list
+    vim.g.indent_blankline_context_char = o(
+        options.context_char,
+        vim.g.indent_blankline_context_char,
+        vim.g.indent_blankline_char
     )
+    vim.g.indent_blankline_context_char_list = o(options.context_char_list, vim.g.indent_blankline_context_char_list)
     vim.g.indent_blankline_char_highlight_list = o(
         options.char_highlight_list,
         vim.g.indent_blankline_char_highlight_list
@@ -350,7 +351,7 @@ local refresh = function()
             local extra_context_active = context_active and context_indent == index
 
             if
-                (char ~= "" or (extra_context_active and context_char ~=""))
+                (char ~= "" or (extra_context_active and context_char ~= ""))
                 and ((blankline or extra) and trail_indent)
                 and (first_indent or #virtual_text > 0)
                 and current_left_offset < 1
