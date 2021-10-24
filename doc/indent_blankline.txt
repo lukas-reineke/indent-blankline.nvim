@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.8.0
+Version: 2.9.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -410,6 +410,36 @@ g:indent_blankline_show_current_context*g:indent_blankline_show_current_context*
         let g:indent_blankline_show_current_context = v:true
 
 ------------------------------------------------------------------------------
+g:indent_blankline_context_char              *g:indent_blankline_context_char*
+
+    Specifies the character to be used for the current context indent line.
+    Not used if |g:indent_blankline_context_char_list| is not empty.
+
+    Useful to have a greater distinction between the current context indent
+    line and others.
+
+    Also useful in combination with |g:indent_blankline_char| set to empty string
+    (""), as this allows only the current context indent line to be shown.
+
+    Default: g:indent_blankline_char                                         ~
+
+    Example: >
+
+        let g:indent_blankline_context_char = '┃'
+
+------------------------------------------------------------------------------
+g:indent_blankline_context_char_list    *g:indent_blankline_context_char_list*
+
+    Equivalent of |g:indent_blankline_char_list| for
+    |g:indent_blankline_context_char|.
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_context_char_list = ['┃', '║', '╬', '█']
+
+------------------------------------------------------------------------------
 g:indent_blankline_context_highlight_list*g:indent_blankline_context_highlight_list*
 
     Specifies the list of character highlights for the current context at
@@ -558,6 +588,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.9.0
+ * Add |g:indent_blankline_context_char|
+ * Add |g:indent_blankline_context_char_list|
 
 2.8.0
  * Add |IndentBlanklineRefreshScroll|
