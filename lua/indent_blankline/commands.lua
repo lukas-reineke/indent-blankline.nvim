@@ -1,12 +1,13 @@
 local M = {}
 
-M.refresh = function(bang)
+M.refresh = function(bang, scroll)
+    scroll = scroll or false
     if bang then
         local win = vim.api.nvim_get_current_win()
-        vim.cmd [[windo call indent_blankline#Refresh()]]
+        vim.cmd(string.format([[windo call indent_blankline#Refresh(v:%s)]], scroll))
         vim.api.nvim_set_current_win(win)
     else
-        vim.cmd [[call indent_blankline#Refresh()]]
+        vim.cmd(string.format([[call indent_blankline#Refresh(v:%s)]], scroll))
     end
 end
 
