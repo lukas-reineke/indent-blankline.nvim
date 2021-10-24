@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.8.0
+Version: 2.9.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -588,6 +588,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.9.0
+ * Add |g:indent_blankline_context_char|
+ * Add |g:indent_blankline_context_char_list|
 
 2.8.0
  * Add |IndentBlanklineRefreshScroll|
