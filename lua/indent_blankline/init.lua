@@ -311,16 +311,12 @@ local refresh = function(scroll)
                                 list_chars["eol_char"],
                                 utils._if(
                                     context,
-                                    utils._if(
-                                        #context_char_list > 0,
-                                        utils.get_from_list(context_char_list, i - utils._if(not first_indent, 1, 0)),
+                                    utils.get_from_list(
+                                        context_char_list,
+                                        i - utils._if(not first_indent, 1, 0),
                                         context_char
                                     ),
-                                    utils._if(
-                                        #char_list > 0,
-                                        utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0)),
-                                        char
-                                    )
+                                    utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0), char)
                                 )
                             ),
                             utils._if(
@@ -328,17 +324,9 @@ local refresh = function(scroll)
                                 utils._if(
                                     context_pattern_highlight[context_pattern],
                                     context_pattern_highlight[context_pattern],
-                                    utils._if(
-                                        #context_highlight_list > 0,
-                                        utils.get_from_list(context_highlight_list, i),
-                                        context_highlight
-                                    )
+                                    utils.get_from_list(context_highlight_list, i, context_highlight)
                                 ),
-                                utils._if(
-                                    #char_highlight_list > 0,
-                                    utils.get_from_list(char_highlight_list, i),
-                                    char_highlight
-                                )
+                                utils.get_from_list(char_highlight_list, i, char_highlight)
                             ),
                         })
                     end
@@ -370,16 +358,8 @@ local refresh = function(scroll)
                         ),
                         utils._if(
                             blankline,
-                            utils._if(
-                                #space_char_blankline_highlight_list > 0,
-                                utils.get_from_list(space_char_blankline_highlight_list, i),
-                                space_char_blankline_highlight
-                            ),
-                            utils._if(
-                                #space_char_highlight_list > 0,
-                                utils.get_from_list(space_char_highlight_list, i),
-                                space_char_highlight
-                            )
+                            utils.get_from_list(space_char_blankline_highlight_list, i, space_char_blankline_highlight),
+                            utils.get_from_list(space_char_highlight_list, i, space_char_highlight)
                         ),
                     })
                 end
@@ -398,29 +378,13 @@ local refresh = function(scroll)
                 table.insert(virtual_text, {
                     utils._if(
                         extra_context_active,
-                        utils._if(
-                            #context_char_list > 0,
-                            utils.get_from_list(context_char_list, index - utils._if(not first_indent, 1, 0)),
-                            context_char
-                        ),
-                        utils._if(
-                            #char_list > 0,
-                            utils.get_from_list(char_list, index - utils._if(not first_indent, 1, 0)),
-                            char
-                        )
+                        utils.get_from_list(context_char_list, index - utils._if(not first_indent, 1, 0), context_char),
+                        utils.get_from_list(char_list, index - utils._if(not first_indent, 1, 0), char)
                     ),
                     utils._if(
                         extra_context_active,
-                        utils._if(
-                            #context_highlight_list > 0,
-                            utils.get_from_list(context_highlight_list, index),
-                            context_highlight
-                        ),
-                        utils._if(
-                            #char_highlight_list > 0,
-                            utils.get_from_list(char_highlight_list, index),
-                            char_highlight
-                        )
+                        utils.get_from_list(context_highlight_list, index, context_highlight),
+                        utils.get_from_list(char_highlight_list, index, char_highlight)
                     ),
                 })
             end
