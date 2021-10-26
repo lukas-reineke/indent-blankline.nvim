@@ -175,14 +175,17 @@ local refresh = function(scroll)
     local win_start = vim.fn.line "w0"
     local win_end = vim.fn.line "w$"
     local offset = math.max(win_start - 1 - v "indent_blankline_viewport_buffer", 0)
+    local left_offset = vim.fn.winsaveview().leftcol
+    local left_offset_s = tostring(left_offset)
     local range = math.min(win_end + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
 
-    -- check if we need to refresh while scrolling
+    if not vim.b.__indent_blankline_ranges then
+        vim.b.__indent_blankline_ranges = {}
+    end
+
     if scroll then
-        if not vim.b.__indent_blankline_ranges then
-            vim.b.__indent_blankline_ranges = { { offset, range } }
-        else
-            local blankline_ranges = vim.b.__indent_blankline_ranges
+        if vim.b.__indent_blankline_ranges[left_offset_s] then
+            local blankline_ranges = vim.b.__indent_blankline_ranges[left_offset_s]
             local need_to_update = true
 
             -- find a candidate that could contain the window
@@ -205,14 +208,14 @@ local refresh = function(scroll)
             end
 
             -- merge ranges and update the variable, strategies are: contains or extends
-            vim.b.__indent_blankline_ranges = utils.merge_ranges(blankline_ranges)
+            vim.b.__indent_blankline_ranges[left_offset_s] = utils.merge_ranges(blankline_ranges)
+        else
+            vim.b.__indent_blankline_ranges[left_offset_s] = { { offset, range } }
         end
     else
-        -- if the function was called due to changed text, reset the ranges for good measure
-        vim.b.__indent_blankline_ranges = { { offset, range } }
+        vim.b.__indent_blankline_ranges = { [left_offset_s] = { { offset, range } } }
     end
 
-    local left_offset = vim.fn.winsaveview().leftcol
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local char = v "indent_blankline_char"
     local char_list = v "indent_blankline_char_list" or {}
