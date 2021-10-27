@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.9.1
+Version: 2.9.2
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -588,6 +588,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.9.2
+ * Fix refresh argument types for 0.5
 
 2.9.1
  * Fix horizontal scroll update
