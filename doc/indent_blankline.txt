@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.9.2
+Version: 2.9.3
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -149,7 +149,7 @@ g:indent_blankline_char_list                    *g:indent_blankline_char_list*
 
 ------------------------------------------------------------------------------
 
-g:indent_blankline_char_highlight_list*g:indent_blankline_char_highlight_list*
+g:indent_blankline_char_highlight_list *g:indent_blankline_char_highlight_list*
 
     Specifies the list of character highlights for each indentation level.
     Ignored if the value is an empty list.
@@ -161,7 +161,7 @@ g:indent_blankline_char_highlight_list*g:indent_blankline_char_highlight_list*
         let g:indent_blankline_char_highlight_list = ['Error', 'Function']
 
 ------------------------------------------------------------------------------
-g:indent_blankline_space_char_blankline*g:indent_blankline_space_char_blankline*
+g:indent_blankline_space_char_blankline *g:indent_blankline_space_char_blankline*
 
     Specifies the character to be used as the space value in between indent
     lines when the line is blank.
@@ -174,7 +174,7 @@ g:indent_blankline_space_char_blankline*g:indent_blankline_space_char_blankline*
 
 ------------------------------------------------------------------------------
 
-g:indent_blankline_space_char_highlight_list*g:indent_blankline_space_char_highlight_list*
+g:indent_blankline_space_char_highlight_list *g:indent_blankline_space_char_highlight_list*
 
     Specifies the list of space character highlights for each indentation
     level.
@@ -188,7 +188,7 @@ g:indent_blankline_space_char_highlight_list*g:indent_blankline_space_char_highl
 
 ------------------------------------------------------------------------------
 
-g:indent_blankline_space_char_blankline_highlight_list*g:indent_blankline_space_char_blankline_highlight_list*
+g:indent_blankline_space_char_blankline_highlight_list *g:indent_blankline_space_char_blankline_highlight_list*
 
     Specifies the list of space character highlights for each indentation
     level when the line is empty.
@@ -241,7 +241,7 @@ g:indent_blankline_max_indent_increase  *g:indent_blankline_max_indent_increase*
         let g:indent_blankline_max_indent_increase = 1
 
 ------------------------------------------------------------------------------
-g:indent_blankline_show_first_indent_level*g:indent_blankline_show_first_indent_level*
+g:indent_blankline_show_first_indent_level *g:indent_blankline_show_first_indent_level*
 
     Displays indentation in the first column.
 
@@ -252,7 +252,7 @@ g:indent_blankline_show_first_indent_level*g:indent_blankline_show_first_indent_
         let g:indent_blankline_show_first_indent_level = v:false
 
 ------------------------------------------------------------------------------
-g:indent_blankline_show_trailing_blankline_indent*g:indent_blankline_show_trailing_blankline_indent*
+g:indent_blankline_show_trailing_blankline_indent *g:indent_blankline_show_trailing_blankline_indent*
 
     Displays a trailing indentation guide on blank lines, to match the
     indentation of surrounding code.
@@ -394,7 +394,7 @@ g:indent_blankline_strict_tabs                *g:indent_blankline_strict_tabs*
         let g:indent_blankline_strict_tabs = v:true
 
 ------------------------------------------------------------------------------
-g:indent_blankline_show_current_context*g:indent_blankline_show_current_context*
+g:indent_blankline_show_current_context *g:indent_blankline_show_current_context*
 
     When on, use treesitter to determine the current context. Then show the
     indent character in a different highlight.
@@ -440,7 +440,7 @@ g:indent_blankline_context_char_list    *g:indent_blankline_context_char_list*
         let g:indent_blankline_context_char_list = ['┃', '║', '╬', '█']
 
 ------------------------------------------------------------------------------
-g:indent_blankline_context_highlight_list*g:indent_blankline_context_highlight_list*
+g:indent_blankline_context_highlight_list *g:indent_blankline_context_highlight_list*
 
     Specifies the list of character highlights for the current context at
     each indentation level.
@@ -473,7 +473,7 @@ g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
         let g:indent_blankline_context_patterns = ['^if']
 
 ------------------------------------------------------------------------------
-g:indent_blankline_context_pattern_highlight*g:indent_blankline_context_pattern_highlight*
+g:indent_blankline_context_pattern_highlight *g:indent_blankline_context_pattern_highlight*
 
     Specifies a map of patterns set in
     |g:indent_blankline_context_patterns| to highlight groups.
@@ -501,7 +501,7 @@ g:indent_blankline_viewport_buffer        *g:indent_blankline_viewport_buffer*
         let g:indent_blankline_viewport_buffer = 20
 
 ------------------------------------------------------------------------------
-g:indent_blankline_disable_warning_message*g:indent_blankline_disable_warning_message*
+g:indent_blankline_disable_warning_message *g:indent_blankline_disable_warning_message*
 
     Turns deprecation warning messages off.
 
@@ -588,6 +588,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.9.3
+ * Fix indent cache for scrolling
+ * Fix documentation tags
 
 2.9.2
  * Fix refresh argument types for 0.5
