@@ -184,6 +184,8 @@ local refresh = function(scroll)
     end
 
     if scroll then
+        local updated_range
+
         if vim.b.__indent_blankline_ranges[left_offset_s] then
             local blankline_ranges = vim.b.__indent_blankline_ranges[left_offset_s]
             local need_to_update = true
@@ -208,10 +210,15 @@ local refresh = function(scroll)
             end
 
             -- merge ranges and update the variable, strategies are: contains or extends
-            vim.b.__indent_blankline_ranges[left_offset_s] = utils.merge_ranges(blankline_ranges)
+            updated_range = utils.merge_ranges(blankline_ranges)
         else
-            vim.b.__indent_blankline_ranges[left_offset_s] = { { offset, range } }
+            updated_range = { { offset, range } }
         end
+
+        -- we can't assign directly to a table key, so we update the reference to the variable
+        local new_ranges = vim.b.__indent_blankline_ranges
+        new_ranges[left_offset_s] = updated_range
+        vim.b.__indent_blankline_ranges = new_ranges
     else
         vim.b.__indent_blankline_ranges = { [left_offset_s] = { { offset, range } } }
     end
