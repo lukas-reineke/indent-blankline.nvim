@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.10.0
+Version: 2.10.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -623,6 +623,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.10.1
+ * Remove `nocombine` from |hl-IndentBlanklineContextStart|
 
 2.10.0
  * Add |g:indent_blankline_show_current_context_start|
