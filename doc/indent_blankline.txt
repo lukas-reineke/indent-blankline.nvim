@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.9.3
+Version: 2.10.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -77,6 +77,22 @@ IndentBlanklineContextChar                     *hl-IndentBlanklineContextChar*
     Example: >
 
         highlight IndentBlanklineContextChar guifg=#00FF00 gui=nocombine
+
+------------------------------------------------------------------------------
+IndentBlanklineContextStart                     *hl-IndentBlanklineContextStart*
+
+    Highlight of the first line of the current context.
+    Only used when |g:indent_blankline_show_current_context_start| is active
+
+    Default: takes guifg color from 'Label' as guisp and adds underline      ~
+
+    Note: You need to have set |gui-colors| for the default to work.
+
+    Example: >
+
+        highlight IndentBlanklineContextStart guisp=#00FF00 gui=nocombine,underline
+
+------------------------------------------------------------------------------
 
 When defining the highlight group, it is important to set |nocombine| as a
 gui option. This is to make sure the character does not inherit gui options
@@ -410,6 +426,22 @@ g:indent_blankline_show_current_context *g:indent_blankline_show_current_context
         let g:indent_blankline_show_current_context = v:true
 
 ------------------------------------------------------------------------------
+g:indent_blankline_show_current_context_start *g:indent_blankline_show_current_context_start*
+
+    Applies the |hl-IndentBlanklineContextStart| highlight group to the first
+    line of the current context.
+    By default this will underline.
+
+    Note: You need to have set |gui-colors| and it depends on your terminal
+          emulator if this works as expected.
+
+    Default: v:false                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_show_current_context_start = v:true
+
+------------------------------------------------------------------------------
 g:indent_blankline_context_char              *g:indent_blankline_context_char*
 
     Specifies the character to be used for the current context indent line.
@@ -588,6 +620,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.10.0
+ * Add |g:indent_blankline_show_current_context_start|
+ * Add |hl-IndentBlanklineContextStart|
 
 2.9.3
  * Fix indent cache for scrolling

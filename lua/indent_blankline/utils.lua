@@ -216,17 +216,32 @@ M.reset_highlights = function()
         IndentBlanklineSpaceChar = whitespace_fg,
         IndentBlanklineSpaceCharBlankline = whitespace_fg,
         IndentBlanklineContextChar = label_fg,
+        IndentBlanklineContextStart = label_fg,
     } do
         local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
-        if vim.fn.synIDattr(current_highlight, "fg") == "" and vim.fn.synIDattr(current_highlight, "bg") == "" then
-            vim.cmd(
-                string.format(
-                    "highlight %s guifg=%s ctermfg=%s gui=nocombine cterm=nocombine",
-                    highlight_name,
-                    M._if(highlight[1] == "", "NONE", highlight[1]),
-                    M._if(highlight[2] == "", "NONE", highlight[2])
+        if
+            vim.fn.synIDattr(current_highlight, "fg") == ""
+            and vim.fn.synIDattr(current_highlight, "bg") == ""
+            and vim.fn.synIDattr(current_highlight, "sp") == ""
+        then
+            if highlight_name == "IndentBlanklineContextStart" then
+                vim.cmd(
+                    string.format(
+                        "highlight %s guisp=%s gui=nocombine,underline cterm=nocombine,underline",
+                        highlight_name,
+                        M._if(highlight[1] == "", "NONE", highlight[1])
+                    )
                 )
-            )
+            else
+                vim.cmd(
+                    string.format(
+                        "highlight %s guifg=%s ctermfg=%s gui=nocombine cterm=nocombine",
+                        highlight_name,
+                        M._if(highlight[1] == "", "NONE", highlight[1]),
+                        M._if(highlight[2] == "", "NONE", highlight[2])
+                    )
+                )
+            end
         end
     end
 end

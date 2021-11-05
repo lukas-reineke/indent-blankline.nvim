@@ -148,10 +148,11 @@ vim.opt.listchars:append("eol:↴")
 require("indent_blankline").setup {
     space_char_blankline = " ",
     show_current_context = true,
+    show_current_context_start = true,
 }
 ```
 
-<img width="900" src="https://i.imgur.com/mkyGPZZ.png" alt="Screenshot" />
+<img width="900" src="https://user-images.githubusercontent.com/12900252/140518531-522aa67a-b377-498c-ad39-85113b2b56df.png" alt="Screenshot" />
 
 ## Thanks
 
