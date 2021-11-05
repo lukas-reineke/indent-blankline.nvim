@@ -106,6 +106,11 @@ M.setup = function(options)
         vim.g.indent_blankline_show_current_context,
         false
     )
+    vim.g.indent_blankline_show_current_context_start = o(
+        options.show_current_context_start,
+        vim.g.indent_blankline_show_current_context_start,
+        false
+    )
     vim.g.indent_blankline_context_highlight_list = o(
         options.context_highlight_list,
         vim.g.indent_blankline_context_highlight_list
@@ -292,6 +297,8 @@ local refresh = function(scroll)
     local context_highlight_list = v "indent_blankline_context_highlight_list" or {}
     local context_pattern_highlight = v "indent_blankline_context_pattern_highlight" or {}
     local context_status, context_start, context_end, context_pattern = false, 0, 0, nil
+    local show_current_context_start = v "indent_blankline_show_current_context"
+        and v "indent_blankline_show_current_context_start"
     if v "indent_blankline_show_current_context" then
         context_status, context_start, context_end, context_pattern = utils.get_current_context(
             v "indent_blankline_context_patterns"
@@ -415,8 +422,10 @@ local refresh = function(scroll)
             async = vim.loop.new_async(function()
                 local blankline = lines[i]:len() == 0
                 local context_active = false
+                local context_first_line = false
                 if context_status then
                     context_active = offset + i > context_start and offset + i <= context_end
+                    context_first_line = offset + i == context_start
                 end
 
                 if blankline and use_ts_indent then
@@ -427,7 +436,7 @@ local refresh = function(scroll)
                             return
                         end
                         indent = indent / shiftwidth
-                        if offset + i == context_start then
+                        if context_first_line then
                             context_indent = indent + 1
                         end
 
@@ -450,6 +459,21 @@ local refresh = function(scroll)
                             0,
                             { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine" }
                         )
+                        if context_first_line and show_current_context_start then
+                            xpcall(
+                                vim.api.nvim_buf_set_extmark,
+                                utils.error_handler,
+                                bufnr,
+                                vim.g.indent_blankline_namespace,
+                                context_start - 1,
+                                indent,
+                                {
+                                    end_col = #lines[i],
+                                    hl_group = "IndentBlanklineContextStart",
+                                    priority = 10000,
+                                }
+                            )
+                        end
                     end)()
                     return async:close()
                 end
@@ -478,7 +502,7 @@ local refresh = function(scroll)
                     next_extra = extra
                 end
 
-                if offset + i == context_start then
+                if context_first_line then
                     context_indent = indent + 1
                 end
 
@@ -512,6 +536,21 @@ local refresh = function(scroll)
                         0,
                         { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine" }
                     )
+                    if context_first_line and show_current_context_start then
+                        xpcall(
+                            vim.api.nvim_buf_set_extmark,
+                            utils.error_handler,
+                            bufnr,
+                            vim.g.indent_blankline_namespace,
+                            context_start - 1,
+                            indent,
+                            {
+                                end_col = #lines[i],
+                                hl_group = "IndentBlanklineContextStart",
+                                priority = 10000,
+                            }
+                        )
+                    end
                 end)()
                 return async:close()
             end)
