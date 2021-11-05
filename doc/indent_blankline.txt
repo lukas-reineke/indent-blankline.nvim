@@ -90,7 +90,7 @@ IndentBlanklineContextStart                     *hl-IndentBlanklineContextStart*
 
     Example: >
 
-        highlight IndentBlanklineContextStart guisp=#00FF00 gui=nocombine,underline
+        highlight IndentBlanklineContextStart guisp=#00FF00 gui=underline
 
 ------------------------------------------------------------------------------
 
@@ -434,6 +434,9 @@ g:indent_blankline_show_current_context_start *g:indent_blankline_show_current_c
 
     Note: You need to have set |gui-colors| and it depends on your terminal
           emulator if this works as expected.
+          If you are using kitty and tmux, take a look at this article to
+          make it work
+          http://evantravers.com/articles/2021/02/05/curly-underlines-in-kitty-tmux-neovim/
 
     Default: v:false                                                         ~
 

@@ -465,8 +465,8 @@ local refresh = function(scroll)
                                 utils.error_handler,
                                 bufnr,
                                 vim.g.indent_blankline_namespace,
-                                context_start - 1,
-                                indent,
+                                i - 1 + offset,
+                                0,
                                 {
                                     end_col = #lines[i],
                                     hl_group = "IndentBlanklineContextStart",
@@ -542,8 +542,8 @@ local refresh = function(scroll)
                             utils.error_handler,
                             bufnr,
                             vim.g.indent_blankline_namespace,
-                            context_start - 1,
-                            indent,
+                            i - 1 + offset,
+                            0,
                             {
                                 end_col = #lines[i],
                                 hl_group = "IndentBlanklineContextStart",
