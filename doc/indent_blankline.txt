@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.10.1
+Version: 2.10.2
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -623,6 +623,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.10.2
+ * Apply context start highlight after indentation
 
 2.10.1
  * Remove `nocombine` from |hl-IndentBlanklineContextStart|
