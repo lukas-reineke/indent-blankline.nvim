@@ -421,6 +421,8 @@ local refresh = function(scroll)
             local async
             async = vim.loop.new_async(function()
                 local blankline = lines[i]:len() == 0
+                local whitespace = string.match(lines[i], "^%s+") or ""
+                local only_whitespace = whitespace == lines[i]
                 local context_active = false
                 local context_first_line = false
                 if context_status then
@@ -431,10 +433,28 @@ local refresh = function(scroll)
                 if blankline and use_ts_indent then
                     vim.schedule_wrap(function()
                         local indent = ts_indent.get_indent(i + offset) or 0
+                        utils.clear_line_indent(bufnr, i + offset)
+
+                        if context_first_line and show_current_context_start then
+                            xpcall(
+                                vim.api.nvim_buf_set_extmark,
+                                utils.error_handler,
+                                bufnr,
+                                vim.g.indent_blankline_namespace,
+                                i - 1 + offset,
+                                #whitespace,
+                                {
+                                    end_col = #lines[i],
+                                    hl_group = "IndentBlanklineContextStart",
+                                    priority = 10000,
+                                }
+                            )
+                        end
+
                         if indent == 0 then
-                            utils.clear_line_indent(bufnr, i + offset)
                             return
                         end
+
                         indent = indent / shiftwidth
                         if context_first_line then
                             context_indent = indent + 1
@@ -449,7 +469,6 @@ local refresh = function(scroll)
                             max_indent_level,
                             {}
                         )
-                        utils.clear_line_indent(bufnr, i + offset)
                         xpcall(
                             vim.api.nvim_buf_set_extmark,
                             utils.error_handler,
@@ -459,21 +478,6 @@ local refresh = function(scroll)
                             0,
                             { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine" }
                         )
-                        if context_first_line and show_current_context_start then
-                            xpcall(
-                                vim.api.nvim_buf_set_extmark,
-                                utils.error_handler,
-                                bufnr,
-                                vim.g.indent_blankline_namespace,
-                                i - 1 + offset,
-                                (indent * shiftwidth),
-                                {
-                                    end_col = #lines[i],
-                                    hl_group = "IndentBlanklineContextStart",
-                                    priority = 10000,
-                                }
-                            )
-                        end
                     end)()
                     return async:close()
                 end
@@ -481,7 +485,13 @@ local refresh = function(scroll)
                 local indent, extra
                 local virtual_string = {}
                 if not blankline then
-                    indent, extra, virtual_string = utils.find_indent(lines[i], shiftwidth, strict_tabs, list_chars)
+                    indent, extra, virtual_string = utils.find_indent(
+                        whitespace,
+                        only_whitespace,
+                        shiftwidth,
+                        strict_tabs,
+                        list_chars
+                    )
                 elseif empty_line_counter > 0 then
                     empty_line_counter = empty_line_counter - 1
                     indent = next_indent
@@ -496,7 +506,15 @@ local refresh = function(scroll)
                             j = j + 1
                             empty_line_counter = empty_line_counter + 1
                         end
-                        indent, extra, _ = utils.find_indent(lines[j], shiftwidth, strict_tabs, list_chars)
+                        local j_whitespace = string.match(lines[j], "^%s+")
+                        local j_only_whitespace = j_whitespace == lines[j]
+                        indent, extra, _ = utils.find_indent(
+                            j_whitespace,
+                            j_only_whitespace,
+                            shiftwidth,
+                            strict_tabs,
+                            list_chars
+                        )
                     end
                     next_indent = indent
                     next_extra = extra
@@ -506,9 +524,27 @@ local refresh = function(scroll)
                     context_indent = indent + 1
                 end
 
+                vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
+                if context_first_line and show_current_context_start then
+                    vim.schedule_wrap(function()
+                        xpcall(
+                            vim.api.nvim_buf_set_extmark,
+                            utils.error_handler,
+                            bufnr,
+                            vim.g.indent_blankline_namespace,
+                            i - 1 + offset,
+                            #whitespace,
+                            {
+                                end_col = #lines[i],
+                                hl_group = "IndentBlanklineContextStart",
+                                priority = 10000,
+                            }
+                        )
+                    end)()
+                end
+
                 if indent == 0 and #virtual_string == 0 and not extra then
                     prev_indent = 0
-                    vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
                     return async:close()
                 end
 
@@ -526,7 +562,6 @@ local refresh = function(scroll)
                     virtual_string
                 )
                 vim.schedule_wrap(function()
-                    utils.clear_line_indent(bufnr, i + offset)
                     xpcall(
                         vim.api.nvim_buf_set_extmark,
                         utils.error_handler,
@@ -536,21 +571,6 @@ local refresh = function(scroll)
                         0,
                         { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine" }
                     )
-                    if context_first_line and show_current_context_start then
-                        xpcall(
-                            vim.api.nvim_buf_set_extmark,
-                            utils.error_handler,
-                            bufnr,
-                            vim.g.indent_blankline_namespace,
-                            i - 1 + offset,
-                            (indent * shiftwidth),
-                            {
-                                end_col = #lines[i],
-                                hl_group = "IndentBlanklineContextStart",
-                                priority = 10000,
-                            }
-                        )
-                    end
                 end)()
                 return async:close()
             end)
