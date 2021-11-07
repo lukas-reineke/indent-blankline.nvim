@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.10.2
+Version: 2.10.3
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -623,6 +623,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.10.3
+ * Fix context start highlight column for files indent with tab
+ * Fix context start highlight on lines with no indent
 
 2.10.2
  * Apply context start highlight after indentation

@@ -124,8 +124,7 @@ M._if = function(bool, a, b)
     end
 end
 
-M.find_indent = function(line, shiftwidth, strict_tabs, list_chars)
-    local whitespace = string.match(line, "^%s+")
+M.find_indent = function(whitespace, only_whitespace, shiftwidth, strict_tabs, list_chars)
     local indent = 0
     local spaces = 0
     local tab_width
@@ -163,7 +162,7 @@ M.find_indent = function(line, shiftwidth, strict_tabs, list_chars)
                     -- return early when no more tabs are found
                     return indent, true, virtual_string
                 end
-                if whitespace == line then
+                if only_whitespace then
                     -- if the entire line is only whitespace use trail_char instead of lead_char
                     table.insert(virtual_string, list_chars["trail_char"])
                 else
