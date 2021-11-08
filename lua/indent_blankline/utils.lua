@@ -226,7 +226,7 @@ M.reset_highlights = function()
             if highlight_name == "IndentBlanklineContextStart" then
                 vim.cmd(
                     string.format(
-                        "highlight %s guisp=%s gui=nocombine,underline cterm=underline",
+                        "highlight %s guisp=%s gui=underline cterm=underline",
                         highlight_name,
                         M._if(highlight[1] == "", "NONE", highlight[1])
                     )
