@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.10.4
+Version: 2.10.5
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -623,6 +623,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.10.5
+ * Run refresh without autocmds
+ * Check that the window is valid before returning to it after refresh
 
 2.10.4
  * Remove `nocombine` from |hl-IndentBlanklineContextStart| again..
