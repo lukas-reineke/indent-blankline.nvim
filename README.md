@@ -44,8 +44,9 @@ The setup function has a single table as argument, keys of the table match the `
 
 ```lua
 require("indent_blankline").setup {
-    char = "|",
-    buftype_exclude = {"terminal"}
+    -- for example, context is off by default, use this to turn it on
+    show_current_context = true,
+    show_current_context_start = true,
 }
 ```
 

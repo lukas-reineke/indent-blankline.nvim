@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.10.5
+Version: 2.10.6
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -118,8 +118,9 @@ The setup function has a single table as argument, keys of the table match the
 Example: >
 
     require("indent_blankline").setup {
-      char = "|",
-      buftype_exclude = {"terminal"}
+        -- for example, context is off by default, use this to turn it on
+        show_current_context = true,
+        show_current_context_start = true,
     }
 
 ==============================================================================
@@ -623,6 +624,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.10.6
+ * Update example setup in the readme and docs
 
 2.10.5
  * Run refresh without autocmds
