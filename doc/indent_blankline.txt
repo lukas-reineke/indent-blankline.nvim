@@ -446,6 +446,18 @@ g:indent_blankline_show_current_context_start *g:indent_blankline_show_current_c
         let g:indent_blankline_show_current_context_start = v:true
 
 ------------------------------------------------------------------------------
+g:indent_blankline_show_current_context_start_on_current_line *g:indent_blankline_show_current_context_start_on_current_line*
+
+    Shows |g:indent_blankline_show_current_context_start| even when the cursor
+    is on the same line
+
+    Default: v:true                                                         ~
+
+    Example: >
+
+        let g:indent_blankline_show_current_context_start_on_current_line = v:false
+
+------------------------------------------------------------------------------
 g:indent_blankline_context_char              *g:indent_blankline_context_char*
 
     Specifies the character to be used for the current context indent line.
