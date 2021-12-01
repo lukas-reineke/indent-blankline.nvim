@@ -111,6 +111,11 @@ M.setup = function(options)
         vim.g.indent_blankline_show_current_context_start,
         false
     )
+    vim.g.indent_blankline_show_current_context_start_on_current_line = o(
+        options.show_current_context_start_on_current_line,
+        vim.g.indent_blankline_show_current_context_start_on_current_line,
+        true
+    )
     vim.g.indent_blankline_context_highlight_list = o(
         options.context_highlight_list,
         vim.g.indent_blankline_context_highlight_list
@@ -180,7 +185,9 @@ local refresh = function(scroll)
     local win_start = vim.fn.line "w0"
     local win_end = vim.fn.line "w$"
     local offset = math.max(win_start - 1 - v "indent_blankline_viewport_buffer", 0)
-    local left_offset = vim.fn.winsaveview().leftcol
+    local win_view = vim.fn.winsaveview()
+    local left_offset = win_view.leftcol
+    local lnum = win_view.lnum
     local left_offset_s = tostring(left_offset)
     local range = math.min(win_end + v "indent_blankline_viewport_buffer", vim.api.nvim_buf_line_count(bufnr))
 
@@ -297,8 +304,8 @@ local refresh = function(scroll)
     local context_highlight_list = v "indent_blankline_context_highlight_list" or {}
     local context_pattern_highlight = v "indent_blankline_context_pattern_highlight" or {}
     local context_status, context_start, context_end, context_pattern = false, 0, 0, nil
-    local show_current_context_start = v "indent_blankline_show_current_context"
-        and v "indent_blankline_show_current_context_start"
+    local show_current_context_start = v "indent_blankline_show_current_context_start"
+    local show_current_context_start_on_current_line = v "indent_blankline_show_current_context_start_on_current_line"
     if v "indent_blankline_show_current_context" then
         context_status, context_start, context_end, context_pattern = utils.get_current_context(
             v "indent_blankline_context_patterns"
@@ -435,13 +442,17 @@ local refresh = function(scroll)
                         local indent = ts_indent.get_indent(i + offset) or 0
                         utils.clear_line_indent(bufnr, i + offset)
 
-                        if context_first_line and show_current_context_start then
+                        if
+                            context_first_line
+                            and show_current_context_start
+                            and (show_current_context_start_on_current_line or lnum ~= context_start)
+                        then
                             xpcall(
                                 vim.api.nvim_buf_set_extmark,
                                 utils.error_handler,
                                 bufnr,
                                 vim.g.indent_blankline_namespace,
-                                i - 1 + offset,
+                                context_start - 1,
                                 #whitespace,
                                 {
                                     end_col = #lines[i],
@@ -525,14 +536,18 @@ local refresh = function(scroll)
                 end
 
                 vim.schedule_wrap(utils.clear_line_indent)(bufnr, i + offset)
-                if context_first_line and show_current_context_start then
+                if
+                    context_first_line
+                    and show_current_context_start
+                    and (show_current_context_start_on_current_line or lnum ~= context_start)
+                then
                     vim.schedule_wrap(function()
                         xpcall(
                             vim.api.nvim_buf_set_extmark,
                             utils.error_handler,
                             bufnr,
                             vim.g.indent_blankline_namespace,
-                            i - 1 + offset,
+                            context_start - 1,
                             #whitespace,
                             {
                                 end_col = #lines[i],
