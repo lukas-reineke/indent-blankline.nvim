@@ -54,6 +54,26 @@ Please see `:help indent_blankline.txt`for more details and all possible values.
 
 A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options should work out of the box.
 
+### Excluding filetypes
+
+```lua
+require("indent_blankline").setup {
+    -- the buffers NvimTree and packer won't show the indetation guides
+    filetype_exclude = {
+        'NvimTree',
+        'packer',
+    }
+}
+```
+
+Using vim script:
+
+```vim
+let g:indent_blankline_filetype_exclude = ['NvimTree', 'packer']
+```
+
+NOTE: filetypes are case sensitive.
+
 ## Screenshots
 
 All screenshots use [my custom onedark color scheme](https://github.com/lukas-reineke/onedark.nvim).
