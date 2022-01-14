@@ -359,7 +359,13 @@ g:indent_blankline_filetype_exclude      *g:indent_blankline_filetype_exclude*
 
     Also set by |g:indentLine_fileTypeExclude|
 
-    Default: []                                                              ~
+    Default: [                                                               ~
+        "lspinfo",                                                           ~
+        "packer",                                                            ~
+        "checkhealth",                                                       ~
+        "help",                                                              ~
+        "",                                                                  ~
+    ]                                                                        ~
 
     Example: >
 
@@ -514,7 +520,24 @@ g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
 
     Only used when |g:indent_blankline_show_current_context| is active
 
-    Default: ['class', 'function', 'method']                                 ~
+    Default: [                                                               ~
+        "class",                                                             ~
+        "^func",                                                             ~
+        "method",                                                            ~
+        "^if",                                                               ~
+        "while",                                                             ~
+        "for",                                                               ~
+        "with",                                                              ~
+        "try",                                                               ~
+        "except",                                                            ~
+        "arguments",                                                         ~
+        "argument_list",                                                     ~
+        "object",                                                            ~
+        "dictionary",                                                        ~
+        "element",                                                           ~
+        "table",                                                             ~
+        "tuple",                                                             ~
+    ]                                                                        ~
 
     Example: >
 

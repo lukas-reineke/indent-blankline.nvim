@@ -65,7 +65,8 @@ M.setup = function(options)
     vim.g.indent_blankline_filetype_exclude = o(
         options.filetype_exclude,
         vim.g.indent_blankline_filetype_exclude,
-        vim.g.indentLine_fileTypeExclude
+        vim.g.indentLine_fileTypeExclude,
+        { "lspinfo", "packer", "checkhealth", "help", "" }
     )
     vim.g.indent_blankline_bufname_exclude = o(
         options.bufname_exclude,
@@ -120,11 +121,24 @@ M.setup = function(options)
         options.context_highlight_list,
         vim.g.indent_blankline_context_highlight_list
     )
-    vim.g.indent_blankline_context_patterns = o(
-        options.context_patterns,
-        vim.g.indent_blankline_context_patterns,
-        { "class", "function", "method" }
-    )
+    vim.g.indent_blankline_context_patterns = o(options.context_patterns, vim.g.indent_blankline_context_patterns, {
+        "class",
+        "^func",
+        "method",
+        "^if",
+        "while",
+        "for",
+        "with",
+        "try",
+        "except",
+        "arguments",
+        "argument_list",
+        "object",
+        "dictionary",
+        "element",
+        "table",
+        "tuple",
+    })
     vim.g.indent_blankline_context_pattern_highlight = o(
         options.context_pattern_highlight,
         vim.g.indent_blankline_context_pattern_highlight
@@ -166,7 +180,7 @@ local refresh = function(scroll)
             vim.opt.list:get(),
             vim.bo.filetype,
             v "indent_blankline_filetype" or {},
-            v "indent_blankline_filetype_exclude" or {},
+            v "indent_blankline_filetype_exclude",
             vim.bo.buftype,
             v "indent_blankline_buftype_exclude" or {},
             v "indent_blankline_bufname_exclude" or {},
