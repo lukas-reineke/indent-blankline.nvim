@@ -1,11 +1,6 @@
 local utils = require "indent_blankline/utils"
 local M = {}
 
-local char_highlight = "IndentBlanklineChar"
-local space_char_highlight = "IndentBlanklineSpaceChar"
-local space_char_blankline_highlight = "IndentBlanklineSpaceCharBlankline"
-local context_highlight = "IndentBlanklineContextChar"
-
 M.init = function()
     if not vim.g.indent_blankline_namespace then
         vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace "indent_blankline"
@@ -164,7 +159,7 @@ M.setup = function(options)
     vim.g.__indent_blankline_setup_completed = true
 end
 
-local refresh = function(scroll)
+local refresh = function(scroll, nc)
     local v = utils.get_variable
     local bufnr = vim.api.nvim_get_current_buf()
 
@@ -248,6 +243,11 @@ local refresh = function(scroll)
     else
         vim.b.__indent_blankline_ranges = { [left_offset_s] = { { offset, range } } }
     end
+
+    local char_highlight = utils._if(nc, "IndentBlanklineCharNC", "IndentBlanklineChar")
+    local space_char_highlight = "IndentBlanklineSpaceChar"
+    local space_char_blankline_highlight = "IndentBlanklineSpaceCharBlankline"
+    local context_highlight = "IndentBlanklineContextChar"
 
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local char = v "indent_blankline_char"
@@ -609,8 +609,8 @@ local refresh = function(scroll)
     end
 end
 
-M.refresh = function(scroll)
-    xpcall(refresh, utils.error_handler, scroll)
+M.refresh = function(scroll, nc)
+    xpcall(refresh, utils.error_handler, scroll, nc)
 end
 
 return M
