@@ -501,7 +501,7 @@ local refresh = function(scroll)
                             vim.g.indent_blankline_namespace,
                             i - 1 + offset,
                             0,
-                            { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine" }
+                            { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine", priority = 1 }
                         )
                     end)()
                     return async:close()
@@ -598,7 +598,7 @@ local refresh = function(scroll)
                         vim.g.indent_blankline_namespace,
                         i - 1 + offset,
                         0,
-                        { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine" }
+                        { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine", priority = 1 }
                     )
                 end)()
                 return async:close()
