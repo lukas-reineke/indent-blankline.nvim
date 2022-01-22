@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.12.0
+Version: 2.12.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -659,6 +659,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.12.1
+ * Add ext mark priority
 
 2.12.0
  * Remove old vimscript functions
