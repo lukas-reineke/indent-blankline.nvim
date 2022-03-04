@@ -259,7 +259,7 @@ local refresh = function(scroll)
     local space_char_blankline_highlight_list = v "indent_blankline_space_char_blankline_highlight_list" or {}
     local space_char_blankline = v "indent_blankline_space_char_blankline"
 
-    local list_chars = {}
+    local list_chars
     local no_tab_character = false
     -- No need to check for disable_with_nolist as this part would never be executed if "true" && nolist
     if vim.opt.list:get() then
