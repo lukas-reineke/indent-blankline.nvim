@@ -70,9 +70,14 @@ M.is_indent_blankline_enabled = M.memo(
             return false
         end
 
+        local undotted_filetypes = vim.split(filetype, ".", { plain = true })
+        table.insert(undotted_filetypes, filetype)
+
         for _, ft in ipairs(filetype_exclude) do
-            if ft == filetype then
-                return false
+            for _, undotted_filetype in ipairs(undotted_filetypes) do
+                if undotted_filetype == ft then
+                    return false
+                end
             end
         end
 
