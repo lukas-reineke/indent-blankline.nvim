@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.12.1
+Version: 2.13.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -659,6 +659,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.13.0
+ * Support both the concatenated string, as well as the individual |filetypes|
+   in |g:indent_blankline_filetype_exclude| when a buffer has multiple filetypes
 
 2.12.1
  * Add ext mark priority
