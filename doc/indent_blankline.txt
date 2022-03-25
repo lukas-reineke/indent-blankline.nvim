@@ -150,6 +150,18 @@ g:indent_blankline_char                              *g:indent_blankline_char*
         let g:indent_blankline_char = '|'
 
 ------------------------------------------------------------------------------
+g:indent_blankline_char_blankline          *g:indent_blankline_char_blankline*
+
+    Specifies the character to be used as indent line for blanklines.
+    Not used if |g:indent_blankline_char_list_blankline| is not empty.
+
+    Default: ''                                                             ~
+
+    Example: >
+
+        let g:indent_blankline_char_blankline = '┆'
+
+------------------------------------------------------------------------------
 g:indent_blankline_char_list                    *g:indent_blankline_char_list*
 
     Specifies a list of characters to be used as indent line for
@@ -163,6 +175,19 @@ g:indent_blankline_char_list                    *g:indent_blankline_char_list*
     Example: >
 
         let g:indent_blankline_char_list = ['|', '¦', '┆', '┊']
+
+------------------------------------------------------------------------------
+g:indent_blankline_char_list_blankline *g:indent_blankline_char_list_blankline*
+
+    Specifies a list of characters to be used as indent line for
+    each indentation level on blanklines.
+    Ignored if the value is an empty list.
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_char_list_blankline = ['|', '¦', '┆', '┊']
 
 ------------------------------------------------------------------------------
 

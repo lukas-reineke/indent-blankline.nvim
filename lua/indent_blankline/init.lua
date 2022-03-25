@@ -24,10 +24,15 @@ M.setup = function(options)
     local o = utils.first_not_nil
 
     vim.g.indent_blankline_char = o(options.char, vim.g.indent_blankline_char, vim.g.indentLine_char, "│")
+    vim.g.indent_blankline_char_blankline = o(options.char_blankline, vim.g.indent_blankline_char_blankline)
     vim.g.indent_blankline_char_list = o(
         options.char_list,
         vim.g.indent_blankline_char_list,
         vim.g.indentLine_char_list
+    )
+    vim.g.indent_blankline_char_list_blankline = o(
+        options.char_list_blankline,
+        vim.g.indent_blankline_char_list_blankline
     )
     vim.g.indent_blankline_context_char = o(
         options.context_char,
@@ -251,7 +256,9 @@ local refresh = function(scroll)
 
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
     local char = v "indent_blankline_char"
+    local char_blankline = v "indent_blankline_char_blankline"
     local char_list = v "indent_blankline_char_list" or {}
+    local char_list_blankline = v "indent_blankline_char_list_blankline" or {}
     local context_char = v "indent_blankline_context_char"
     local context_char_list = v "indent_blankline_context_char_list" or {}
     local char_highlight_list = v "indent_blankline_char_highlight_list" or {}
@@ -331,10 +338,12 @@ local refresh = function(scroll)
             local virtual_text = {}
             local current_left_offset = left_offset
             local local_max_indent_level = math.min(max_indent_level, prev_indent + max_indent_increase)
+            local indent_char = utils._if(blankline and char_blankline, char_blankline, char)
+            local indent_char_list = utils._if(blankline and #char_list_blankline > 0, char_list_blankline, char_list)
             for i = 1, math.min(math.max(indent, 0), local_max_indent_level) do
                 local space_count = shiftwidth
                 local context = context_active and context_indent == i
-                local show_indent_char = (i ~= 1 or first_indent) and char ~= ""
+                local show_indent_char = (i ~= 1 or first_indent) and indent_char ~= ""
                 local show_context_indent_char = context and (i ~= 1 or first_indent) and context_char ~= ""
                 local show_end_of_line_char = i == 1 and blankline and end_of_line and list_chars["eol_char"]
                 local show_indent_or_eol_char = show_indent_char or show_context_indent_char or show_end_of_line_char
@@ -354,7 +363,11 @@ local refresh = function(scroll)
                                         i - utils._if(not first_indent, 1, 0),
                                         context_char
                                     ),
-                                    utils.get_from_list(char_list, i - utils._if(not first_indent, 1, 0), char)
+                                    utils.get_from_list(
+                                        indent_char_list,
+                                        i - utils._if(not first_indent, 1, 0),
+                                        indent_char
+                                    )
                                 )
                             ),
                             utils._if(
@@ -407,7 +420,7 @@ local refresh = function(scroll)
             local extra_context_active = context_active and context_indent == index
 
             if
-                (char ~= "" or (extra_context_active and context_char ~= ""))
+                ((indent_char ~= "" or #indent_char_list > 0) or (extra_context_active and context_char ~= ""))
                 and ((blankline or extra) and trail_indent)
                 and (first_indent or #virtual_text > 0)
                 and current_left_offset < 1
@@ -417,7 +430,7 @@ local refresh = function(scroll)
                     utils._if(
                         extra_context_active,
                         utils.get_from_list(context_char_list, index - utils._if(not first_indent, 1, 0), context_char),
-                        utils.get_from_list(char_list, index - utils._if(not first_indent, 1, 0), char)
+                        utils.get_from_list(indent_char_list, index - utils._if(not first_indent, 1, 0), indent_char)
                     ),
                     utils._if(
                         extra_context_active,
