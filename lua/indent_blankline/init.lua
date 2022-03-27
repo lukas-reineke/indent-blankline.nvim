@@ -39,7 +39,16 @@ M.setup = function(options)
         vim.g.indent_blankline_context_char,
         vim.g.indent_blankline_char
     )
+    vim.g.indent_blankline_context_char_blankline = o(
+        options.context_char_blankline,
+        vim.g.indent_blankline_context_char_blankline,
+        vim.g.indent_blankline_char_blankline
+    )
     vim.g.indent_blankline_context_char_list = o(options.context_char_list, vim.g.indent_blankline_context_char_list)
+    vim.g.indent_blankline_context_char_list_blankline = o(
+        options.context_char_list_blankline,
+        vim.g.indent_blankline_context_char_list
+    )
     vim.g.indent_blankline_char_highlight_list = o(
         options.char_highlight_list,
         vim.g.indent_blankline_char_highlight_list
@@ -260,7 +269,9 @@ local refresh = function(scroll)
     local char_list = v "indent_blankline_char_list" or {}
     local char_list_blankline = v "indent_blankline_char_list_blankline" or {}
     local context_char = v "indent_blankline_context_char"
+    local context_char_blankline = v "indent_blankline_context_char_blankline"
     local context_char_list = v "indent_blankline_context_char_list" or {}
+    local context_char_list_blankline = v "indent_blankline_context_char_list_blankline" or {}
     local char_highlight_list = v "indent_blankline_char_highlight_list" or {}
     local space_char_highlight_list = v "indent_blankline_space_char_highlight_list" or {}
     local space_char_blankline_highlight_list = v "indent_blankline_space_char_blankline_highlight_list" or {}
@@ -339,12 +350,22 @@ local refresh = function(scroll)
             local current_left_offset = left_offset
             local local_max_indent_level = math.min(max_indent_level, prev_indent + max_indent_increase)
             local indent_char = utils._if(blankline and char_blankline, char_blankline, char)
+            local context_indent_char = utils._if(
+                blankline and context_char_blankline,
+                context_char_blankline,
+                context_char
+            )
             local indent_char_list = utils._if(blankline and #char_list_blankline > 0, char_list_blankline, char_list)
+            local context_indent_char_list = utils._if(
+                blankline and #context_char_list_blankline > 0,
+                context_char_list_blankline,
+                context_char_list
+            )
             for i = 1, math.min(math.max(indent, 0), local_max_indent_level) do
                 local space_count = shiftwidth
                 local context = context_active and context_indent == i
                 local show_indent_char = (i ~= 1 or first_indent) and indent_char ~= ""
-                local show_context_indent_char = context and (i ~= 1 or first_indent) and context_char ~= ""
+                local show_context_indent_char = context and (i ~= 1 or first_indent) and context_indent_char ~= ""
                 local show_end_of_line_char = i == 1 and blankline and end_of_line and list_chars["eol_char"]
                 local show_indent_or_eol_char = show_indent_char or show_context_indent_char or show_end_of_line_char
                 if show_indent_or_eol_char then
@@ -359,9 +380,9 @@ local refresh = function(scroll)
                                 utils._if(
                                     context,
                                     utils.get_from_list(
-                                        context_char_list,
+                                        context_indent_char_list,
                                         i - utils._if(not first_indent, 1, 0),
-                                        context_char
+                                        context_indent_char
                                     ),
                                     utils.get_from_list(
                                         indent_char_list,
@@ -420,7 +441,7 @@ local refresh = function(scroll)
             local extra_context_active = context_active and context_indent == index
 
             if
-                ((indent_char ~= "" or #indent_char_list > 0) or (extra_context_active and context_char ~= ""))
+                ((indent_char ~= "" or #indent_char_list > 0) or (extra_context_active and context_indent_char ~= ""))
                 and ((blankline or extra) and trail_indent)
                 and (first_indent or #virtual_text > 0)
                 and current_left_offset < 1
@@ -429,7 +450,11 @@ local refresh = function(scroll)
                 table.insert(virtual_text, {
                     utils._if(
                         extra_context_active,
-                        utils.get_from_list(context_char_list, index - utils._if(not first_indent, 1, 0), context_char),
+                        utils.get_from_list(
+                            context_indent_char_list,
+                            index - utils._if(not first_indent, 1, 0),
+                            context_indent_char
+                        ),
                         utils.get_from_list(indent_char_list, index - utils._if(not first_indent, 1, 0), indent_char)
                     ),
                     utils._if(
