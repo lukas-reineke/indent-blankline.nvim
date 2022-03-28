@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.14.0
+Version: 2.15.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -507,6 +507,18 @@ g:indent_blankline_context_char              *g:indent_blankline_context_char*
         let g:indent_blankline_context_char = '┃'
 
 ------------------------------------------------------------------------------
+g:indent_blankline_context_char_blankline *g:indent_blankline_context_char_blankline*
+
+    Equivalent of |g:indent_blankline_char_blankline| for
+    |g:indent_blankline_context_char|.
+
+    Default: ''                                                             ~
+
+    Example: >
+
+        let g:indent_blankline_context_char_blankline = '┆'
+
+------------------------------------------------------------------------------
 g:indent_blankline_context_char_list    *g:indent_blankline_context_char_list*
 
     Equivalent of |g:indent_blankline_char_list| for
@@ -517,6 +529,18 @@ g:indent_blankline_context_char_list    *g:indent_blankline_context_char_list*
     Example: >
 
         let g:indent_blankline_context_char_list = ['┃', '║', '╬', '█']
+
+------------------------------------------------------------------------------
+g:indent_blankline_context_char_list_blankline *g:indent_blankline_context_char_list_blankline*
+
+    Equivalent of |g:indent_blankline_char_list_blankline| for
+    |g:indent_blankline_context_char_blankline|.
+
+    Default: []                                                              ~
+
+    Example: >
+
+        let g:indent_blankline_context_char_list_blankline = ['┃', '║', '╬', '█']
 
 ------------------------------------------------------------------------------
 g:indent_blankline_context_highlight_list *g:indent_blankline_context_highlight_list*
@@ -684,6 +708,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.15.0
+ * Add |g:indent_blankline_context_char_blankline| and
+   |g:indent_blankline_context_char_list_blankline| options
 
 2.14.0
  * Add |g:indent_blankline_char_blankline| and
