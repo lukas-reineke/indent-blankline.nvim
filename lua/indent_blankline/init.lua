@@ -441,7 +441,10 @@ local refresh = function(scroll)
             local extra_context_active = context_active and context_indent == index
 
             if
-                ((indent_char ~= "" or #indent_char_list > 0) or (extra_context_active and context_indent_char ~= ""))
+                (
+                    (indent_char ~= "" or #indent_char_list > 0)
+                    or (extra_context_active and (context_indent_char ~= "" or #context_char_list > 0))
+                )
                 and ((blankline or extra) and trail_indent)
                 and (first_indent or #virtual_text > 0)
                 and current_left_offset < 1
