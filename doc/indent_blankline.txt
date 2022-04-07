@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.15.0
+Version: 2.15.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -708,6 +708,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.15.1
+  Fix for nvim 0.5.1
 
 2.15.0
  * Add |g:indent_blankline_context_char_blankline| and
