@@ -215,15 +215,13 @@ M.reset_highlights = function()
         vim.fn.synIDattr(label_highlight, "fg", "cterm"),
     }
 
-    for highlight_name, highlight in
-        pairs {
-            IndentBlanklineChar = whitespace_fg,
-            IndentBlanklineSpaceChar = whitespace_fg,
-            IndentBlanklineSpaceCharBlankline = whitespace_fg,
-            IndentBlanklineContextChar = label_fg,
-            IndentBlanklineContextStart = label_fg,
-        }
-    do
+    for highlight_name, highlight in pairs {
+        IndentBlanklineChar = whitespace_fg,
+        IndentBlanklineSpaceChar = whitespace_fg,
+        IndentBlanklineSpaceCharBlankline = whitespace_fg,
+        IndentBlanklineContextChar = label_fg,
+        IndentBlanklineContextStart = label_fg,
+    } do
         local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
         if
             vim.fn.synIDattr(current_highlight, "fg") == ""
