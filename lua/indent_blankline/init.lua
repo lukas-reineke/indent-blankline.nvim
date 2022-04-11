@@ -80,7 +80,7 @@ M.setup = function(options)
         options.filetype_exclude,
         vim.g.indent_blankline_filetype_exclude,
         vim.g.indentLine_fileTypeExclude,
-        { "lspinfo", "packer", "checkhealth", "help", "" }
+        { "lspinfo", "packer", "checkhealth", "help", "man", "" }
     )
     vim.g.indent_blankline_bufname_exclude = o(
         options.bufname_exclude,

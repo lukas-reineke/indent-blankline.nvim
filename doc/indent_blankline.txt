@@ -389,6 +389,7 @@ g:indent_blankline_filetype_exclude      *g:indent_blankline_filetype_exclude*
         "packer",                                                            ~
         "checkhealth",                                                       ~
         "help",                                                              ~
+        "man",                                                               ~
         "",                                                                  ~
     ]                                                                        ~
 
