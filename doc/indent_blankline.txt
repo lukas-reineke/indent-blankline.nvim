@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.15.1
+Version: 2.16.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -389,6 +389,7 @@ g:indent_blankline_filetype_exclude      *g:indent_blankline_filetype_exclude*
         "packer",                                                            ~
         "checkhealth",                                                       ~
         "help",                                                              ~
+        "man",                                                               ~
         "",                                                                  ~
     ]                                                                        ~
 
@@ -708,6 +709,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.16.0
+  Add `man` to |g:indent_blankline_filetype_exclude|
+  Stylua update
 
 2.15.1
   Fix for nvim 0.5.1
