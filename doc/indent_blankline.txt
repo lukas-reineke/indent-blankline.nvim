@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.17.0
+Version: 2.18.0
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -591,11 +591,24 @@ g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
         "element",                                                           ~
         "table",                                                             ~
         "tuple",                                                             ~
+        "do_block",                                                          ~
     ]                                                                        ~
 
     Example: >
 
         let g:indent_blankline_context_patterns = ['^if']
+
+------------------------------------------------------------------------------
+g:indent_blankline_use_treesitter_scope *g:indent_blankline_use_treesitter_scope*
+
+    Instead of using |g:indent_blankline_context_patterns|, use the current
+    scope defined by nvim-treesitter as the context.
+
+    Default: false                                                           ~
+
+    Example: >
+
+        let g:indent_blankline_use_treesitter_scope = true
 
 ------------------------------------------------------------------------------
 g:indent_blankline_context_pattern_highlight *g:indent_blankline_context_pattern_highlight*
@@ -713,6 +726,10 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.18.0
+  Add |g:indent_blankline_use_treesitter_scope|
+  Update |g:indent_blankline_context_patterns|
 
 2.17.0
   Update defaults for |g:indent_blankline_buftype_exclude|

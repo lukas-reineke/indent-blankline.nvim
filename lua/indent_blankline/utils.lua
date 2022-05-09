@@ -182,9 +182,19 @@ M.find_indent = function(whitespace, only_whitespace, shiftwidth, strict_tabs, l
     return indent + math.floor(spaces / shiftwidth), table.maxn(virtual_string) % shiftwidth ~= 0, virtual_string
 end
 
-M.get_current_context = function(type_patterns)
+M.get_current_context = function(type_patterns, use_treesitter_scope)
     local ts_utils = require "nvim-treesitter.ts_utils"
+    local locals = require "nvim-treesitter.locals"
     local cursor_node = ts_utils.get_node_at_cursor()
+
+    if use_treesitter_scope then
+        local current_scope = locals.containing_scope(cursor_node, 0)
+        if not current_scope then
+            return false
+        end
+        local node_start, _, node_end, _ = current_scope:range()
+        return true, node_start + 1, node_end + 1, current_scope:type()
+    end
 
     while cursor_node do
         local node_type = cursor_node:type()
