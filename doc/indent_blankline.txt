@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.18.0
+Version: 2.18.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -726,6 +726,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.18.1
+  Ignore treesitter scope context if it is only one line
 
 2.18.0
   Add |g:indent_blankline_use_treesitter_scope|

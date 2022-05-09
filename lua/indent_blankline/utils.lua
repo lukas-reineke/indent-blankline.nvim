@@ -193,6 +193,9 @@ M.get_current_context = function(type_patterns, use_treesitter_scope)
             return false
         end
         local node_start, _, node_end, _ = current_scope:range()
+        if node_start ~= node_end then
+            return false
+        end
         return true, node_start + 1, node_end + 1, current_scope:type()
     end
 
