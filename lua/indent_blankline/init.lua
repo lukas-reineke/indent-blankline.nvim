@@ -127,6 +127,11 @@ M.setup = function(options)
         vim.g.indent_blankline_show_current_context_start,
         false
     )
+    vim.g.indent_blankline_use_treesitter_scope = o(
+        options.use_treesitter_scope,
+        vim.g.indent_blankline_use_treesitter_scope,
+        false
+    )
     vim.g.indent_blankline_show_current_context_start_on_current_line = o(
         options.show_current_context_start_on_current_line,
         vim.g.indent_blankline_show_current_context_start_on_current_line,
@@ -153,6 +158,7 @@ M.setup = function(options)
         "element",
         "table",
         "tuple",
+        "do_block",
     })
     vim.g.indent_blankline_context_pattern_highlight = o(
         options.context_pattern_highlight,
@@ -341,7 +347,8 @@ local refresh = function(scroll)
     local show_current_context_start_on_current_line = v "indent_blankline_show_current_context_start_on_current_line"
     if v "indent_blankline_show_current_context" then
         context_status, context_start, context_end, context_pattern = utils.get_current_context(
-            v "indent_blankline_context_patterns"
+            v "indent_blankline_context_patterns",
+            v "indent_blankline_use_treesitter_scope"
         )
     end
 
