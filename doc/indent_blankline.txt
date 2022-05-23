@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.18.2
+Version: 2.18.3
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -726,6 +726,9 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
+
+2.18.3
+  Don't set ext marks when the plugin is already disabled
 
 2.18.2
   Fix treesitter scope context

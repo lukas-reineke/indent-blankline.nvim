@@ -510,6 +510,9 @@ local refresh = function(scroll)
                             and show_current_context_start
                             and (show_current_context_start_on_current_line or lnum ~= context_start)
                         then
+                            if not vim.api.nvim_buf_get_var(bufnr, "__indent_blankline_active") then
+                                return
+                            end
                             xpcall(
                                 vim.api.nvim_buf_set_extmark,
                                 utils.error_handler,
@@ -543,6 +546,9 @@ local refresh = function(scroll)
                             max_indent_level,
                             {}
                         )
+                        if not vim.api.nvim_buf_get_var(bufnr, "__indent_blankline_active") then
+                            return
+                        end
                         xpcall(
                             vim.api.nvim_buf_set_extmark,
                             utils.error_handler,
@@ -605,6 +611,9 @@ local refresh = function(scroll)
                     and (show_current_context_start_on_current_line or lnum ~= context_start)
                 then
                     vim.schedule_wrap(function()
+                        if not vim.api.nvim_buf_get_var(bufnr, "__indent_blankline_active") then
+                            return
+                        end
                         xpcall(
                             vim.api.nvim_buf_set_extmark,
                             utils.error_handler,
@@ -640,6 +649,9 @@ local refresh = function(scroll)
                     virtual_string
                 )
                 vim.schedule_wrap(function()
+                    if not vim.api.nvim_buf_get_var(bufnr, "__indent_blankline_active") then
+                        return
+                    end
                     xpcall(
                         vim.api.nvim_buf_set_extmark,
                         utils.error_handler,
