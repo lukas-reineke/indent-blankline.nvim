@@ -38,12 +38,13 @@ M.memo = setmetatable({
     end,
 })
 
-M.error_handler = function(err)
-    if vim.g.indent_blankline_debug then
-        vim.cmd "echohl Error"
-        vim.cmd('echomsg "' .. err .. '"')
-        vim.cmd "echohl None"
+M.error_handler = function(err, level)
+    if not pcall(require, "notify") then
+        err = string.format("indent-blankline: %s", err)
     end
+    vim.notify_once(err, level or vim.log.levels.DEBUG, {
+        title = "indent-blankline",
+    })
 end
 
 M.is_indent_blankline_enabled = M.memo(
@@ -183,7 +184,13 @@ M.find_indent = function(whitespace, only_whitespace, shiftwidth, strict_tabs, l
 end
 
 M.get_current_context = function(type_patterns, use_treesitter_scope)
-    local ts_utils = require "nvim-treesitter.ts_utils"
+    local ts_utils_status, ts_utils = pcall(require, "nvim-treesitter.ts_utils")
+    if not ts_utils_status then
+        vim.schedule_wrap(function()
+            M.error_handler("nvim-treesitter not found. Context will not work", vim.log.levels.WARN)
+        end)()
+        return false
+    end
     local locals = require "nvim-treesitter.locals"
     local cursor_node = ts_utils.get_node_at_cursor()
 

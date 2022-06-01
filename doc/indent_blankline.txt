@@ -451,7 +451,9 @@ g:indent_blankline_show_current_context *g:indent_blankline_show_current_context
 
     When on, use treesitter to determine the current context. Then show the
     indent character in a different highlight.
-    Requires treesitter
+
+    Note: Requires https://github.com/nvim-treesitter/nvim-treesitter to be
+          installed
 
     Note: With this option enabled, the plugin refreshes on |CursorMoved|,
           which might be slower
@@ -468,6 +470,9 @@ g:indent_blankline_show_current_context_start *g:indent_blankline_show_current_c
     Applies the |hl-IndentBlanklineContextStart| highlight group to the first
     line of the current context.
     By default this will underline.
+
+    Note: Requires https://github.com/nvim-treesitter/nvim-treesitter to be
+          installed
 
     Note: You need to have set |gui-colors| and it depends on your terminal
           emulator if this works as expected.
@@ -648,17 +653,6 @@ g:indent_blankline_disable_warning_message *g:indent_blankline_disable_warning_m
     Example: >
 
         let g:indent_blankline_disable_warning_message = v:true
-
-------------------------------------------------------------------------------
-g:indent_blankline_debug                            *g:indent_blankline_debug*
-
-    Turns on error logging.
-
-    Default: v:false                                                         ~
-
-    Example: >
-
-        let g:indent_blankline_debug = v:true
 
 ==============================================================================
  5. COMMANDS                                       *indent-blankline-commands*
