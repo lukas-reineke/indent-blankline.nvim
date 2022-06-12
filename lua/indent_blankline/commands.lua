@@ -4,8 +4,8 @@ M.refresh = function(bang, scroll)
     scroll = scroll or false
     if bang then
         local win = vim.api.nvim_get_current_win()
-        vim.cmd(string.format([[noautocmd windo lua require("indent_blankline").refresh(%s)]], tostring(scroll)))
-        if vim.api.nvim_win_is_valid(win) then
+        vim.cmd(string.format([[silent! noautocmd windo lua require("indent_blankline").refresh(%s)]], tostring(scroll)))
+        if vim.api.nvim_win_is_valid(win) and vim.fn.getcmdwintype == "" then
             vim.api.nvim_set_current_win(win)
         end
     else
