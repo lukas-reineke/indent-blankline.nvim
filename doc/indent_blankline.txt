@@ -568,6 +568,28 @@ g:indent_blankline_context_highlight_list *g:indent_blankline_context_highlight_
         let g:indent_blankline_context_highlight_list = ['Error', 'Warning']
 
 ------------------------------------------------------------------------------
+g:indent_blankline_char_priority            *g:indent_blankline_char_priority*
+
+    Specifies the |extmarks| priority for chars.
+
+    Default: 1                                                               ~
+
+    Example: >
+
+        let g:indent_blankline_char_priority = 50
+
+------------------------------------------------------------------------------
+g:indent_blankline_context_start_priority *g:indent_blankline_context_start_priority*
+
+    Specifies the |extmarks| priority for the context start.
+
+    Default: 10000                                                           ~
+
+    Example: >
+
+        let g:indent_blankline_context_start_priority = 50
+
+------------------------------------------------------------------------------
 g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
 
     Specifies a list of lua patterns that are used to match against the
