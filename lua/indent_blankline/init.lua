@@ -5,6 +5,7 @@ local char_highlight = "IndentBlanklineChar"
 local space_char_highlight = "IndentBlanklineSpaceChar"
 local space_char_blankline_highlight = "IndentBlanklineSpaceCharBlankline"
 local context_highlight = "IndentBlanklineContextChar"
+local context_space_char_highlight = "IndentBlanklineContextSpaceChar"
 
 M.init = function()
     if not vim.g.indent_blankline_namespace then
@@ -451,7 +452,11 @@ local refresh = function(scroll)
                         utils._if(
                             blankline,
                             utils.get_from_list(space_char_blankline_highlight_list, i, space_char_blankline_highlight),
-                            utils.get_from_list(space_char_highlight_list, i, space_char_highlight)
+                            utils.get_from_list(
+                                space_char_highlight_list,
+                                i,
+                                utils._if(context, context_space_char_highlight, space_char_highlight)
+                            )
                         ),
                     })
                 end
