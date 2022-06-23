@@ -8,9 +8,7 @@ local context_highlight = "IndentBlanklineContextChar"
 local context_space_char_highlight = "IndentBlanklineContextSpaceChar"
 
 M.init = function()
-    if not vim.g.indent_blankline_namespace then
-        vim.g.indent_blankline_namespace = vim.api.nvim_create_namespace "indent_blankline"
-    end
+    vim.g.indent_blankline_namespace = vim.g.indent_blankline_namespace or vim.api.nvim_create_namespace "indent_blankline"
 
     utils.reset_highlights()
 
@@ -18,9 +16,7 @@ M.init = function()
 end
 
 M.setup = function(options)
-    if options == nil then
-        options = {}
-    end
+    options = options or {}
 
     local o = utils.first_not_nil
 
