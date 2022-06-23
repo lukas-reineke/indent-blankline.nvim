@@ -171,6 +171,12 @@ M.setup = function(options)
         vim.g.indent_blankline_disable_warning_message,
         false
     )
+    vim.g.indent_blankline_char_priority = o(options.char_priority, vim.g.indent_blankline_char_priority, 1)
+    vim.g.indent_blankline_context_start_priority = o(
+        options.context_start_priority,
+        vim.g.indent_blankline_context_start_priority,
+        10000
+    )
 
     if vim.g.indent_blankline_show_current_context then
         vim.cmd [[
@@ -282,6 +288,8 @@ local refresh = function(scroll)
     local space_char_highlight_list = v "indent_blankline_space_char_highlight_list" or {}
     local space_char_blankline_highlight_list = v "indent_blankline_space_char_blankline_highlight_list" or {}
     local space_char_blankline = v "indent_blankline_space_char_blankline"
+    local char_priority = v "indent_blankline_char_priority"
+    local context_start_priority = v "indent_blankline_context_start_priority"
 
     local list_chars
     local no_tab_character = false
@@ -530,7 +538,7 @@ local refresh = function(scroll)
                                 {
                                     end_col = #lines[i],
                                     hl_group = "IndentBlanklineContextStart",
-                                    priority = 10000,
+                                    priority = context_start_priority,
                                 }
                             )
                         end
@@ -566,7 +574,12 @@ local refresh = function(scroll)
                             vim.g.indent_blankline_namespace,
                             i - 1 + offset,
                             0,
-                            { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine", priority = 1 }
+                            {
+                                virt_text = virtual_text,
+                                virt_text_pos = "overlay",
+                                hl_mode = "combine",
+                                priority = char_priority,
+                            }
                         )
                     end)()
                     return async:close()
@@ -637,7 +650,7 @@ local refresh = function(scroll)
                             {
                                 end_col = #lines[i],
                                 hl_group = "IndentBlanklineContextStart",
-                                priority = 10000,
+                                priority = context_start_priority,
                             }
                         )
                     end)()
@@ -675,7 +688,12 @@ local refresh = function(scroll)
                         vim.g.indent_blankline_namespace,
                         i - 1 + offset,
                         0,
-                        { virt_text = virtual_text, virt_text_pos = "overlay", hl_mode = "combine", priority = 1 }
+                        {
+                            virt_text = virtual_text,
+                            virt_text_pos = "overlay",
+                            hl_mode = "combine",
+                            priority = char_priority,
+                        }
                     )
                 end)()
                 return async:close()
