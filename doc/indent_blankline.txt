@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.18.4
+Version: 2.19.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -755,31 +755,37 @@ g:indent_blankline_disable_warning_message *g:indent_blankline_disable_warning_m
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
 
+2.19.0
+ * Add |hl-IndentBlanklineContextSpaceChar|
+ * Add |g:indent_blankline_char_priority|
+ * Add |g:indent_blankline_context_start_priority|
+ * Use |vim.notify()|
+
 2.18.4
-  Check if buffer is loaded before setting ext marks
+ * Check if buffer is loaded before setting ext marks
 
 2.18.3
-  Don't set ext marks when the plugin is already disabled
+ * Don't set ext marks when the plugin is already disabled
 
 2.18.2
-  Fix treesitter scope context
+ * Fix treesitter scope context
 
 2.18.1
-  Ignore treesitter scope context if it is only one line
+ * Ignore treesitter scope context if it is only one line
 
 2.18.0
-  Add |g:indent_blankline_use_treesitter_scope|
-  Update |g:indent_blankline_context_patterns|
+ * Add |g:indent_blankline_use_treesitter_scope|
+ * Update |g:indent_blankline_context_patterns|
 
 2.17.0
-  Update defaults for |g:indent_blankline_buftype_exclude|
+ * Update defaults for |g:indent_blankline_buftype_exclude|
 
 2.16.0
-  Add `man` to |g:indent_blankline_filetype_exclude|
-  Stylua update
+ * Add `man` to |g:indent_blankline_filetype_exclude|
+ * Stylua update
 
 2.15.1
-  Fix for nvim 0.5.1
+ * Fix for nvim 0.5.1
 
 2.15.0
  * Add |g:indent_blankline_context_char_blankline| and
