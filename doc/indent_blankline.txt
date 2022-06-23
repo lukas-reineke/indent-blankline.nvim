@@ -79,6 +79,18 @@ IndentBlanklineContextChar                     *hl-IndentBlanklineContextChar*
         highlight IndentBlanklineContextChar guifg=#00FF00 gui=nocombine
 
 ------------------------------------------------------------------------------
+IndentBlanklineContextSpaceChar           *hl-IndentBlanklineContextSpaceChar*
+
+    Highlight of space characters one indent level of the current context.
+    Only used when |g:indent_blankline_show_current_context| is active
+
+    Default: takes guifg color from 'Label'                             ~
+
+    Example: >
+
+        highlight IndentBlanklineContextSpaceChar guifg=#00FF00 gui=nocombine
+
+------------------------------------------------------------------------------
 IndentBlanklineContextStart                     *hl-IndentBlanklineContextStart*
 
     Highlight of the first line of the current context.
