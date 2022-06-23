@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.18.4
+Version: 2.19.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -77,6 +77,18 @@ IndentBlanklineContextChar                     *hl-IndentBlanklineContextChar*
     Example: >
 
         highlight IndentBlanklineContextChar guifg=#00FF00 gui=nocombine
+
+------------------------------------------------------------------------------
+IndentBlanklineContextSpaceChar           *hl-IndentBlanklineContextSpaceChar*
+
+    Highlight of space characters one indent level of the current context.
+    Only used when |g:indent_blankline_show_current_context| is active
+
+    Default: takes guifg color from 'Label'                             ~
+
+    Example: >
+
+        highlight IndentBlanklineContextSpaceChar guifg=#00FF00 gui=nocombine
 
 ------------------------------------------------------------------------------
 IndentBlanklineContextStart                     *hl-IndentBlanklineContextStart*
@@ -451,7 +463,9 @@ g:indent_blankline_show_current_context *g:indent_blankline_show_current_context
 
     When on, use treesitter to determine the current context. Then show the
     indent character in a different highlight.
-    Requires treesitter
+
+    Note: Requires https://github.com/nvim-treesitter/nvim-treesitter to be
+          installed
 
     Note: With this option enabled, the plugin refreshes on |CursorMoved|,
           which might be slower
@@ -468,6 +482,9 @@ g:indent_blankline_show_current_context_start *g:indent_blankline_show_current_c
     Applies the |hl-IndentBlanklineContextStart| highlight group to the first
     line of the current context.
     By default this will underline.
+
+    Note: Requires https://github.com/nvim-treesitter/nvim-treesitter to be
+          installed
 
     Note: You need to have set |gui-colors| and it depends on your terminal
           emulator if this works as expected.
@@ -563,6 +580,28 @@ g:indent_blankline_context_highlight_list *g:indent_blankline_context_highlight_
         let g:indent_blankline_context_highlight_list = ['Error', 'Warning']
 
 ------------------------------------------------------------------------------
+g:indent_blankline_char_priority            *g:indent_blankline_char_priority*
+
+    Specifies the |extmarks| priority for chars.
+
+    Default: 1                                                               ~
+
+    Example: >
+
+        let g:indent_blankline_char_priority = 50
+
+------------------------------------------------------------------------------
+g:indent_blankline_context_start_priority *g:indent_blankline_context_start_priority*
+
+    Specifies the |extmarks| priority for the context start.
+
+    Default: 10000                                                           ~
+
+    Example: >
+
+        let g:indent_blankline_context_start_priority = 50
+
+------------------------------------------------------------------------------
 g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
 
     Specifies a list of lua patterns that are used to match against the
@@ -649,17 +688,6 @@ g:indent_blankline_disable_warning_message *g:indent_blankline_disable_warning_m
 
         let g:indent_blankline_disable_warning_message = v:true
 
-------------------------------------------------------------------------------
-g:indent_blankline_debug                            *g:indent_blankline_debug*
-
-    Turns on error logging.
-
-    Default: v:false                                                         ~
-
-    Example: >
-
-        let g:indent_blankline_debug = v:true
-
 ==============================================================================
  5. COMMANDS                                       *indent-blankline-commands*
 
@@ -727,31 +755,37 @@ g:indent_blankline_debug                            *g:indent_blankline_debug*
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
 
+2.19.0
+ * Add |hl-IndentBlanklineContextSpaceChar|
+ * Add |g:indent_blankline_char_priority|
+ * Add |g:indent_blankline_context_start_priority|
+ * Use |vim.notify()|
+
 2.18.4
-  Check if buffer is loaded before setting ext marks
+ * Check if buffer is loaded before setting ext marks
 
 2.18.3
-  Don't set ext marks when the plugin is already disabled
+ * Don't set ext marks when the plugin is already disabled
 
 2.18.2
-  Fix treesitter scope context
+ * Fix treesitter scope context
 
 2.18.1
-  Ignore treesitter scope context if it is only one line
+ * Ignore treesitter scope context if it is only one line
 
 2.18.0
-  Add |g:indent_blankline_use_treesitter_scope|
-  Update |g:indent_blankline_context_patterns|
+ * Add |g:indent_blankline_use_treesitter_scope|
+ * Update |g:indent_blankline_context_patterns|
 
 2.17.0
-  Update defaults for |g:indent_blankline_buftype_exclude|
+ * Update defaults for |g:indent_blankline_buftype_exclude|
 
 2.16.0
-  Add `man` to |g:indent_blankline_filetype_exclude|
-  Stylua update
+ * Add `man` to |g:indent_blankline_filetype_exclude|
+ * Stylua update
 
 2.15.1
-  Fix for nvim 0.5.1
+ * Fix for nvim 0.5.1
 
 2.15.0
  * Add |g:indent_blankline_context_char_blankline| and
