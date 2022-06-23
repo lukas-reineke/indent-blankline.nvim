@@ -171,7 +171,6 @@ M.setup = function(options)
         vim.g.indent_blankline_disable_warning_message,
         false
     )
-    vim.g.indent_blankline_debug = o(options.debug, vim.g.indent_blankline_debug, false)
 
     if vim.g.indent_blankline_show_current_context then
         vim.cmd [[
@@ -327,6 +326,11 @@ local refresh = function(scroll)
     local ts_indent
     if v "indent_blankline_use_treesitter" then
         local ts_query_status, ts_query = pcall(require, "nvim-treesitter.query")
+        if not ts_query_status then
+            vim.schedule_wrap(function()
+                utils.error_handler("nvim-treesitter not found. Treesitter indent will not work", vim.log.levels.WARN)
+            end)()
+        end
         local ts_indent_status
         ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
         use_ts_indent = ts_query_status and ts_indent_status and ts_query.has_indents(vim.bo.filetype)
