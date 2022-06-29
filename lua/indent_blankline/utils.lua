@@ -39,6 +39,9 @@ M.memo = setmetatable({
 })
 
 M.error_handler = function(err, level)
+    if err:match "Invalid buffer id.*" then
+        return
+    end
     if not pcall(require, "notify") then
         err = string.format("indent-blankline: %s", err)
     end
