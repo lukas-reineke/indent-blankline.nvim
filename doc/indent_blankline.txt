@@ -755,6 +755,9 @@ g:indent_blankline_disable_warning_message *g:indent_blankline_disable_warning_m
 ==============================================================================
  6. CHANGELOG                                     *indent-blankline-changelog*
 
+2.19.1
+ * Filter invalid buffer error
+
 2.19.0
  * Add |hl-IndentBlanklineContextSpaceChar|
  * Add |g:indent_blankline_char_priority|
