@@ -467,7 +467,8 @@ g:indent_blankline_show_current_context *g:indent_blankline_show_current_context
     Note: Requires https://github.com/nvim-treesitter/nvim-treesitter to be
           installed
 
-    Note: With this option enabled, the plugin refreshes on |CursorMoved|,
+    Note: With this option enabled, the plugin refreshes on |CursorMoved| and
+    |CursorMovedI|,
           which might be slower
 
     Default: v:false                                                         ~

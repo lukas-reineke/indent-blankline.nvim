@@ -183,7 +183,7 @@ M.setup = function(options)
         vim.cmd [[
             augroup IndentBlanklineContextAutogroup
                 autocmd!
-                autocmd CursorMoved * IndentBlanklineRefresh
+                autocmd CursorMoved,CursorMovedI * IndentBlanklineRefresh
             augroup END
         ]]
     end
