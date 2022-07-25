@@ -421,6 +421,7 @@ g:indent_blankline_buftype_exclude        *g:indent_blankline_buftype_exclude*
         "terminal",                                                          ~
         "nofile",                                                            ~
         "quickfix",                                                          ~
+        "prompt",                                                            ~
     ]                                                                        ~
 
     Example: >
