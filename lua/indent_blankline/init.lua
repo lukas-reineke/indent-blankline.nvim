@@ -69,7 +69,7 @@ M.setup = function(options)
         options.buftype_exclude,
         vim.g.indent_blankline_buftype_exclude,
         vim.g.indentLine_bufTypeExclude,
-        { "terminal", "nofile", "quickfix" }
+        { "terminal", "nofile", "quickfix", "prompt" }
     )
     vim.g.indent_blankline_viewport_buffer = o(options.viewport_buffer, vim.g.indent_blankline_viewport_buffer, 10)
     vim.g.indent_blankline_use_treesitter = o(options.use_treesitter, vim.g.indent_blankline_use_treesitter, false)
