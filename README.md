@@ -19,11 +19,9 @@ Use your favourite plugin manager to install.
 
 ```lua
 -- init.lua
-require("packer").startup(
-    function()
-        use "lukas-reineke/indent-blankline.nvim"
-    end
-)
+require("packer").startup(function()
+    use "lukas-reineke/indent-blankline.nvim"
+end)
 ```
 
 #### Example with Plug
@@ -62,7 +60,7 @@ All screenshots use [my custom onedark color scheme](https://github.com/lukas-re
 
 ```lua
 vim.opt.list = true
-vim.opt.listchars:append("eol:↴")
+vim.opt.listchars:append "eol:↴"
 
 require("indent_blankline").setup {
     show_end_of_line = true,
@@ -75,8 +73,8 @@ require("indent_blankline").setup {
 
 ```lua
 vim.opt.list = true
-vim.opt.listchars:append("space:⋅")
-vim.opt.listchars:append("eol:↴")
+vim.opt.listchars:append "space:⋅"
+vim.opt.listchars:append "eol:↴"
 
 require("indent_blankline").setup {
     show_end_of_line = true,
@@ -98,8 +96,8 @@ vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
 vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
 
 vim.opt.list = true
-vim.opt.listchars:append("space:⋅")
-vim.opt.listchars:append("eol:↴")
+vim.opt.listchars:append "space:⋅"
+vim.opt.listchars:append "eol:↴"
 
 require("indent_blankline").setup {
     space_char_blankline = " ",
@@ -143,8 +141,8 @@ require("indent_blankline").setup {
 
 ```lua
 vim.opt.list = true
-vim.opt.listchars:append("space:⋅")
-vim.opt.listchars:append("eol:↴")
+vim.opt.listchars:append "space:⋅"
+vim.opt.listchars:append "eol:↴"
 
 require("indent_blankline").setup {
     space_char_blankline = " ",
