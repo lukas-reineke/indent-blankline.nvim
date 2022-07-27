@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.19.1
+Version: 2.20.1
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -421,6 +421,7 @@ g:indent_blankline_buftype_exclude        *g:indent_blankline_buftype_exclude*
         "terminal",                                                          ~
         "nofile",                                                            ~
         "quickfix",                                                          ~
+        "prompt",                                                            ~
     ]                                                                        ~
 
     Example: >
@@ -707,7 +708,7 @@ g:indent_blankline_disable_warning_message *g:indent_blankline_disable_warning_m
       4. |CompleteChanged| *
       5. |BufWinEnter| *
       6. |Filetype| *
-      7. |OptionSet| shiftwidth,tabstop,expandtab
+      7. |OptionSet| list,listchars,shiftwidth,tabstop,expandtab
 
     Example: >
 
