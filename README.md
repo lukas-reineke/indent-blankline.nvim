@@ -1,13 +1,11 @@
 # Indent Blankline
 
-This plugin adds indentation guides to all lines (including empty lines).
-
+This plugin adds indentation guides to Neovim.
 It uses Neovim's virtual text feature and **no conceal**
 
-This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
-features so it will not work in Vim.
-There is a legacy version of the plugin that supports Neovim 0.4 under the
-branch `version-1`
+To start using indent-blankline, call the `ibl.setup()` function.
+
+This plugin requires the latests stable version of Neovim.
 
 ## Install
 
@@ -19,140 +17,129 @@ For [lazy.nvim](https://github.com/folke/lazy.nvim):
 { "lukas-reineke/indent-blankline.nvim" },
 ```
 
-For [packer.nvim](https://github.com/wbthomason/packer.nvim):
+For [pckr.nvim](https://github.com/lewis6991/pckr.nvim):
 
 ```lua
 use "lukas-reineke/indent-blankline.nvim"
 ```
 
-For [vim-plug](https://github.com/junegunn/vim-plug):
-
-```vim
-Plug 'lukas-reineke/indent-blankline.nvim'
-```
-
 ## Setup
 
-To configure indent-blankline, either run the setup function, or set variables manually.
-The setup function has a single table as argument, keys of the table match the `:help indent-blankline-variables` without the `indent_blankline_` part.
+To initialize and configure indent-blankline, run the `setup` function.
 
 ```lua
-require("indent_blankline").setup {
-    -- for example, context is off by default, use this to turn it on
-    show_current_context = true,
-    show_current_context_start = true,
-}
+require("ibl").setup()
 ```
 
-Please see `:help indent_blankline.txt` for more details and all possible values.
+Optionally, you can pass a configuration table to the setup function. For all
+available options, take a look at `:help ibl.config`.
 
-A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options should work out of the box.
+## Migrate from version 2
+
+The setup function is now under `ibl` instead of `indent_blankline`.
+
+The configuration from version 2 is not compatible with version 3. Most of the
+options have changed, please read `:help ibl.config`.
 
 ## Screenshots
-
-All screenshots use [my custom onedark color scheme](https://github.com/lukas-reineke/onedark.nvim).
 
 ### Simple
 
 ```lua
-vim.opt.list = true
-vim.opt.listchars:append "eol:↴"
-
-require("indent_blankline").setup {
-    show_end_of_line = true,
-}
+require("ibl").setup()
 ```
 
-<img width="900" src="https://i.imgur.com/3gRG5qI.png" alt="Screenshot" />
+<img width="900" src="https://github.com/lukas-reineke/indent-blankline.nvim/assets/12900252/69ca7bb2-e294-4437-818b-8b47e63244b3" alt="Screenshot" />
 
-#### With custom `listchars` and `g:indent_blankline_space_char_blankline`
+### Scope
 
 ```lua
-vim.opt.list = true
-vim.opt.listchars:append "space:⋅"
-vim.opt.listchars:append "eol:↴"
-
-require("indent_blankline").setup {
-    show_end_of_line = true,
-    space_char_blankline = " ",
-}
+require("ibl").setup()
 ```
 
-<img width="900" src="https://i.imgur.com/VxCThMu.png" alt="Screenshot" />
+<img width="900" src="https://github.com/lukas-reineke/indent-blankline.nvim/assets/12900252/a9d2426f-56a4-44bd-8bb5-2a3c5f5ca384" alt="Screenshot" />
 
-#### With custom `g:indent_blankline_char_highlight_list`
-
-```lua
-vim.opt.termguicolors = true
-vim.cmd [[highlight IndentBlanklineIndent1 guifg=#E06C75 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guifg=#E5C07B gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent3 guifg=#98C379 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent4 guifg=#56B6C2 gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent5 guifg=#61AFEF gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent6 guifg=#C678DD gui=nocombine]]
-
-vim.opt.list = true
-vim.opt.listchars:append "space:⋅"
-vim.opt.listchars:append "eol:↴"
-
-require("indent_blankline").setup {
-    space_char_blankline = " ",
-    char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-        "IndentBlanklineIndent3",
-        "IndentBlanklineIndent4",
-        "IndentBlanklineIndent5",
-        "IndentBlanklineIndent6",
-    },
-}
-```
-
-<img width="900" src="https://i.imgur.com/E3B0PUb.png" alt="Screenshot" />
-
-#### With custom background highlight
-
-```lua
-vim.opt.termguicolors = true
-vim.cmd [[highlight IndentBlanklineIndent1 guibg=#1f1f1f gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guibg=#1a1a1a gui=nocombine]]
-
-require("indent_blankline").setup {
-    char = "",
-    char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-    },
-    space_char_highlight_list = {
-        "IndentBlanklineIndent1",
-        "IndentBlanklineIndent2",
-    },
-    show_trailing_blankline_indent = false,
-}
-```
-
-<img width="900" src="https://i.imgur.com/DukMZGk.png" alt="Screenshot" />
-
-#### With context indent highlighted by treesitter
-
-```lua
-vim.opt.list = true
-vim.opt.listchars:append "space:⋅"
-vim.opt.listchars:append "eol:↴"
-
-require("indent_blankline").setup {
-    space_char_blankline = " ",
-    show_current_context = true,
-    show_current_context_start = true,
-}
-```
-
-<img width="900" src="https://user-images.githubusercontent.com/12900252/188080732-5b7d98b9-3cb8-4789-b28d-67cad0bfbcde.png" alt="Screenshot" />
-
-`show_current_context_start` uses underline, so to achieve the best result you
+The start and end of scope uses underline, so to achieve the best result you
 might need to tweak the underline position. In Kitty terminal for example you
 can do that with [modify_font](https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.modify_font)
 
-## Thanks
+### Mixed indentation
 
-Special thanks to [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine)
+```lua
+require("ibl").setup()
+```
+
+<img width="900" src="https://github.com/lukas-reineke/indent-blankline.nvim/assets/12900252/64a1a3c6-74e6-4183-901d-ad94c1edc59c" alt="Screenshot" />
+
+### Multiple indent colors
+
+```lua
+local highlight = {
+    "RainbowRed",
+    "RainbowYellow",
+    "RainbowBlue",
+    "RainbowOrange",
+    "RainbowGreen",
+    "RainbowViolet",
+    "RainbowCyan",
+}
+vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
+vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
+vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
+vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
+vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
+vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
+
+require("ibl").setup { indent = { highlight = highlight } }
+```
+
+<img width="900" src="https://github.com/lukas-reineke/indent-blankline.nvim/assets/12900252/78fd962a-67fa-4ddf-8924-780256dfd118" alt="Screenshot" />
+
+### Background color indentation guides
+
+```lua
+local highlight = {
+    "CursorColumn",
+    "Whitespace",
+}
+require("ibl").setup {
+    indent = { highlight = highlight, char = "" },
+    whitespace = {
+        highlight = highlight,
+        remove_blankline_trail = false,
+    },
+    scope = { enabled = false },
+}
+```
+
+<img width="900" src="https://github.com/lukas-reineke/indent-blankline.nvim/assets/12900252/35d70992-4482-4577-b1e1-28fda23b2b2d" alt="Screenshot" />
+
+### rainbow-delimiters.nvim integration
+
+[rainbow-delimiters.nvim](https://gitlab.com/HiPhish/rainbow-delimiters.nvim)
+
+```lua
+local highlight = {
+    "RainbowRed",
+    "RainbowYellow",
+    "RainbowBlue",
+    "RainbowOrange",
+    "RainbowGreen",
+    "RainbowViolet",
+    "RainbowCyan",
+}
+vim.api.nvim_set_hl(0, "RainbowRed", { fg = "#E06C75" })
+vim.api.nvim_set_hl(0, "RainbowYellow", { fg = "#E5C07B" })
+vim.api.nvim_set_hl(0, "RainbowOrange", { fg = "#D19A66" })
+vim.api.nvim_set_hl(0, "RainbowGreen", { fg = "#98C379" })
+vim.api.nvim_set_hl(0, "RainbowViolet", { fg = "#C678DD" })
+vim.api.nvim_set_hl(0, "RainbowCyan", { fg = "#56B6C2" })
+
+vim.g.rainbow_delimiters = { highlight = highlight }
+require("ibl").setup { scope = { highlight = highlight } }
+
+local hooks = require "ibl.hooks"
+hooks.register(hooks.type.SCOPE_HIGHLIGHT, hooks.builtin.scope_highlight_from_extmark)
+```
+
+<img width="900" src="https://github.com/lukas-reineke/indent-blankline.nvim/assets/12900252/67707d8e-57d3-411c-8418-77908d8babd9" alt="Screenshot" />

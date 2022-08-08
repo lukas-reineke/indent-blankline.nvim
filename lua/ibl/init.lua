@@ -1,0 +1,371 @@
+local highlights = require "ibl.highlights"
+local hooks = require "ibl.hooks"
+local autocmds = require "ibl.autocmds"
+local inlay_hints = require "ibl.inlay_hints"
+local indent = require "ibl.indent"
+local vt = require "ibl.virt_text"
+local scp = require "ibl.scope"
+local conf = require "ibl.config"
+local utils = require "ibl.utils"
+
+local namespace = vim.api.nvim_create_namespace "indent_blankline"
+
+local M = {}
+
+---@package
+M.initialized = false
+
+---@type table<number, { scope: TSNode?, left_offset: number, top_offset: number, tick: number }>
+local global_buffer_state = {}
+
+---@param bufnr number
+local clear_buffer = function(bufnr)
+    vt.clear_buffer(bufnr)
+    inlay_hints.clear_buffer(bufnr)
+    for _, fn in pairs(hooks.get(bufnr, hooks.type.CLEAR)) do
+        fn(bufnr)
+    end
+end
+
+---@param config ibl.config.full
+local setup = function(config)
+    M.initialized = true
+
+    if not config.enabled then
+        for bufnr, _ in pairs(global_buffer_state) do
+            clear_buffer(bufnr)
+        end
+        global_buffer_state = {}
+        inlay_hints.clear()
+        return
+    end
+
+    vim.schedule_wrap(function()
+        inlay_hints.setup()
+        highlights.setup()
+        autocmds.setup()
+
+        M.refresh_all()
+    end)()
+end
+
+--- Initializes and configures indent-blankline.
+---
+--- Optionally, the first parameter can be a configuration table.
+--- All values that are not passed in the table are set to the default value.
+--- List values get merged with the default list value.
+---
+--- `setup` is idempotent, meaning you can call it multiple times, and each call will reset indent-blankline.
+--- If you want to only update the current configuration, use `update()`.
+---@param config ibl.config?
+M.setup = function(config)
+    setup(conf.set_config(config))
+end
+
+--- Updates the indent-blankline configuration
+---
+--- The first parameter is a configuration table.
+--- All values that are not passed in the table are kept as they are.
+--- List values get merged with the current list value.
+---@param config ibl.config
+M.update = function(config)
+    setup(conf.update_config(config))
+end
+
+--- Configures indent-blankline for one buffer
+---
+--- All values that are not passed are cleared, and will fall back to the global config
+---@param bufnr number
+---@param config ibl.config
+M.setup_buffer = function(bufnr, config)
+    assert(M.initialized, "Tried to setup buffer without doing global setup")
+    bufnr = utils.get_bufnr(bufnr)
+    local c = conf.set_buffer_config(bufnr, config)
+
+    if c.enabled then
+        M.refresh(bufnr)
+    else
+        clear_buffer(bufnr)
+    end
+end
+
+--- Refreshes indent-blankline in all buffers
+M.refresh_all = function()
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+        vim.api.nvim_win_call(win, function()
+            M.refresh(vim.api.nvim_win_get_buf(win))
+        end)
+    end
+end
+
+local debounced_refresh = setmetatable({
+    timers = {},
+}, {
+    ---@param bufnr number
+    __call = function(self, bufnr)
+        bufnr = utils.get_bufnr(bufnr)
+        local config = conf.get_config(bufnr)
+        if not self.timers[bufnr] or self.timers[bufnr]:is_closing() then
+            ---@diagnostic disable-next-line:undefined-field
+            self.timers[bufnr] = vim.uv.new_timer()
+        end
+        self.timers[bufnr]:start(config.debounce, 0, function()
+            vim.schedule_wrap(M.refresh)(bufnr)
+            self.timers[bufnr]:stop()
+        end)
+    end,
+})
+
+--- Refreshes indent-blankline in one buffer, debounced
+---
+---@param bufnr number
+M.debounced_refresh = function(bufnr)
+    if vim.api.nvim_get_current_buf() == bufnr and vim.api.nvim_get_option_value("scrollbind", { scope = "local" }) then
+        for _, b in ipairs(vim.fn.tabpagebuflist()) do
+            debounced_refresh(b)
+        end
+    else
+        debounced_refresh(bufnr)
+    end
+end
+
+--- Refreshes indent-blankline in one buffer
+---
+--- Only use this directly if you know what you are doing, consider `debounced_refresh` instead
+---@param bufnr number
+M.refresh = function(bufnr)
+    assert(M.initialized, "Tried to refresh without doing setup")
+    bufnr = utils.get_bufnr(bufnr)
+    local is_current_buffer = vim.api.nvim_get_current_buf() == bufnr
+    local config = conf.get_config(bufnr)
+
+    if not config.enabled or not vim.api.nvim_buf_is_loaded(bufnr) or not utils.is_buffer_active(bufnr, config) then
+        return
+    end
+
+    for _, fn in
+        pairs(hooks.get(bufnr, hooks.type.ACTIVE) --[[ @as ibl.hooks.cb.active[] ]])
+    do
+        if not fn(bufnr) then
+            return
+        end
+    end
+
+    local left_offset, top_offset, win_end, win_height = utils.get_offset(bufnr)
+    if top_offset >= win_end then
+        return
+    end
+
+    local offset = math.max(top_offset - 1 - config.viewport_buffer.min, 0)
+    local scope
+    if config.scope.enabled and is_current_buffer then
+        scope = scp.get(bufnr, config)
+        if scope and scope:start() >= 0 then
+            offset = top_offset - math.min(top_offset - math.min(offset, scope:start()), config.viewport_buffer.max)
+        end
+    end
+
+    local range = math.min(win_end + config.viewport_buffer.min, vim.api.nvim_buf_line_count(bufnr))
+    local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
+
+    ---@type ibl.indent_options
+    local indent_opts = {
+        tabstop = vim.api.nvim_get_option_value("tabstop", { buf = bufnr }),
+        vartabstop = vim.api.nvim_get_option_value("vartabstop", { buf = bufnr }),
+        shiftwidth = vim.api.nvim_get_option_value("shiftwidth", { buf = bufnr }),
+        smart_indent_cap = config.indent.smart_indent_cap,
+    }
+    local listchars = utils.get_listchars()
+    if listchars.tabstop_overwrite then
+        indent_opts.tabstop = 2
+        indent_opts.vartabstop = ""
+    end
+
+    local indent_state
+    local next_virtual_string = {}
+    local empty_line_counter = 0
+
+    local buffer_state = global_buffer_state[bufnr]
+        or {
+            scope = nil,
+            left_offset = -1,
+            top_offset = -1,
+            tick = 0,
+        }
+
+    local same_scope = (scope and scope:id()) == (buffer_state.scope and buffer_state.scope:id())
+
+    if not same_scope then
+        inlay_hints.clear_buffer(bufnr)
+    end
+
+    global_buffer_state[bufnr] = {
+        left_offset = left_offset,
+        top_offset = top_offset,
+        scope = scope,
+        tick = buffer_state.tick + 1,
+    }
+
+    local scope_col_start_single = -1
+    local scope_row_start, scope_col_start, scope_row_end, scope_col_end = -1, -1, -1, -1
+    local scope_index = -1
+    if scope then
+        scope_row_start, scope_col_start, scope_row_end, scope_col_end = scope:range()
+        scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
+    end
+
+    local last_whitespace_tbl = {}
+
+    for i, line in ipairs(lines) do
+        local row = i + offset
+        local whitespace = utils.get_whitespace(line)
+        local foldclosed = vim.fn.foldclosed(row)
+
+        for _, fn in
+            pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
+        do
+            if fn(buffer_state.tick, bufnr, row - 1, line) then
+                vt.clear_buffer(bufnr, row)
+                goto continue
+            end
+        end
+
+        if is_current_buffer and foldclosed == row then
+            local foldtext = vim.fn.foldtextresult(row)
+            local foldtext_whitespace = utils.get_whitespace(foldtext)
+            if vim.fn.strdisplaywidth(foldtext_whitespace, 0) < vim.fn.strdisplaywidth(whitespace, 0) then
+                vt.clear_buffer(bufnr, row)
+                goto continue
+            end
+        end
+
+        if is_current_buffer and foldclosed > -1 and foldclosed + win_height < row then
+            vt.clear_buffer(bufnr, row)
+            goto continue
+        end
+
+        local blankline = line:len() == 0
+        local whitespace_only = not blankline and line == whitespace
+        local whitespace_tbl
+        local scope_active = row >= scope_row_start and row <= scope_row_end
+        local scope_start = row == scope_row_start
+        local scope_end = row == scope_row_end
+
+        -- #### calculate indent ####
+        if not blankline then
+            whitespace_tbl, indent_state = indent.get(whitespace, indent_opts, indent_state)
+        elseif empty_line_counter > 0 then
+            empty_line_counter = empty_line_counter - 1
+            whitespace_tbl = next_virtual_string
+        else
+            if i == #lines then
+                whitespace_tbl = {}
+            else
+                local j = i + 1
+                while j < #lines and lines[j]:len() == 0 do
+                    j = j + 1
+                    empty_line_counter = empty_line_counter + 1
+                end
+                local j_whitespace = utils.get_whitespace(lines[j])
+                whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state)
+
+                if utils.has_end(lines[j]) then
+                    local trail = last_whitespace_tbl[indent_state.stack[#indent_state.stack] + 1]
+                    if trail then
+                        table.insert(whitespace_tbl, trail)
+                    end
+                end
+            end
+            next_virtual_string = whitespace_tbl
+        end
+
+        -- remove blankline trail
+        if blankline and config.whitespace.remove_blankline_trail then
+            while #whitespace_tbl > 0 do
+                if indent.is_indent(whitespace_tbl[#whitespace_tbl]) then
+                    break
+                end
+                table.remove(whitespace_tbl, #whitespace_tbl)
+            end
+        end
+
+        -- Fix horizontal scroll
+        local current_left_offset = left_offset
+        while #whitespace_tbl > 0 and current_left_offset > 0 do
+            table.remove(whitespace_tbl, 1)
+            current_left_offset = current_left_offset - 1
+        end
+
+        for _, fn in
+            pairs(hooks.get(bufnr, hooks.type.WHITESPACE) --[[ @as ibl.hooks.cb.whitespace[] ]])
+        do
+            whitespace_tbl = fn(buffer_state.tick, bufnr, row - 1, whitespace_tbl)
+        end
+
+        last_whitespace_tbl = whitespace_tbl
+
+        -- #### make virtual text ####
+        if scope_start and scope then
+            scope_col_start = #whitespace
+            scope_col_start_single = #whitespace_tbl
+            scope_index = #vim.tbl_filter(function(w)
+                return indent.is_indent(w)
+            end, whitespace_tbl) + 1
+            for _, fn in
+                pairs(hooks.get(bufnr, hooks.type.SCOPE_HIGHLIGHT) --[[ @as ibl.hooks.cb.scope_highlight[] ]])
+            do
+                scope_index = fn(buffer_state.tick, bufnr, scope, scope_index)
+            end
+        end
+
+        local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
+        local virt_text, scope_hl =
+            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single)
+
+        -- #### set virtual text ####
+        vt.clear_buffer(bufnr, row)
+
+        -- Scope start
+        if config.scope.show_start and scope_start then
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, #whitespace, {
+                end_col = #line,
+                hl_group = scope_hl.start,
+                priority = config.scope.priority,
+                strict = false,
+            })
+            inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.inlay_hint, scope_hl.start)
+        end
+
+        -- Scope end
+        if config.scope.show_end and scope_end and #whitespace_tbl > scope_col_start_single then
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
+                end_col = scope_col_end,
+                hl_group = scope_hl.start,
+                priority = config.scope.priority,
+                strict = false,
+            })
+            inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.inlay_hint, scope_hl.start)
+        end
+
+        for _, fn in
+            pairs(hooks.get(bufnr, hooks.type.VIRTUAL_TEXT) --[[ @as ibl.hooks.cb.virtual_text[] ]])
+        do
+            virt_text = fn(buffer_state.tick, bufnr, row - 1, virt_text)
+        end
+
+        -- Indent
+        if #virt_text > 0 then
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, 0, {
+                virt_text = virt_text,
+                virt_text_pos = "overlay",
+                hl_mode = "combine",
+                priority = config.indent.priority,
+                strict = false,
+            })
+        end
+
+        ::continue::
+    end
+end
+
+return M

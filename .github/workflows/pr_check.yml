@@ -3,41 +3,122 @@ name: Pull request check
 on:
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  format:
-    runs-on: ubuntu-latest
+  tests:
+    name: unit tests
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: nightly
+            rev: nightly/nvim-linux64.tar.gz
+          - version: stable
+            rev: v0.9.1/nvim-linux64.tar.gz
     steps:
-      - uses: actions/checkout@v2
-      - uses: JohnnyMorganz/stylua-action@1.0.0
+      - uses: actions/checkout@v3
+      - run: date +%F > todays-date
+      - name: Restore cache for today's nightly.
+        uses: actions/cache@v3
+        with:
+          path: _neovim
+          key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
+      - name: Prepare
+        run: |
+          test -d _neovim || {
+            mkdir -p _neovim
+            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}" | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
+          }
+
+      - name: Run tests
+        run: |
+          export PATH="${PWD}/_neovim/bin:${PATH}"
+          export VIM="${PWD}/_neovim/share/nvim/runtime"
+          nvim --version
+          make test
+
+  lua-language-server:
+    name: lua language server
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - version: nightly
+            rev: nightly/nvim-linux64.tar.gz
+          - version: stable
+            rev: v0.9.1/nvim-linux64.tar.gz
+    steps:
+      - uses: actions/checkout@v3
+      - run: date +%F > todays-date
+      - name: Restore cache for today's nightly.
+        uses: actions/cache@v3
+        with:
+          path: _neovim
+          key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
+      - name: Restore vendor dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ hashFiles('todays-date') }}
+      - name: Restore cache for lua LS
+        uses: actions/cache@v3
+        with:
+          path: _lua-ls
+          key: 3.7.0
+      - name: Prepare
+        run: |
+          test -d _neovim || {
+            mkdir -p _neovim
+            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}" | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
+          }
+          test -d _lua-ls || {
+            mkdir -p _lua-ls
+            curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/3.7.0/lua-language-server-3.7.0-linux-x64.tar.gz" | tar xzf - -C "${PWD}/_lua-ls"
+          }
+
+      - name: Run check
+        run: |
+          export PATH="${PWD}/_neovim/bin:${PATH}"
+          export PATH="${PWD}/_lua-ls/bin:${PATH}"
+          export VIM="${PWD}/_neovim/share/nvim/runtime"
+          nvim --version
+          make lua-language-server version=${{ matrix.version }}
+
+  stylua:
+    name: stylua
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: JohnnyMorganz/stylua-action@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          args: --check .
+          version: latest
+          args: --color always --check .
+
+  luacheck:
+    name: luacheck
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Prepare
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y luarocks
+          sudo luarocks install luacheck
+
+      - name: Lint
+        run: sudo make luacheck
 
   block-fixup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v2
       - name: Block Fixup Commit Merge
         uses: 13rac1/block-fixup-merge-action@v2.0.0
-
-  luacheck:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@master
-
-      - uses: leafo/gh-actions-lua@v8.0.0
-        with:
-          luaVersion: 'luajit-2.1.0-beta3'
-
-      - uses: leafo/gh-actions-luarocks@v4.0.0
-
-      - name: build
-        run: |
-          luarocks install luacheck
-
-      - name: test
-        run: |
-          luacheck lua
-
