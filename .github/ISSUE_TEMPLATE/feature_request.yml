@@ -1,0 +1,23 @@
+name: Feature request
+description: Request an enhancement for indent-blankline
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before requesting: search [existing issues](https://github.com/lukas-reineke/indent-blankline.nvim/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc) and read the documentation `:help indent-blankline`.
+
+  - type: textarea
+    attributes:
+      label: 'Problem'
+      description: 'Describe the problem to be solved.'
+      placeholder: 'Add bongocat'
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: 'Expected behavior'
+      description: 'Describe what the new feature or behavior would look like. How does it solve the problem? Is it worth the cost?'
+    validations:
+      required: true

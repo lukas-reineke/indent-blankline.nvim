@@ -1,0 +1,40 @@
+name: Bug Report
+description: Report a problem with indent-blankline
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        _Before reporting:_ Make sure you are on the latest version of the plugin, and either the latest stable or nightly release of Neovim. Search [existing issues](https://github.com/lukas-reineke/indent-blankline.nvim/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc)
+
+  - type: textarea
+    attributes:
+      label: 'Problem'
+      description: 'Describe the current behavior. Include images, or videos if possible.'
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 'Steps to reproduce'
+      description: |
+        - Share your configurtaion and describe the steps to reproduce the issue.
+        - See [Minimal-reproduction-template](https://github.com/lukas-reineke/indent-blankline.nvim/wiki/Minimal-reproduction-template#minimal-config) for how to create a minimal configuration.
+      placeholder: |
+        nvim --clean
+        :edit foo
+        yiwp
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: 'Expected behavior'
+      description: 'Describe the behavior you expect.'
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: 'Neovim version (nvim -v)'
+      placeholder: '0.6.0 commit db1b0ee3b30f'
+    validations:
+      required: true

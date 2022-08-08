@@ -1,789 +1,816 @@
-*indent_blankline.txt*        Show vertical lines for indent on empty lines
+*indent-blankline.txt*                       Adds indentation guides to Neovim
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.20.8
 
 ==============================================================================
-CONTENTS                                                    *indent-blankline*
+CONTENTS                                              *ibl* *indent-blankline*
 
-  1. Introduction                          |indent-blankline-introduction|
-  2. Highlights                            |indent-blankline-highlights|
-  3. Setup                                 |indent-blankline-setup|
-  4. Variables                             |indent-blankline-variables|
-  5. Commands                              |indent-blankline-commands|
-  6. License                               |indent-blankline-license|
-
-==============================================================================
- 1. INTRODUCTION                               *indent-blankline-introduction*
-
-This plugin adds indentation guides to all lines (including empty lines).
-
-It uses Neovim's virtual text feature and **no conceal**
-
-This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
-features so it will not work in Vim.
-There is a legacy version of the plugin that supports Neovim 0.4 under the
-branch `version-1`
+  1. Introduction                          |ibl.introduction|
+  2. Functions                             |ibl.functions|
+  3. Types                                 |ibl.types|
+  4. Commands                              |ibl.commands|
+  5. License                               |ibl.license|
 
 ==============================================================================
- 2. HIGHLIGHTS                                   *indent-blankline-highlights*
+ 1. INTRODUCTION                                            *ibl.introduction*
 
-To change the highlighting of either the indent character, or the whitespace
-between indent characters, define or update these highlight groups.
+ This plugin adds indentation guides to Neovim.
+ It uses Neovim's virtual text feature and **no conceal**
 
-------------------------------------------------------------------------------
-IndentBlanklineChar                                   *hl-IndentBlanklineChar*
+ To start using indent-blankline, call the |ibl.setup()| function.
 
-    Highlight of indent character.
-
-    Default: takes guifg color from 'Whitespace'                             ~
-
-    Example: >
-
-        highlight IndentBlanklineChar guifg=#00FF00 gui=nocombine
-
-------------------------------------------------------------------------------
-IndentBlanklineSpaceChar                         *hl-IndentBlanklineSpaceChar*
-
-    Highlight of space character.
-
-    Default: takes guifg color from 'Whitespace'                             ~
-
-    Example: >
-
-        highlight IndentBlanklineSpaceChar guifg=#00FF00 gui=nocombine
-
-------------------------------------------------------------------------------
-IndentBlanklineSpaceCharBlankline       *hl-IndentBlanklineSpaceCharBlankline*
-
-    Highlight of space character on blank lines.
-
-    Default: takes guifg color from 'Whitespace'                             ~
-
-    Example: >
-
-        highlight IndentBlanklineSpaceCharBlankline guifg=#00FF00 gui=nocombine
-
-------------------------------------------------------------------------------
-IndentBlanklineContextChar                     *hl-IndentBlanklineContextChar*
-
-    Highlight of indent character when base of current context.
-    Only used when |g:indent_blankline_show_current_context| is active
-
-    Default: takes guifg color from 'Label'                             ~
-
-    Example: >
-
-        highlight IndentBlanklineContextChar guifg=#00FF00 gui=nocombine
-
-------------------------------------------------------------------------------
-IndentBlanklineContextSpaceChar           *hl-IndentBlanklineContextSpaceChar*
-
-    Highlight of space characters one indent level of the current context.
-    Only used when |g:indent_blankline_show_current_context| is active
-
-    Default: takes guifg color from 'Label'                             ~
-
-    Example: >
-
-        highlight IndentBlanklineContextSpaceChar guifg=#00FF00 gui=nocombine
-
-------------------------------------------------------------------------------
-IndentBlanklineContextStart                     *hl-IndentBlanklineContextStart*
-
-    Highlight of the first line of the current context.
-    Only used when |g:indent_blankline_show_current_context_start| is active
-
-    Default: takes guifg color from 'Label' as guisp and adds underline      ~
-
-    Note: You need to have set |gui-colors| for the default to work.
-
-    Example: >
-
-        highlight IndentBlanklineContextStart guisp=#00FF00 gui=underline
-
-------------------------------------------------------------------------------
-
-Note: Define your highlight group after setting colorscheme or your colorscheme will clear your highlight group
-
-When defining the highlight group, it is important to set |nocombine| as a
-gui option. This is to make sure the character does not inherit gui options
-from the underlying text, like italic or bold.
-
-Highlight groups get reset on |ColorScheme| autocommand, if both fg and bg
-are empty.
-
-The set more than one highlight group that changes based on indentation level,
-see:
-|g:indent_blankline_char_highlight_list|
-|g:indent_blankline_space_char_highlight_list|
-|g:indent_blankline_space_char_blankline_highlight_list|
+ This plugin requires the latest stable version of Neovim.
 
 ==============================================================================
- 3. SETUP                                             *indent-blankline-setup*
+ 2. FUNCTIONS                                                  *ibl.functions*
+ 
+setup({config})                                                  *ibl.setup()*
 
-To configure indent-blankline, either run the setup function, or set variables
-manually.
-The setup function has a single table as argument, keys of the table match the
-|indent-blankline-variables| without the `indent_blankline_` part.
+ Initializes and configures indent-blankline.
 
-Example: >
+ Optionally, the first parameter can be a configuration table.
+ All values that are not passed in the table are set to the default value.
+ List values get merged with the default list value.
 
-    require("indent_blankline").setup {
-        -- for example, context is off by default, use this to turn it on
-        show_current_context = true,
-        show_current_context_start = true,
-    }
+ `setup` is idempotent, meaning you can call it multiple times, and each call
+ will reset indent-blankline. If you want to only update the current
+ configuration, use |ibl.update()|.
+
+ Parameters: ~
+   • {config}  (|ibl.config|?) Configuration table
+
+ Example: ~
+   >lua
+   require "ibl".setup()
+
+
+update({config})                                                *ibl.update()*
+
+ Updates the indent-blankline configuration
+
+ The first parameter is a configuration table.
+ All values that are not passed in the table are kept as they are.
+ List values get merged with the current list value.
+
+ Parameters: ~
+   • {config}  (|ibl.config|) Configuration table
+
+ Example: ~
+   >lua
+   require "ibl".update { enabled = false }
+<
+
+overwrite({config})                                          *ibl.overwrite()*
+
+ Overwrites the indent-blankline configuration
+
+ The first parameter is a configuration table.
+ All values that are not passed in the table are kept as they are.
+ All values that are passed overwrite existing and default values.
+
+ Parameters: ~
+   • {config}  (|ibl.config|) Configuration table
+
+ Example: ~
+   >lua
+   require "ibl".overwrite {
+     exclude = { filetypes = {} }
+   }
+<
+
+setup_buffer({bufnr}, {config})                           *ibl.setup_buffer()*
+
+ Configures indent-blankline for one buffer
+
+ All values that are not passed are cleared, and will fall back to
+ the global config.
+ List values get merged with the global config values.
+
+ Parameters: ~
+   • {bufnr}   (number) Buffer number (0 for current buffer)
+   • {config}  (|ibl.config|?) Configuration table
+
+
+refresh({bufnr})                                               *ibl.refresh()*
+
+ Refreshes indent-blankline in one buffer
+
+ Only use this directly if you know what you are doing,
+ consider |ibl.debounced_refresh| instead
+
+ Parameters: ~
+   • {bufnr}  (number) Buffer number (0 for current buffer)
+
+
+debounced_refresh({bufnr})                           *ibl.debounced_refresh()*
+
+ Refreshes indent-blankline in one buffer, debounced
+
+ Parameters: ~
+   • {bufnr}  (number) Buffer number (0 for current buffer)
+
+
+refresh_all()                                              *ibl.refresh_all()*
+
+ Refreshes indent-blankline in all buffers
+
+
+hooks.register({type}, {fn}, {opts})                    *ibl.hooks.register()*
+
+ Registers a hook.
+ See |ibl.hooks| for more information
+
+ Each hook type takes a different callback, and a configuration table
+
+ Parameters: ~
+   • {type}  (|ibl.hooks.type|) Type of the hook
+   • {cb}    (|ibl.hooks.cb|) Callback function
+   • {opts}  (|ibl.hooks.options|?) Optional options for the hook
+
+ Return: ~
+   (string) ID of the hook
+
+ Example: ~
+   >lua
+   local hooks = require "ibl.hooks"
+   hooks.register(
+     hooks.type.ACTIVE,
+     function(bufnr)
+       return vim.api.nvim_buf_line_count(bufnr) < 5000
+     end
+   )
+<
+
+hooks.clear({id})                                          *ibl.hooks.clear()*
+
+ Clears a hook by id
+
+ Parameters: ~
+   • {id}  (string) ID of the hook
+
+
+hooks.clear_all()                                      *ibl.hooks.clear_all()*
+
+ Clears all hooks
+
+
+hooks.get({bufnr}, {type})                                   *ibl.hooks.get()*
+
+ Returns a list of all hooks for that buffer with the type
+
+ Parameters: ~
+   • {bufnr}  (number) Buffer number (0 for current buffer)
+   • {type}   (|ibl.hooks.type|) Type of the hook
+
+ Return: ~
+   (|ibl.hooks.cb|[]) List of hooks
 
 ==============================================================================
- 4. VARIABLES                                     *indent-blankline-variables*
+ 3. TYPES                                                          *ibl.types*
 
-All variables can be set globally |g:var|, per tab |t:var|, or per buffer |b:var|
+config                                                            *ibl.config*
 
-------------------------------------------------------------------------------
-g:indent_blankline_char                              *g:indent_blankline_char*
+ Configuration table for indent-blankline.
 
-    Specifies the character to be used as indent line.
-    Not used if |g:indent_blankline_char_list| is not empty.
+ Fields: ~
+                                                          *ibl.config.enabled*
+   • {enabled}          (boolean)
+                        Enables or disables indent-blankline
 
-    When set explicitly to empty string (""), no indentation character is
-    displayed at all, even when |g:indent_blankline_char_list| is not empty.
-    This can be useful in combination with
-    |g:indent_blankline_space_char_highlight_list| to only rely on different
-    highlighting of different indentation levels without needing to show a
-    special character.
+                        Default: `true` ~
 
-    Also set by |g:indentLine_char|
+                                                         *ibl.config.debounce*
+   • {debounce}         (number)
+                        Sets the amount indent-blankline debounces
+                        refreshes in milliseconds
 
-    Default: '│'                                                             ~
+                        Default: `200` ~
 
-    Example: >
+   • {viewport_buffer}  (|ibl.config.viewport_buffer|)
+                        Configures the viewport of where indentation guides
+                        are generated
+
+   • {indent}           (|ibl.config.indent|)
+                        Configures the indentation
+
+   • {whitespace}       (|ibl.config.whitespace|)
+                        Configures the whitespace
+
+   • {scope}            (|ibl.config.scope|)
+                        Configures the scope
+
+   • {exclude}          (|ibl.config.exclude|)
+                        Configures what is excluded from indent-blankline
+
+ Example: ~
+   >lua
+   {
+       debounce = 100,
+       indent = { char = "|" },
+       whitespace = { highlight = { "Whitespace", "NonText" } },
+       scope = { exclude = { "lua" } },
+   }
+<
+
+config.viewport_buffer                            *ibl.config.viewport_buffer*
+
+ Configures the viewport of where indentation guides are generated
+
+ Fields: ~
+                                              *ibl.config.viewport_buffer.min*
+   • {min}  (number)
+            Minimum number of lines above and below of what is currently
+            visible in the window for which indentation guides will
+            be generated
+            
+            Default: `30` ~
+
+                                              *ibl.config.viewport_buffer.max*
+   • {max}  (number)
+            Maximum number of lines above and below of what is currently
+            visible in the window for which indentation guides will
+            be generated
+
+            Default: `500` ~
+
+ Example: ~
+   >lua
+   { min = 100, max = 600 }
+<
+
+config.indent                                              *ibl.config.indent*
+
+ Configures the indentation
+
+ Fields: ~
+                                                      *ibl.config.indent.char*
+   • {char}              (string|string[])
+                         Character, or list of characters, that get used to
+                         display the indentation guide
+                         Each character has to have a display width of 0 or 1
+
+                         Default: `▎` ~
 
-        let g:indent_blankline_char = '|'
+                                                  *ibl.config.indent.tab_char*
+   • {tab_char}          (string|string[])
+                         Character, or list of characters, that get used to
+                         display the indentation guide for tabs
+                         Each character has to have a display width of 0 or 1
+
+                         Default: uses |lcs-tab| if |list| is set, ~
+                                  otherwhise, uses |ibl.config.indent.char| ~
+
+                                                 *ibl.config.indent.highlight*
+   • {highlight}         (string|string[])
+                         Highlight group, or list of highlight groups, that
+                         get applied to the indentation guide
 
-------------------------------------------------------------------------------
-g:indent_blankline_char_blankline          *g:indent_blankline_char_blankline*
+                         Default: |hl-Whitespace| ~
 
-    Specifies the character to be used as indent line for blanklines.
-    Not used if |g:indent_blankline_char_list_blankline| is not empty.
+                                          *ibl.config.indent.smart_indent_cap*
+   • {smart_indent_cap}  (boolean)
+                         Caps the number of indentation levels by looking at
+                         the surrounding code
+
+                         Default: `true` ~
 
-    Default: ''                                                             ~
+                         Example: ~
+                           >c
+                           # OFF
+                           {
+                           ▎ foo_bar(a, b,
+                           ▎ ▎ ▎ ▎ ▎ c, d);
+                           }
 
-    Example: >
+                           # ON
+                           {
+                           ▎ foo_bar(a, b,
+                           ▎ ▎       c, d);
+                           }
+<
+                                                  *ibl.config.indent.priority*
+   • {priority}          (number)
+                         Virtual text priority for the indentation guide
 
-        let g:indent_blankline_char_blankline = '┆'
+                         Default: `1` ~
 
-------------------------------------------------------------------------------
-g:indent_blankline_char_list                    *g:indent_blankline_char_list*
+ Example: ~
+   >lua
+   {
+       char = "|",
+       tab_char = { "a", "b", "c" },
+       highlight = { "Function", "Label" },
+       smart_indent_cap = true,
+       priority = 2,
+   }
+<
 
-    Specifies a list of characters to be used as indent line for
-    each indentation level.
-    Ignored if the value is an empty list.
+config.whitespace                                      *ibl.config.whitespace*
 
-    Also set by |g:indentLine_char_list|
+ Configures the whitespace
 
-    Default: []                                                              ~
+ Fields: ~
+                                             *ibl.config.whitespace.highlight*
+   • {highlight}               (string|string[])
+                               Highlight group, or list of highlight groups,
+                               that get applied to the whitespace
 
-    Example: >
+                               Default: |hl-Whitespace| ~
 
-        let g:indent_blankline_char_list = ['|', '¦', '┆', '┊']
+                                *ibl.config.whitespace.remove_blankline_trail*
+   • {remove_blankline_trail}  (boolean)
+                               Removes trailing whitespace on blanklines
 
-------------------------------------------------------------------------------
-g:indent_blankline_char_list_blankline *g:indent_blankline_char_list_blankline*
+                               Turn this off if you want to add background
+                               color to the whitespace highlight group
+
+                               Default: `true` ~
 
-    Specifies a list of characters to be used as indent line for
-    each indentation level on blanklines.
-    Ignored if the value is an empty list.
+ Example: ~
+   >lua
+   {
+       highlight = { "Function", "Label" },
+       remove_blankline_trail = true,
+   }
+<
 
-    Default: []                                                              ~
+config.scope                                                *ibl.config.scope*
 
-    Example: >
+ Configures the scope
 
-        let g:indent_blankline_char_list_blankline = ['|', '¦', '┆', '┊']
+ The scope is *not* the current indentation level! Instead, it is the
+ indentation level where variables or functions are accessible. This depends
+ on the language you are writing.
 
-------------------------------------------------------------------------------
-g:indent_blankline_char_highlight_list *g:indent_blankline_char_highlight_list*
+ Note: Scope requires treesitter to be set up ~
 
-    Specifies the list of character highlights for each indentation level.
-    Ignored if the value is an empty list.
+ Fields: ~
+                                                    *ibl.config.scope.enabled*
+   • {enabled}             (boolean)
+                           Enables or disables scope
 
-    Default: []                                                              ~
+                           Default: `true` ~
 
-    Example: >
+                                                       *ibl.config.scope.char*
+   • {char}                (string|string[])
+                           Character, or list of characters, that get used to
+                           display the scope indentation guide
+                           Each character has to have a display width
+                           of 0 or 1
 
-        let g:indent_blankline_char_highlight_list = ['Error', 'Function']
+                           Default: |ibl.config.indent.char| ~
 
-------------------------------------------------------------------------------
-g:indent_blankline_space_char_blankline *g:indent_blankline_space_char_blankline*
+                                                 *ibl.config.scope.show_start*
+   • {show_start}          (boolean)
+                           Shows an underline on the first line of the scope
 
-    Specifies the character to be used as the space value in between indent
-    lines when the line is blank.
+                           Default: `true` ~
 
-    Default: An empty space character                                        ~
+                                                   *ibl.config.scope.show_end*
+   • {show_end}            (boolean)
+                           Shows an underline on the last line of the scope
 
-    Example: >
+                           Default: `true` ~
 
-        let g:indent_blankline_space_char_blankline = ' '
+                                         *ibl.config.scope.injected_languages*
+   • {injected_languages}  (boolean)
+                           Checks for the current scope in injected
+                           treesitter languages
 
-------------------------------------------------------------------------------
-g:indent_blankline_space_char_highlight_list *g:indent_blankline_space_char_highlight_list*
+                           This also influences if the scope gets excluded
+                           or not
 
-    Specifies the list of space character highlights for each indentation
-    level.
-    Ignored if the value is an empty list.
+                           Default: `true` ~
 
-    Default: []                                                              ~
+                                                  *ibl.config.scope.highlight*
+   • {highlight}           (string|string[])
+                           Highlight group, or list of highlight groups,
+                           that get applied to the scope
 
-    Example: >
+                           Default: |hl-LineNr| ~
+
+                                                   *ibl.config.scope.priority*
+   • {priority}            (number)
+                           Virtual text priority for the scope
+
+                           Default: `1024` ~
 
-        let g:indent_blankline_space_char_highlight_list = ['Error', 'Function']
+   • {include}             (|ibl.config.scope.include|)
+                           Configures additional nodes to be used as scope
+
+   • {exclude}             (|ibl.config.scope.exclude|)
+                           Configures nodes or languages to be excluded
+                           from scope
+
+ Example: ~
+   >lua
+   {
+       enabled = true,
+       show_start = true,
+       show_end = false,
+       injected_languages = false,
+       highlight = { "Function", "Label" },
+       priority = 500,
+   }
+<
+
+config.scope.include                                *ibl.config.scope.include*
+
+ Configures additional nodes to be used as scope
+
+ Fields: ~
+                                          *ibl.config.scope.include.node_type*
+   • {node_type}  (table<string, string[]>)
+                  map of language to a list of node types which can be
+                  used as scope
+
+                  Use `*` as a wildcard for all languages
+
+                  Default: empty ~
+
+ Example: ~
+   >lua
+   {
+       node_type = { lua = { "return_statement", "table_constructor" } },
+   }
 
-------------------------------------------------------------------------------
-g:indent_blankline_space_char_blankline_highlight_list *g:indent_blankline_space_char_blankline_highlight_list*
 
-    Specifies the list of space character highlights for each indentation
-    level when the line is empty.
-    Ignored if the value is an empty list.
+config.scope.exclude                                *ibl.config.scope.exclude*
 
-    Also set by |g:indent_blankline_space_char_highlight_list|
+ Configures nodes or languages to be excluded from scope
 
-    Default: []                                                              ~
+ Fields: ~
+                                           *ibl.config.scope.exclude.language*
+   • {language}   (string[])
+                  List of treesitter languages for which scope is disabled
+
+                  Default: empty ~
+
+                                          *ibl.config.scope.exclude.node_type*
+   • {node_type}  (table<string, string[]>)
+                  map of language to a list of node types which should not
+                  be used as scope
 
-    Example: >
+                  Use `*` as a wildcard for all languages
 
-        let g:indent_blankline_space_char_blankline_highlight_list = ['Error', 'Function']
+                  Default: ~
+                    • `*`:
+                      • `source_file`
+                      • `program`
+                    • `lua`:
+                      • `chunk`
+                    • `python`:
+                      • `module`
 
-------------------------------------------------------------------------------
-g:indent_blankline_use_treesitter          *g:indent_blankline_use_treesitter*
+ Example: ~
+   >lua
+   {
+       language = { "rust" },
+       node_type = { lua = { "block", "chunk" } },
+   }
+<
 
-    Use treesitter to calculate indentation when possible.
-    Requires treesitter
+config.exclude                                            *ibl.config.exclude*
 
-    Default: false                                                           ~
+ Configures what is excluded from indent-blankline
 
-    Example: >
+ Fields: ~
+                                                *ibl.config.exclude.filetypes*
+   • {filetypes}  (string[])
+                  List of |'filetype'|s for which indent-blankline is disabled
 
-        let g:indent_blankline_use_treesitter = v:true
+                  Default: ~
+                    • `lspinfo`
+                    • `packer`
+                    • `checkhealth`
+                    • `help`
+                    • `man`
+                    • `gitcommit`
+                    • `TelescopePrompt`
+                    • `TelescopeResults`
+                    • `''`
 
-------------------------------------------------------------------------------
-g:indent_blankline_indent_level              *g:indent_blankline_indent_level*
+                                                 *ibl.config.exclude.buftypes*
+   • {buftypes}  (string[])
+                  List of |'buftype'|s for which indent-blankline is disabled
 
-    Specifies the maximum indent level to display.
+                  Default: ~
+                    • `terminal`
+                    • `nofile`
+                    • `quickfix`
+                    • `prompt`
 
-    Also set by |g:indentLine_indentLevel|
+ Example: ~
+   >lua
+   {
+       filetypes = { "rust" },
+       buftypes = { "terminal" },
+   }
+<
 
-    Default: 10                                                              ~
+indent.whitespace                                      *ibl.indent.whitespace*
 
-    Example: >
+ Enum of whitespace types
 
-        let g:indent_blankline_indent_level = 4
+ Variants: ~
+   • {TAB_START}
+   • {TAB_START_SINGLE}
+   • {TAB_FILL}
+   • {TAB_END}
+   • {SPACE}
+   • {INDENT}
 
-------------------------------------------------------------------------------
-g:indent_blankline_max_indent_increase  *g:indent_blankline_max_indent_increase*
 
-    The maximum indent level increase from line to line.
-    Set this option to 1 to make aligned trailing multiline comments not
-    create indentation.
+hooks                                                              *ibl.hooks*
 
-    Default: g:indent_blankline_indent_level                                 ~
+ Hooks provide a way to extend the functionality of indent-blankline. Either
+ from your own config, or even from other third part plugins.
+ Hooks consist of a type (|ibl.hooks.type|) and a callback
+ function (|ibl.hooks.cb|). When indent-blankline computes values for which
+ hooks exist, for example if a buffer is active, it then calls all registered
+ hooks for that type to get the final value.
 
-    Example: >
+ Most hooks can be global or buffer scoped.
 
-        let g:indent_blankline_max_indent_increase = 1
 
-------------------------------------------------------------------------------
-g:indent_blankline_show_first_indent_level *g:indent_blankline_show_first_indent_level*
+hooks.type                                                    *ibl.hooks.type*
 
-    Displays indentation in the first column.
+ Enum of hook types
 
-    Default: v:true                                                         ~
+ Variants: ~
+   • {ACTIVE}
+   • {SCOPE_ACTIVE}
+   • {SKIP_LINE}
+   • {WHITESPACE}
+   • {VIRTUAL_TEXT}
+   • {SCOPE_HIGHLIGHT}
+   • {CLEAR}
+   • {HIGHLIGHT_SETUP}
 
-    Example: >
 
-        let g:indent_blankline_show_first_indent_level = v:false
+hooks.cb                                                        *ibl.hooks.cb*
 
-------------------------------------------------------------------------------
-g:indent_blankline_show_trailing_blankline_indent *g:indent_blankline_show_trailing_blankline_indent*
+ Each hook type takes a different callback function
 
-    Displays a trailing indentation guide on blank lines, to match the
-    indentation of surrounding code.
-    Turn this off if you want to use background highlighting instead of chars.
 
-    Default: v:true                                                         ~
+hooks.cb.active({bufnr})                               *ibl.hooks.cb.active()*
 
-    Example: >
+ Callback function for the |ibl.hooks.type|.ACTIVE hook.
 
-        let g:indent_blankline_show_trailing_blankline_indent = v:false
+ Gets called before refreshing indent-blankline for a buffer.
+ If the callback returns false, the buffer will not be refreshed, and all
+ existing indentation guides will be cleared.
 
-------------------------------------------------------------------------------
-g:indent_blankline_show_end_of_line      *g:indent_blankline_show_end_of_line*
+ Parameters: ~
+   • {bufnr}  (number) Buffer number
 
-    Displays the end of line character set by |listchars| instead of the
-    indent guide on line returns.
+ Return: ~
+   (boolean)
 
-    Default: v:false                                                         ~
 
-    Example: >
+hooks.cb.scope_active({bufnr})                    *ibl.hooks.cb.scope_active()*
 
-        let g:indent_blankline_show_end_of_line = v:true
+ Callback function for the |ibl.hooks.type|.SCOPE_ACTIVE hook.
 
-------------------------------------------------------------------------------
-g:indent_blankline_show_foldtext            *g:indent_blankline_show_foldtext*
+ Gets called before refreshing indent-blankline for a buffer.
+ If the callback returns false, |ibl.config.scope| will be disabled.
 
-    Displays the full fold text instead of the indent guide on folded lines.
+ Parameters: ~
+   • {bufnr}  (number) Buffer number
 
-    Note: there is no autocommand to subscribe to changes in folding. This
-          might lead to unexpected results. A possible solution for this is to
-          remap folding bindings to also call |IndentBlanklineRefresh|
+ Return: ~
+   (boolean)
 
-    Default: v:true                                                         ~
 
-    Example: >
+hooks.cb.skip_line({tick}, {bufnr}, {row}, {line})  *ibl.hooks.cb.skip_line()*
 
-        let g:indent_blankline_show_foldtext = v:false
+ Callback function for the |ibl.hooks.type|.SKIP_LINE hook.
 
-------------------------------------------------------------------------------
-g:indent_blankline_enabled                        *g:indent_blankline_enabled*
+ Gets called for every line before indentation is calculated.
+ If the callback returns true, the line will get skipped.
 
-    Turns this plugin on or off.
+ Parameters: ~
+   • {tick}   (number) auto-incrementing id of the current refresh
+   • {bufnr}  (number) Buffer number
+   • {row}    (number) Row of the buffer
+   • {line}   (string) Text of that row
 
-    Also set by |g:indentLine_enabled|
+ Return: ~
+   (boolean)
 
-    Note: the buffer version of this variable overwrites all other
-          enabled/disabled checks.
+                                                   *ibl.hooks.cb.whitespace()*
+hooks.cb.whitespace({tick}, {bufnr}, {row}, {whitespace})
 
-    Default: v:true                                                          ~
+ Callback function for the |ibl.hooks.type|.WHITESPACE hook.
 
-    Example: >
+ Gets called for every line after the whitespace is determined.
+ The return value overwrites the whitespace for that line.
 
-        let g:indent_blankline_enabled = v:false
+ Whitespace is a table of `ibl.indent.whitespace` enum values, where each
+ value represents a display cell.
 
-------------------------------------------------------------------------------
-g:indent_blankline_disable_with_nolist *g:indent_blankline_disable_with_nolist*
+ Parameters: ~
+   • {tick}        (number) auto-incrementing id of the current refresh
+   • {bufnr}       (number) Buffer number
+   • {row}         (number) Row of the buffer
+   • {whitespace}  (|ib.indent.whitespace|[]) List of whitespace enum
 
-    When true, automatically turns this plugin off when |nolist| is set.
-    When false, setting |nolist| will keep displaying indentation guides but
-    removes whitespace characters set by |listchars|.
+ Return: ~
+   (|ib.indent.whitespace|[])
 
-    Default: v:false                                                         ~
+                                                 *ibl.hooks.cb.virtual_text()*
+hooks.cb.virtual_text({tick}, {bufnr}, {row}, {virtual_text})
 
-    Example: >
+ Callback function for the |ibl.hooks.type|.VIRTUAL_TEXT hook.
 
-        let g:indent_blankline_disable_with_nolist = v:true
+ Gets called for every line after the virtual text is determened.
+ The return value overwrites the virtual text for that line.
 
-------------------------------------------------------------------------------
-g:indent_blankline_filetype                      *g:indent_blankline_filetype*
+ See |nvim_buf_set_extmark()| for more information about virtual text.
 
-    Specifies a list of |filetype| values for which this plugin is enabled.
-    All |filetypes| are enabled if the value is an empty list.
+ Parameters: ~
+   • {tick}          (number) auto-incrementing id of the current refresh
+   • {bufnr}         (number) Buffer number
+   • {row}           (number) Row of the buffer
+   • {virtual_text}  ({string, string|string[]}[]) Virtual text for the line
 
-    Also set by |g:indentLine_fileType|
+ Return: ~
+   ({string, string|string[]}[])
 
-    Default: []                                                              ~
+                                              *ibl.hooks.cb.scope_highlight()*
+hooks.cb.scope_highlight({tick}, {bufnr}, {scope}, {scope_index})
 
-    Example: >
+ Callback function for the |ibl.hooks.type|.SCOPE_HIGHLIGHT hook.
 
-        let g:indent_blankline_filetype = ['vim']
+ Gets called for once per refresh after the scope is determined.
+ The return value overwrites the index of the highlight group
+ defined in |ibl.config.scope.highlight|
 
-------------------------------------------------------------------------------
-g:indent_blankline_filetype_exclude      *g:indent_blankline_filetype_exclude*
+ Parameters: ~
+   • {tick}         (number) auto-incrementing id of the current refresh
+   • {bufnr}        (number) Buffer number
+   • {scope}        (|TSNode|) The current scope
+   • {scope_index}  (number) Index of the highlight group
 
-    Specifies a list of |filetype| values for which this plugin is not enabled.
-    Ignored if the value is an empty list.
+ Return: ~
+   (number)
 
-    Also set by |g:indentLine_fileTypeExclude|
 
-    Default: [                                                               ~
-        "lspinfo",                                                           ~
-        "packer",                                                            ~
-        "checkhealth",                                                       ~
-        "help",                                                              ~
-        "man",                                                               ~
-        "",                                                                  ~
-    ]                                                                        ~
+hooks.cb.clear({bufnr})                                 *ibl.hooks.cb.clear()*
 
-    Example: >
+ Callback function for the |ibl.hooks.type|.CLEAR hook.
 
-        let g:indent_blankline_filetype_exclude = ['help']
+ Gets called when a buffer is cleared.
 
-------------------------------------------------------------------------------
-g:indent_blankline_buftype_exclude        *g:indent_blankline_buftype_exclude*
+ Parameters: ~
+   • {bufnr}  (number) Buffer number
 
-    Specifies a list of |buftype| values for which this plugin is not enabled.
-    Ignored if the value is an empty list.
 
-    Also set by |g:indentLine_bufTypeExclude|
+hooks.cb.highlight_setup()                    *ibl.hooks.cb.highlight_setup()*
 
-    Default: [                                                               ~
-        "terminal",                                                          ~
-        "nofile",                                                            ~
-        "quickfix",                                                          ~
-        "prompt",                                                            ~
-    ]                                                                        ~
+ Callback function for the |ibl.hooks.type|.HIGHLIGHT_SETUP hook.
 
-    Example: >
+ Gets called before the highlight groups are created.
+ If you want to define custom highlight groups, do it in this hook, so they
+ are reset if you change the colorscheme with |:colorscheme|.
 
-        let g:indent_blankline_buftype_exclude = ['terminal']
 
-------------------------------------------------------------------------------
-g:indent_blankline_bufname_exclude        *g:indent_blankline_bufname_exclude*
+hooks.options                                              *ibl.hooks.options*
 
-    Specifies a list of buffer names (file name with full path) for which
-    this plugin is not enabled.
-    A name can be regular expression as well.
+ Option table for hook registration
 
-    Also set by |g:indentLine_bufNameExclude|
+ Fields: ~
+                                                     *ibl.hooks.options.bufnr*
+   • {bufnr}  (number)
+              Buffer number (0 for current buffer)
 
-    Default: []                                                              ~
 
-    Example: >
+hooks.builtin                                              *ibl.hooks.builtin*
 
-        let g:indent_blankline_bufname_exclude = ['README.md', '.*\.py']
+hooks.builtin.skip_preproc_lines        *ibl.hooks.builtin.skip_preproc_lines*
 
-------------------------------------------------------------------------------
-g:indent_blankline_strict_tabs                *g:indent_blankline_strict_tabs*
+ Skip preproc lines
+ Automatically active for `c` and `cpp`
 
-    When on, if there is a single tab in a line, only tabs are used to
-    calculate the indentation level.
-    When off, both spaces and tabs are used to calculate the indentation
-    level.
-    Only makes a difference if a line has a mix of tabs and spaces for
-    indentation.
+ Example: ~
+   >lua
+   local hooks = require "ibl.hooks"
+   hooks.register(
+     hooks.type.SKIP_LINE,
+     hooks.builtin.skip_preproc_lines,
+     { bufnr = 0 }
+   )
+<
+                                  *hooks.builtin.scope_highlight_from_extmark*
+hooks.builtin.scope_highlight_from_extmark
 
-    Default: v:false                                                         ~
+ Gets the highlight group from existing extmark highlights at the end or
+ beginning of the scope.
+ This can be used to get a somewhat reliable sync between
+ "rainbow parentheses" plugins like
+ https://gitlab.com/HiPhish/rainbow-delimiters.nvim and indent-blankline.
 
-    Example: >
+ Example: ~
+   >lua
+   local highlight = {
+     "RainbowDelimiterRed",
+     "RainbowDelimiterYellow",
+     "RainbowDelimiterBlue",
+     "RainbowDelimiterOrange",
+     "RainbowDelimiterGreen",
+     "RainbowDelimiterViolet",
+     "RainbowDelimiterCyan",
+   }
+   vim.g.rainbow_delimiters = { highlight = highlight }
+   require "ibl".setup { scope = { highlight = highlight } }
 
-        let g:indent_blankline_strict_tabs = v:true
+   local hooks = require "ibl.hooks"
+   hooks.register(
+     hooks.type.SCOPE_HIGHLIGHT,
+     hooks.builtin.scope_highlight_from_extmark
+   )
+<
+                             *ibl.hooks.builtin.hide_first_space_indent_level*
+hooks.builtin.hide_first_space_indent_level
 
-------------------------------------------------------------------------------
-g:indent_blankline_show_current_context *g:indent_blankline_show_current_context*
+ Replaces the first indentation guide for space indentation with a normal
+ space.
 
-    When on, use treesitter to determine the current context. Then show the
-    indent character in a different highlight.
+ Example: ~
+   >lua
+   local hooks = require "ibl.hooks"
+   hooks.register(
+     hooks.type.WHITESPACE,
+     hooks.builtin.hide_first_space_indent_level
+   )
+<
+                               *ibl.hooks.builtin.hide_first_tab_indent_level*
+hooks.builtin.hide_tab_space_indent_level
 
-    Note: Requires https://github.com/nvim-treesitter/nvim-treesitter to be
-          installed
+ Replaces the first indentation guide for tab indentation with
+ |lcs-tab| tab fill.
 
-    Note: With this option enabled, the plugin refreshes on |CursorMoved|,
-          which might be slower
+ Example: ~
+   >lua
+   local hooks = require "ibl.hooks"
+   hooks.register(
+     hooks.type.WHITESPACE,
+     hooks.builtin.hide_first_tab_indent_level
+   )
+<
+==============================================================================
+ 4. COMMANDS                                                    *ibl.commands*
 
-    Default: v:false                                                         ~
+:IBLEnable                                                        *:IBLEnable*
 
-    Example: >
+ Enables indent-blankline
 
-        let g:indent_blankline_show_current_context = v:true
+:IBLDisable                                                      *:IBLDisable*
 
-------------------------------------------------------------------------------
-g:indent_blankline_show_current_context_start *g:indent_blankline_show_current_context_start*
+ Disables indent-blankline
 
-    Applies the |hl-IndentBlanklineContextStart| highlight group to the first
-    line of the current context.
-    By default this will underline.
+:IBLToggle                                                        *:IBLToggle*
 
-    Note: Requires https://github.com/nvim-treesitter/nvim-treesitter to be
-          installed
+ Toggles indent-blankline on and off
 
-    Note: You need to have set |gui-colors| and it depends on your terminal
-          emulator if this works as expected.
-          If you are using kitty and tmux, take a look at this article to
-          make it work
-          http://evantravers.com/articles/2021/02/05/curly-underlines-in-kitty-tmux-neovim/
+:IBLEnableScope                                              *:IBLEnableScope*
 
-    Default: v:false                                                         ~
+ Enables indent-blanklines scope
 
-    Example: >
+:IBLDisableScope                                            *:IBLDisableScope*
 
-        let g:indent_blankline_show_current_context_start = v:true
+ Disables indent-blanklines scope
 
-------------------------------------------------------------------------------
-g:indent_blankline_show_current_context_start_on_current_line *g:indent_blankline_show_current_context_start_on_current_line*
+:IBLToggleScope                                              *:IBLToggleScope*
 
-    Shows |g:indent_blankline_show_current_context_start| even when the cursor
-    is on the same line
-
-    Default: v:true                                                         ~
-
-    Example: >
-
-        let g:indent_blankline_show_current_context_start_on_current_line = v:false
-
-------------------------------------------------------------------------------
-g:indent_blankline_context_char              *g:indent_blankline_context_char*
-
-    Specifies the character to be used for the current context indent line.
-    Not used if |g:indent_blankline_context_char_list| is not empty.
-
-    Useful to have a greater distinction between the current context indent
-    line and others.
-
-    Also useful in combination with |g:indent_blankline_char| set to empty string
-    (""), as this allows only the current context indent line to be shown.
-
-    Default: g:indent_blankline_char                                         ~
-
-    Example: >
-
-        let g:indent_blankline_context_char = '┃'
-
-------------------------------------------------------------------------------
-g:indent_blankline_context_char_blankline *g:indent_blankline_context_char_blankline*
-
-    Equivalent of |g:indent_blankline_char_blankline| for
-    |g:indent_blankline_context_char|.
-
-    Default: ''                                                             ~
-
-    Example: >
-
-        let g:indent_blankline_context_char_blankline = '┆'
-
-------------------------------------------------------------------------------
-g:indent_blankline_context_char_list    *g:indent_blankline_context_char_list*
-
-    Equivalent of |g:indent_blankline_char_list| for
-    |g:indent_blankline_context_char|.
-
-    Default: []                                                              ~
-
-    Example: >
-
-        let g:indent_blankline_context_char_list = ['┃', '║', '╬', '█']
-
-------------------------------------------------------------------------------
-g:indent_blankline_context_char_list_blankline *g:indent_blankline_context_char_list_blankline*
-
-    Equivalent of |g:indent_blankline_char_list_blankline| for
-    |g:indent_blankline_context_char_blankline|.
-
-    Default: []                                                              ~
-
-    Example: >
-
-        let g:indent_blankline_context_char_list_blankline = ['┃', '║', '╬', '█']
-
-------------------------------------------------------------------------------
-g:indent_blankline_context_highlight_list *g:indent_blankline_context_highlight_list*
-
-    Specifies the list of character highlights for the current context at
-    each indentation level.
-    Ignored if the value is an empty list.
-
-    Only used when |g:indent_blankline_show_current_context| is active
-
-    Default: []                                                              ~
-
-    Example: >
-
-        let g:indent_blankline_context_highlight_list = ['Error', 'Warning']
-
-------------------------------------------------------------------------------
-g:indent_blankline_char_priority            *g:indent_blankline_char_priority*
-
-    Specifies the |extmarks| priority for chars.
-
-    Default: 1                                                               ~
-
-    Example: >
-
-        let g:indent_blankline_char_priority = 50
-
-------------------------------------------------------------------------------
-g:indent_blankline_context_start_priority *g:indent_blankline_context_start_priority*
-
-    Specifies the |extmarks| priority for the context start.
-
-    Default: 10000                                                           ~
-
-    Example: >
-
-        let g:indent_blankline_context_start_priority = 50
-
-------------------------------------------------------------------------------
-g:indent_blankline_context_patterns      *g:indent_blankline_context_patterns*
-
-    Specifies a list of lua patterns that are used to match against the
-    treesitter |tsnode:type()| at the cursor position to find the current
-    context.
-
-    To learn more about how lua pattern work, see here:
-    https://www.lua.org/manual/5.1/manual.html#5.4.1
-
-    Only used when |g:indent_blankline_show_current_context| is active
-
-    Default: [                                                               ~
-        "class",                                                             ~
-        "^func",                                                             ~
-        "method",                                                            ~
-        "^if",                                                               ~
-        "while",                                                             ~
-        "for",                                                               ~
-        "with",                                                              ~
-        "try",                                                               ~
-        "except",                                                            ~
-        "arguments",                                                         ~
-        "argument_list",                                                     ~
-        "object",                                                            ~
-        "dictionary",                                                        ~
-        "element",                                                           ~
-        "table",                                                             ~
-        "tuple",                                                             ~
-        "do_block",                                                          ~
-        "Block",                                                             ~
-        "InitList",                                                          ~
-        "FnCallArguments",                                                   ~
-        "IfStatement",                                                       ~
-        "ContainerDecl",                                                     ~
-        "SwitchExpr",                                                        ~
-        "IfExpr",                                                            ~
-        "ParamDeclList",                                                     ~
-    ]                                                                        ~
-
-    Example: >
-
-        let g:indent_blankline_context_patterns = ['^if']
-
-------------------------------------------------------------------------------
-g:indent_blankline_use_treesitter_scope *g:indent_blankline_use_treesitter_scope*
-
-    Instead of using |g:indent_blankline_context_patterns|, use the current
-    scope defined by nvim-treesitter as the context.
-
-    Default: false                                                           ~
-
-    Example: >
-
-        let g:indent_blankline_use_treesitter_scope = true
-
-------------------------------------------------------------------------------
-g:indent_blankline_context_pattern_highlight *g:indent_blankline_context_pattern_highlight*
-
-    Specifies a map of patterns set in
-    |g:indent_blankline_context_patterns| to highlight groups.
-    When the current matching context pattern is in the map, the context
-    will be highlighted with the corresponding highlight group.
-
-    Only used when |g:indent_blankline_show_current_context| is active
-
-    Default: {}                                                              ~
-
-    Example: >
-
-        let g:indent_blankline_context_pattern_highlight = {'function': 'Function'}
-
-------------------------------------------------------------------------------
-g:indent_blankline_viewport_buffer        *g:indent_blankline_viewport_buffer*
-
-    Sets the buffer of extra lines before and after the current viewport that
-    are considered when generating indentation and the context.
-
-    Default: 10                                                              ~
-
-    Example: >
-
-        let g:indent_blankline_viewport_buffer = 20
-
-------------------------------------------------------------------------------
-g:indent_blankline_disable_warning_message *g:indent_blankline_disable_warning_message*
-
-    Turns deprecation warning messages off.
-
-    Default: v:false                                                         ~
-
-    Example: >
-
-        let g:indent_blankline_disable_warning_message = v:true
+ Toggles indent-blanklines scope on and off
 
 ==============================================================================
- 5. COMMANDS                                       *indent-blankline-commands*
+ 5. LICENSE                                                      *ibl.license*
 
-------------------------------------------------------------------------------
-:IndentBlanklineRefresh[!]                            *IndentBlanklineRefresh*
-
-    Refreshes the indent guides for the current buffer.
-    Run this with |autocmd| when the file changes. For example after a plugin
-    formats the file.
-
-    With bang (IndentBlanklineRefresh!) refreshes the indent guides globally.
-
-    By default it is run for:
-      1. |FileChangedShellPost| *
-      2. |TextChanged| *
-      3. |TextChangedI| *
-      4. |CompleteChanged| *
-      5. |BufWinEnter| *
-      6. |Filetype| *
-      7. |OptionSet| list,listchars,shiftwidth,tabstop,expandtab
-
-    Example: >
-
-        autocmd User ALEFixPost IndentBlanklineRefresh
-
-------------------------------------------------------------------------------
-:IndentBlanklineRefreshScroll[!]                *IndentBlanklineRefreshScroll*
-
-    Refreshes the indent guides for the current buffer. But tries to reuse as
-    indent guides that already exist. Only used if we are sure the buffer
-    content did not change.
-
-    With bang (IndentBlanklineRefresh!) refreshes the indent guides globally.
-
-    By default it is run for:
-      1. |WinScrolled| *
-
-    Example: >
-
-        autocmd WinScrolled * IndentBlanklineRefreshScroll
-
-------------------------------------------------------------------------------
-:IndentBlanklineEnable[!]                               *IndentBlanklineEnable*
-
-    Enables this plugin for the current buffer.
-    This overwrites any include/exclude rules.
-
-    With bang (IndentBlanklineEnable!) enables this plugin globally
-
-------------------------------------------------------------------------------
-:IndentBlanklineDisable[!]                            *IndentBlanklineDisable*
-
-    Disables this plugin for the current buffer.
-    This overwrites any include/exclude rules.
-
-    With bang (IndentBlanklineDisable!) disables this plugin globally
-
-------------------------------------------------------------------------------
-:IndentBlanklineToggle[!]                              *IndentBlanklineToggle*
-
-    Toggles between |IndentBlanklineEnable| and |IndentBlanklineDisable|.
-
-    With bang (IndentBlanklineToggle!) toggles globally
-
-==============================================================================
- 6. LICENSE                                         *indent-blankline-license*
-
-The MIT Licence
-http://www.opensource.org/licenses/mit-license.php
-
-Copyright (c) 2023 Lukas Reineke
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+ The MIT Licence
+ http://www.opensource.org/licenses/mit-license.php
+ 
+ Copyright (c) 2023 Lukas Reineke
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl
