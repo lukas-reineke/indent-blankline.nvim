@@ -110,7 +110,7 @@ When defining the highlight group, it is important to set |nocombine| as a
 gui option. This is to make sure the character does not inherit gui options
 from the underlying text, like italic or bold.
 
-Highlight groups get reset on |ColorScheme| autocommand, *if* both fg and bg
+Highlight groups get reset on |ColorScheme| autocommand, if both fg and bg
 are empty.
 
 The set more than one highlight group that changes based on indentation level,
