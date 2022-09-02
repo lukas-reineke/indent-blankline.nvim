@@ -151,7 +151,11 @@ require("indent_blankline").setup {
 }
 ```
 
-<img width="900" src="https://user-images.githubusercontent.com/12900252/140518531-522aa67a-b377-498c-ad39-85113b2b56df.png" alt="Screenshot" />
+<img width="900" src="https://user-images.githubusercontent.com/12900252/188080732-5b7d98b9-3cb8-4789-b28d-67cad0bfbcde.png" alt="Screenshot" />
+
+`show_current_context_start` uses underline, so to achieve the best result you
+might need to tweak the underline position. In Kitty terminal for example you
+can do that with [modify_font](https://sw.kovidgoyal.net/kitty/conf/#opt-kitty.modify_font)
 
 ## Thanks
 
