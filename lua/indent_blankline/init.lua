@@ -24,7 +24,7 @@ M.setup = function(options)
 
     local o = utils.first_not_nil
 
-    vim.g.indent_blankline_char = o(options.char, vim.g.indent_blankline_char, vim.g.indentLine_char, "│")
+    vim.g.indent_blankline_char = o(options.char, vim.g.indent_blankline_char, vim.g.indentLine_char, "▏")
     vim.g.indent_blankline_char_blankline = o(options.char_blankline, vim.g.indent_blankline_char_blankline)
     vim.g.indent_blankline_char_list =
         o(options.char_list, vim.g.indent_blankline_char_list, vim.g.indentLine_char_list)
