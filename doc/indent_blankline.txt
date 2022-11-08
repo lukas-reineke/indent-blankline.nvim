@@ -137,7 +137,7 @@ Example: >
 ==============================================================================
  4. VARIABLES                                     *indent-blankline-variables*
 
-All variables can be set gobally |g:var|, per tab |t:var|, or per buffer |b:var|
+All variables can be set globally |g:var|, per tab |t:var|, or per buffer |b:var|
 
 ------------------------------------------------------------------------------
 g:indent_blankline_char                              *g:indent_blankline_char*
