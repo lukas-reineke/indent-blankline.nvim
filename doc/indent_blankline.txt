@@ -105,6 +105,8 @@ IndentBlanklineContextStart                     *hl-IndentBlanklineContextStart*
 
 ------------------------------------------------------------------------------
 
+Note: Define your highlight group after setting colorscheme or your colorscheme will clear your highlight group
+
 When defining the highlight group, it is important to set |nocombine| as a
 gui option. This is to make sure the character does not inherit gui options
 from the underlying text, like italic or bold.
