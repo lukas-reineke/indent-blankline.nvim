@@ -2,7 +2,7 @@
 
 This plugin adds indentation guides to all lines (including empty lines).
 
-It uses Neovims virtual text feature and **no conceal**
+It uses Neovim's virtual text feature and **no conceal**
 
 This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
 features so it will not work in Vim.
@@ -13,26 +13,22 @@ branch `version-1`
 
 Use your favourite plugin manager to install.
 
-#### Example with Packer
-
-[wbthomason/packer.nvim](https://github.com/wbthomason/packer.nvim)
+For [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
--- init.lua
-require("packer").startup(function()
-    use "lukas-reineke/indent-blankline.nvim"
-end)
+{ "lukas-reineke/indent-blankline.nvim" },
 ```
 
-#### Example with Plug
+For [packer.nvim](https://github.com/wbthomason/packer.nvim):
 
-[junegunn/vim-plug](https://github.com/junegunn/vim-plug)
+```lua
+use "lukas-reineke/indent-blankline.nvim"
+```
+
+For [vim-plug](https://github.com/junegunn/vim-plug):
 
 ```vim
-" init.vim
-call plug#begin('~/.vim/plugged')
 Plug 'lukas-reineke/indent-blankline.nvim'
-call plug#end()
 ```
 
 ## Setup
@@ -48,7 +44,7 @@ require("indent_blankline").setup {
 }
 ```
 
-Please see `:help indent_blankline.txt`for more details and all possible values.
+Please see `:help indent_blankline.txt` for more details and all possible values.
 
 A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options should work out of the box.
 

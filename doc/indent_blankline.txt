@@ -19,7 +19,7 @@ CONTENTS                                                    *indent-blankline*
 
 This plugin adds indentation guides to all lines (including empty lines).
 
-It uses Neovims virtual text feature and **no conceal**
+It uses Neovim's virtual text feature and **no conceal**
 
 This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
 features so it will not work in Vim.
