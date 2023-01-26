@@ -19,7 +19,7 @@ CONTENTS                                                    *indent-blankline*
 
 This plugin adds indentation guides to all lines (including empty lines).
 
-It uses Neovims virtual text feature and **no conceal**
+It uses Neovim's virtual text feature and **no conceal**
 
 This plugin requires Neovim 0.5 or higher. It makes use of Neovim only
 features so it will not work in Vim.
@@ -139,7 +139,7 @@ Example: >
 ==============================================================================
  4. VARIABLES                                     *indent-blankline-variables*
 
-All variables can be set gobally |g:var|, per tab |t:var|, or per buffer |b:var|
+All variables can be set globally |g:var|, per tab |t:var|, or per buffer |b:var|
 
 ------------------------------------------------------------------------------
 g:indent_blankline_char                              *g:indent_blankline_char*
