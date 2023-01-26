@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.20.2
+Version: 2.20.3
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
@@ -760,7 +760,7 @@ g:indent_blankline_disable_warning_message *g:indent_blankline_disable_warning_m
 The MIT Licence
 http://www.opensource.org/licenses/mit-license.php
 
-Copyright (c) 2022 Lukas Reineke
+Copyright (c) 2023 Lukas Reineke
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
