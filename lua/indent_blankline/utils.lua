@@ -246,11 +246,7 @@ M.reset_highlights = function()
         IndentBlanklineContextStart = label_fg,
     } do
         local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
-        if
-            vim.fn.synIDattr(current_highlight, "fg") == ""
-            and vim.fn.synIDattr(current_highlight, "bg") == ""
-            and vim.fn.synIDattr(current_highlight, "sp") == ""
-        then
+        if not M.check_hightligt_exists(highlight_name) then
             if highlight_name == "IndentBlanklineContextStart" then
                 vim.cmd(
                     string.format(
@@ -271,6 +267,11 @@ M.reset_highlights = function()
             end
         end
     end
+end
+
+M.check_hightligt_exists = function(highlight_name)
+    local highlight_status, _ = pcall(vim.cmd, 'silent highlight ' .. highlight_name)
+    return highlight_status
 end
 
 M.first_not_nil = function(...)
