@@ -109,6 +109,7 @@ M.setup = function(options)
         "with",
         "try",
         "except",
+        "match",
         "arguments",
         "argument_list",
         "object",
