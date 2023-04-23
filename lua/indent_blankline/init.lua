@@ -118,6 +118,14 @@ M.setup = function(options)
         "table",
         "tuple",
         "do_block",
+		"Block",
+		"InitList",
+		"FnCallArguments",
+		"IfStatement",
+		"ContainerDecl",
+		"SwitchExpr",
+		"IfExpr",
+		"ParamDeclList",
     })
     vim.g.indent_blankline_context_pattern_highlight =
         o(options.context_pattern_highlight, vim.g.indent_blankline_context_pattern_highlight)
