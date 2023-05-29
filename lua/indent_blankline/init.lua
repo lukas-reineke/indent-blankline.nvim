@@ -181,10 +181,10 @@ local refresh = function(scroll)
         vim.b.__indent_blankline_active = true
     end
 
-    local win_start = vim.fn.line "w0"
+    local win_view = vim.fn.winsaveview()
+    local win_start = win_view.topline
     local win_end = vim.fn.line "w$"
     local offset = math.max(win_start - 1 - v "indent_blankline_viewport_buffer", 0)
-    local win_view = vim.fn.winsaveview()
     local left_offset = win_view.leftcol
     local lnum = win_view.lnum
     local left_offset_s = tostring(left_offset)
@@ -217,7 +217,7 @@ local refresh = function(scroll)
             end
 
             if not need_to_update then
-                return
+                -- return
             end
 
             -- merge ranges and update the variable, strategies are: contains or extends
@@ -455,7 +455,10 @@ local refresh = function(scroll)
     local empty_line_counter = 0
     local context_indent
     for i = 1, #lines do
-        if foldtext and vim.fn.foldclosed(i + offset) > 0 then
+        if
+            (i + offset == win_start and win_view.skipcol > 0)
+            or (foldtext and vim.fn.foldclosed(i + offset) > 0)
+        then
             utils.clear_line_indent(bufnr, i + offset)
         else
             local async
