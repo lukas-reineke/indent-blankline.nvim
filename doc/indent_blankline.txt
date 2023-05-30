@@ -203,7 +203,6 @@ g:indent_blankline_char_list_blankline *g:indent_blankline_char_list_blankline*
         let g:indent_blankline_char_list_blankline = ['|', '¦', '┆', '┊']
 
 ------------------------------------------------------------------------------
-
 g:indent_blankline_char_highlight_list *g:indent_blankline_char_highlight_list*
 
     Specifies the list of character highlights for each indentation level.
@@ -228,7 +227,6 @@ g:indent_blankline_space_char_blankline *g:indent_blankline_space_char_blankline
         let g:indent_blankline_space_char_blankline = ' '
 
 ------------------------------------------------------------------------------
-
 g:indent_blankline_space_char_highlight_list *g:indent_blankline_space_char_highlight_list*
 
     Specifies the list of space character highlights for each indentation
@@ -242,7 +240,6 @@ g:indent_blankline_space_char_highlight_list *g:indent_blankline_space_char_high
         let g:indent_blankline_space_char_highlight_list = ['Error', 'Function']
 
 ------------------------------------------------------------------------------
-
 g:indent_blankline_space_char_blankline_highlight_list *g:indent_blankline_space_char_blankline_highlight_list*
 
     Specifies the list of space character highlights for each indentation
