@@ -114,8 +114,38 @@ require("indent_blankline").setup {
 
 ```lua
 vim.opt.termguicolors = true
-vim.cmd [[highlight IndentBlanklineIndent1 guibg=#1f1f1f gui=nocombine]]
-vim.cmd [[highlight IndentBlanklineIndent2 guibg=#1a1a1a gui=nocombine]]
+local bg_color = vim.api.nvim_get_hl_by_name('Normal', true).background
+
+function LightenDarkenColor(numColor, amt)
+    -- Lighten or darken a base 10 RBG color by amt
+    -- Return a base 16 RBG hex string starting with #
+    -- For vimscript
+    local r = bit.rshift(numColor, 16) + amt
+    local b = bit.band(bit.rshift(numColor, 8), 0x00FF) + amt
+    local g = bit.band(numColor, 0x0000FF) + amt
+    if not unpack then -- lua version compatibility
+        local unpack = table.unpack
+    end
+    local r, g, b = unpack(bandaidColor{r, g, b})
+    local newColor = bit.bor(g, bit.bor(bit.lshift(b, 8), bit.lshift(r, 16)))
+    local hexString = string.format("#%06x", newColor)
+    return hexString
+end
+
+function bandaidColor(arr)
+    -- Ensure rbg color does not go over range
+    -- Note this may distort extreme colors
+    res = {}
+    for _, item in ipairs(arr) do
+        item = math.max(item, 0)
+        item = math.min(item, 255)
+        table.insert(res, item)
+    end
+    return res
+end
+
+vim.cmd("highlight IndentBlanklineIndent1 guibg=" .. LightenDarkenColor(bg_color, 3) .. " gui=nocombine")
+vim.cmd("highlight IndentBlanklineIndent2 guibg=" .. LightenDarkenColor(bg_color, -3) .. " gui=nocombine")
 
 require("indent_blankline").setup {
     char = "",
