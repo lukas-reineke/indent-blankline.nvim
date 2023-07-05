@@ -187,17 +187,17 @@ M.find_indent = function(whitespace, only_whitespace, shiftwidth, strict_tabs, l
 end
 
 M.get_current_context = function(type_patterns, use_treesitter_scope)
-    local ts_locals_status, locals = pcall(require, "nvim-treesitter.locals")
-    if not ts_locals_status then
-        vim.schedule_wrap(function()
-            M.error_handler("nvim-treesitter not found. Context will not work", vim.log.levels.WARN)
-        end)()
-        return false
-    end
 
     local cursor_node = vim.treesitter.get_node()
 
     if use_treesitter_scope then
+        local ts_locals_status, locals = pcall(require, "nvim-treesitter.locals")
+        if not ts_locals_status then
+            vim.schedule_wrap(function()
+                M.error_handler("nvim-treesitter not found. Context will not work", vim.log.levels.WARN)
+            end)()
+            return false
+        end
         local current_scope = locals.containing_scope(cursor_node, 0)
         if not current_scope then
             return false
