@@ -246,9 +246,9 @@ M.reset_highlights = function()
     } do
         local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
         if
-                vim.fn.synIDattr(current_highlight, "fg") == ""
-                and vim.fn.synIDattr(current_highlight, "bg") == ""
-                and vim.fn.synIDattr(current_highlight, "sp") == ""
+            vim.fn.synIDattr(current_highlight, "fg") == ""
+            and vim.fn.synIDattr(current_highlight, "bg") == ""
+            and vim.fn.synIDattr(current_highlight, "sp") == ""
         then
             if highlight_name == "IndentBlanklineContextStart" then
                 vim.cmd(
