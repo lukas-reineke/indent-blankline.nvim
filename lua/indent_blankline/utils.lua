@@ -187,7 +187,6 @@ M.find_indent = function(whitespace, only_whitespace, shiftwidth, strict_tabs, l
 end
 
 M.get_current_context = function(type_patterns, use_treesitter_scope)
-
     local cursor_node = vim.treesitter.get_node()
 
     if use_treesitter_scope then
