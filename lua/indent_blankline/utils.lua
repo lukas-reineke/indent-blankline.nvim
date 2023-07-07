@@ -195,7 +195,7 @@ M.get_current_context = function(type_patterns, use_treesitter_scope)
         return false
     end
     local locals = require "nvim-treesitter.locals"
-    local cursor_node = vim.treesitter.get_node()
+    local cursor_node = ts_utils.get_node_at_cursor()
 
     if use_treesitter_scope then
         local current_scope = locals.containing_scope(cursor_node, 0)
