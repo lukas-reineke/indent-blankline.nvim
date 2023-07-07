@@ -292,6 +292,8 @@ local refresh = function(scroll)
     local max_indent_level = v "indent_blankline_indent_level"
     local max_indent_increase = v "indent_blankline_max_indent_increase"
     local expandtab = vim.bo.expandtab
+
+    local has_ts_parser = utils.has_ts_parser(vim.bo.filetype)
     local use_ts_indent = false
     local ts_indent
     if v "indent_blankline_use_treesitter" then
@@ -303,7 +305,7 @@ local refresh = function(scroll)
         end
         local ts_indent_status
         ts_indent_status, ts_indent = pcall(require, "nvim-treesitter.indent")
-        use_ts_indent = ts_query_status and ts_indent_status and ts_query.has_indents(vim.bo.filetype)
+        use_ts_indent = has_ts_parser and ts_query_status and ts_indent_status and ts_query.has_indents(vim.bo.filetype)
     end
     local first_indent = v "indent_blankline_show_first_indent_level"
     local trail_indent = v "indent_blankline_show_trailing_blankline_indent"
@@ -319,7 +321,8 @@ local refresh = function(scroll)
     local context_status, context_start, context_end, context_pattern = false, 0, 0, nil
     local show_current_context_start = v "indent_blankline_show_current_context_start"
     local show_current_context_start_on_current_line = v "indent_blankline_show_current_context_start_on_current_line"
-    if v "indent_blankline_show_current_context" and vim.treesitter.language.get_lang(vim.bo.filetype) ~= nil then
+
+    if v "indent_blankline_show_current_context" and has_ts_parser then
         context_status, context_start, context_end, context_pattern =
             utils.get_current_context(v "indent_blankline_context_patterns", v "indent_blankline_use_treesitter_scope")
     end

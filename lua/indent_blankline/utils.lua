@@ -337,4 +337,8 @@ M.binary_search_ranges = function(ranges, target_range)
     return idx_mid
 end
 
+M.has_ts_parser = function(filetype)
+    return pcall(vim.treesitter.language.add, vim.treesitter.language.get_lang(filetype))
+end
+
 return M
