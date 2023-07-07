@@ -2,7 +2,7 @@
 
 
 Author: Lukas Reineke <lukas.reineke@protonmail.com>
-Version: 2.20.8
+Version: 2.20.9
 
 ==============================================================================
 CONTENTS                                                    *indent-blankline*
