@@ -45,7 +45,7 @@ M.error_handler = function(err, level)
     if not pcall(require, "notify") then
         err = string.format("indent-blankline: %s", err)
     end
-    vim.notify_once(err, level or vim.log.levels.DEBUG, {
+    vim.notify_once(err, level or M._if(vim.g.indent_blankline_debug, vim.log.levels.ERROR, vim.log.levels.DEBUG), {
         title = "indent-blankline",
     })
 end
