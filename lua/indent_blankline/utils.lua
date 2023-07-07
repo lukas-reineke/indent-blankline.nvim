@@ -187,25 +187,26 @@ M.find_indent = function(whitespace, only_whitespace, shiftwidth, strict_tabs, l
 end
 
 M.get_current_context = function(type_patterns, use_treesitter_scope)
+    local ts_utils_status, ts_utils = pcall(require, "nvim-treesitter.ts_utils")
+    if not ts_utils_status then
+        vim.schedule_wrap(function()
+            M.error_handler("nvim-treesitter not found. Context will not work", vim.log.levels.WARN)
+        end)()
+        return false
+    end
+    local locals = require "nvim-treesitter.locals"
     local cursor_node = vim.treesitter.get_node()
 
     if use_treesitter_scope then
-        local success, locals = pcall(require, "nvim-treesitter.locals")
-        if not success then
-            vim.schedule_wrap(function()
-                M.error_handler("nvim-treesitter not found. Defaulting to patterns.", vim.log.levels.WARN)
-            end)()
-        else
-            local current_scope = locals.containing_scope(cursor_node, 0)
-            if not current_scope then
-                return false
-            end
-            local node_start, _, node_end, _ = current_scope:range()
-            if node_start == node_end then
-                return false
-            end
-            return true, node_start + 1, node_end + 1, current_scope:type()
+        local current_scope = locals.containing_scope(cursor_node, 0)
+        if not current_scope then
+            return false
         end
+        local node_start, _, node_end, _ = current_scope:range()
+        if node_start == node_end then
+            return false
+        end
+        return true, node_start + 1, node_end + 1, current_scope:type()
     end
 
     while cursor_node do
@@ -246,9 +247,9 @@ M.reset_highlights = function()
     } do
         local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
         if
-                vim.fn.synIDattr(current_highlight, "fg") == ""
-                and vim.fn.synIDattr(current_highlight, "bg") == ""
-                and vim.fn.synIDattr(current_highlight, "sp") == ""
+            vim.fn.synIDattr(current_highlight, "fg") == ""
+            and vim.fn.synIDattr(current_highlight, "bg") == ""
+            and vim.fn.synIDattr(current_highlight, "sp") == ""
         then
             if highlight_name == "IndentBlanklineContextStart" then
                 vim.cmd(
