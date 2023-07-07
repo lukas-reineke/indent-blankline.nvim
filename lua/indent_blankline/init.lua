@@ -138,6 +138,8 @@ M.setup = function(options)
     vim.g.indent_blankline_context_start_priority =
         o(options.context_start_priority, vim.g.indent_blankline_context_start_priority, 10000)
 
+    vim.g.indent_blankline_debug = o(options.debug, vim.g.indent_blankline_debug, false)
+
     if vim.g.indent_blankline_show_current_context then
         vim.cmd [[
             augroup IndentBlanklineContextAutogroup
@@ -317,138 +319,142 @@ local refresh = function(scroll)
     local context_status, context_start, context_end, context_pattern = false, 0, 0, nil
     local show_current_context_start = v "indent_blankline_show_current_context_start"
     local show_current_context_start_on_current_line = v "indent_blankline_show_current_context_start_on_current_line"
-    if v "indent_blankline_show_current_context" then
+    if v "indent_blankline_show_current_context" and vim.treesitter.language.get_lang(vim.bo.filetype) ~= nil then
         context_status, context_start, context_end, context_pattern =
             utils.get_current_context(v "indent_blankline_context_patterns", v "indent_blankline_use_treesitter_scope")
     end
 
-    local get_virtual_text =
-        function(indent, extra, blankline, context_active, context_indent, prev_indent, virtual_string)
-            local virtual_text = {}
-            local current_left_offset = left_offset
-            local local_max_indent_level = math.min(max_indent_level, prev_indent + max_indent_increase)
-            local indent_char = utils._if(blankline and char_blankline, char_blankline, char)
-            local context_indent_char =
-                utils._if(blankline and context_char_blankline, context_char_blankline, context_char)
-            local indent_char_list = utils._if(blankline and #char_list_blankline > 0, char_list_blankline, char_list)
-            local context_indent_char_list = utils._if(
-                blankline and #context_char_list_blankline > 0,
-                context_char_list_blankline,
-                context_char_list
-            )
-            for i = 1, math.min(math.max(indent, 0), local_max_indent_level) do
-                local space_count = shiftwidth
-                local context = context_active and context_indent == i
-                local show_indent_char = (i ~= 1 or first_indent) and indent_char ~= ""
-                local show_context_indent_char = context and (i ~= 1 or first_indent) and context_indent_char ~= ""
-                local show_end_of_line_char = i == 1 and blankline and end_of_line and list_chars["eol_char"]
-                local show_indent_or_eol_char = show_indent_char or show_context_indent_char or show_end_of_line_char
-                if show_indent_or_eol_char then
-                    space_count = space_count - 1
-                    if current_left_offset > 0 then
-                        current_left_offset = current_left_offset - 1
-                    else
-                        table.insert(virtual_text, {
-                            utils._if(
-                                show_end_of_line_char,
-                                list_chars["eol_char"],
-                                utils._if(
-                                    context,
-                                    utils.get_from_list(
-                                        context_indent_char_list,
-                                        i - utils._if(not first_indent, 1, 0),
-                                        context_indent_char
-                                    ),
-                                    utils.get_from_list(
-                                        indent_char_list,
-                                        i - utils._if(not first_indent, 1, 0),
-                                        indent_char
-                                    )
-                                )
-                            ),
-                            utils._if(
-                                context,
-                                utils._if(
-                                    context_pattern_highlight[context_pattern],
-                                    context_pattern_highlight[context_pattern],
-                                    utils.get_from_list(context_highlight_list, i, context_highlight)
-                                ),
-                                utils.get_from_list(char_highlight_list, i, char_highlight)
-                            ),
-                        })
-                    end
-                end
+    local get_virtual_text = function(
+        indent,
+        extra,
+        blankline,
+        context_active,
+        context_indent,
+        prev_indent,
+        virtual_string
+    )
+        local virtual_text = {}
+        local current_left_offset = left_offset
+        local local_max_indent_level = math.min(max_indent_level, prev_indent + max_indent_increase)
+        local indent_char = utils._if(blankline and char_blankline, char_blankline, char)
+        local context_indent_char =
+            utils._if(blankline and context_char_blankline, context_char_blankline, context_char)
+        local indent_char_list = utils._if(blankline and #char_list_blankline > 0, char_list_blankline, char_list)
+        local context_indent_char_list =
+            utils._if(blankline and #context_char_list_blankline > 0, context_char_list_blankline, context_char_list)
+        for i = 1, math.min(math.max(indent, 0), local_max_indent_level) do
+            local space_count = shiftwidth
+            local context = context_active and context_indent == i
+            local show_indent_char = (i ~= 1 or first_indent) and indent_char ~= ""
+            local show_context_indent_char = context and (i ~= 1 or first_indent) and context_indent_char ~= ""
+            local show_end_of_line_char = i == 1 and blankline and end_of_line and list_chars["eol_char"]
+            local show_indent_or_eol_char = show_indent_char or show_context_indent_char or show_end_of_line_char
+            if show_indent_or_eol_char then
+                space_count = space_count - 1
                 if current_left_offset > 0 then
-                    local current_space_count = space_count
-                    space_count = space_count - current_left_offset
-                    current_left_offset = current_left_offset - current_space_count
-                end
-                if space_count > 0 then
-                    -- ternary operator below in table.insert() doesn't work because it would evaluate each option regardless
-                    local tmp_string
-                    local index = 1 + (i - 1) * shiftwidth
-                    if show_indent_or_eol_char then
-                        if table.maxn(virtual_string) >= index + space_count then
-                            -- first char was already set above
-                            tmp_string = table.concat(virtual_string, "", index + 1, index + space_count)
-                        end
-                    else
-                        if table.maxn(virtual_string) >= index + space_count - 1 then
-                            tmp_string = table.concat(virtual_string, "", index, index + space_count - 1)
-                        end
-                    end
+                    current_left_offset = current_left_offset - 1
+                else
                     table.insert(virtual_text, {
                         utils._if(
-                            tmp_string,
-                            tmp_string,
-                            utils._if(blankline, space_char_blankline, list_chars["lead_char"]):rep(space_count)
+                            show_end_of_line_char,
+                            list_chars["eol_char"],
+                            utils._if(
+                                context,
+                                utils.get_from_list(
+                                    context_indent_char_list,
+                                    i - utils._if(not first_indent, 1, 0),
+                                    context_indent_char
+                                ),
+                                utils.get_from_list(
+                                    indent_char_list,
+                                    i - utils._if(not first_indent, 1, 0),
+                                    indent_char
+                                )
+                            )
                         ),
                         utils._if(
-                            blankline,
-                            utils.get_from_list(space_char_blankline_highlight_list, i, space_char_blankline_highlight),
-                            utils.get_from_list(
-                                space_char_highlight_list,
-                                i,
-                                utils._if(context, context_space_char_highlight, space_char_highlight)
-                            )
+                            context,
+                            utils._if(
+                                context_pattern_highlight[context_pattern],
+                                context_pattern_highlight[context_pattern],
+                                utils.get_from_list(context_highlight_list, i, context_highlight)
+                            ),
+                            utils.get_from_list(char_highlight_list, i, char_highlight)
                         ),
                     })
                 end
             end
-
-            local index = math.ceil(#virtual_text / 2) + 1
-            local extra_context_active = context_active and context_indent == index
-
-            if
-                (
-                    (indent_char ~= "" or #indent_char_list > 0)
-                    or (extra_context_active and (context_indent_char ~= "" or #context_char_list > 0))
-                )
-                and ((blankline or extra) and trail_indent)
-                and (first_indent or #virtual_text > 0)
-                and current_left_offset < 1
-                and indent < local_max_indent_level
-            then
+            if current_left_offset > 0 then
+                local current_space_count = space_count
+                space_count = space_count - current_left_offset
+                current_left_offset = current_left_offset - current_space_count
+            end
+            if space_count > 0 then
+                -- ternary operator below in table.insert() doesn't work because it would evaluate each option regardless
+                local tmp_string
+                local index = 1 + (i - 1) * shiftwidth
+                if show_indent_or_eol_char then
+                    if table.maxn(virtual_string) >= index + space_count then
+                        -- first char was already set above
+                        tmp_string = table.concat(virtual_string, "", index + 1, index + space_count)
+                    end
+                else
+                    if table.maxn(virtual_string) >= index + space_count - 1 then
+                        tmp_string = table.concat(virtual_string, "", index, index + space_count - 1)
+                    end
+                end
                 table.insert(virtual_text, {
                     utils._if(
-                        extra_context_active,
-                        utils.get_from_list(
-                            context_indent_char_list,
-                            index - utils._if(not first_indent, 1, 0),
-                            context_indent_char
-                        ),
-                        utils.get_from_list(indent_char_list, index - utils._if(not first_indent, 1, 0), indent_char)
+                        tmp_string,
+                        tmp_string,
+                        utils._if(blankline, space_char_blankline, list_chars["lead_char"]):rep(space_count)
                     ),
                     utils._if(
-                        extra_context_active,
-                        utils.get_from_list(context_highlight_list, index, context_highlight),
-                        utils.get_from_list(char_highlight_list, index, char_highlight)
+                        blankline,
+                        utils.get_from_list(space_char_blankline_highlight_list, i, space_char_blankline_highlight),
+                        utils.get_from_list(
+                            space_char_highlight_list,
+                            i,
+                            utils._if(context, context_space_char_highlight, space_char_highlight)
+                        )
                     ),
                 })
             end
-
-            return virtual_text
         end
+
+        local index = math.ceil(#virtual_text / 2) + 1
+        local extra_context_active = context_active and context_indent == index
+
+        if
+            (
+                (indent_char ~= "" or #indent_char_list > 0)
+                or (extra_context_active and (context_indent_char ~= "" or #context_char_list > 0))
+            )
+            and ((blankline or extra) and trail_indent)
+            and (first_indent or #virtual_text > 0)
+            and current_left_offset < 1
+            and indent < local_max_indent_level
+        then
+            table.insert(virtual_text, {
+                utils._if(
+                    extra_context_active,
+                    utils.get_from_list(
+                        context_indent_char_list,
+                        index - utils._if(not first_indent, 1, 0),
+                        context_indent_char
+                    ),
+                    utils.get_from_list(indent_char_list, index - utils._if(not first_indent, 1, 0), indent_char)
+                ),
+                utils._if(
+                    extra_context_active,
+                    utils.get_from_list(context_highlight_list, index, context_highlight),
+                    utils.get_from_list(char_highlight_list, index, char_highlight)
+                ),
+            })
+        end
+
+        return virtual_text
+    end
 
     local prev_indent
     local next_indent
