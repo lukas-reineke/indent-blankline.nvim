@@ -45,7 +45,7 @@ M.error_handler = function(err, level)
     if not pcall(require, "notify") then
         err = string.format("indent-blankline: %s", err)
     end
-    vim.notify_once(err, level or M._if(vim.g.indent_blankline_debug, vim.log.levels.ERROR, vim.log.levels.DEBUG), {
+    vim.notify_once(err, level or vim.log.levels.DEBUG, {
         title = "indent-blankline",
     })
 end
@@ -190,22 +190,22 @@ M.get_current_context = function(type_patterns, use_treesitter_scope)
     local cursor_node = vim.treesitter.get_node()
 
     if use_treesitter_scope then
-        local ts_locals_status, locals = pcall(require, "nvim-treesitter.locals")
-        if not ts_locals_status then
+        local success, locals = pcall(require, "nvim-treesitter.locals")
+        if not success then
             vim.schedule_wrap(function()
-                M.error_handler("nvim-treesitter not found. Context will not work", vim.log.levels.WARN)
+                M.error_handler("nvim-treesitter not found. Defaulting to patterns.", vim.log.levels.WARN)
             end)()
-            return false
+        else
+            local current_scope = locals.containing_scope(cursor_node, 0)
+            if not current_scope then
+                return false
+            end
+            local node_start, _, node_end, _ = current_scope:range()
+            if node_start == node_end then
+                return false
+            end
+            return true, node_start + 1, node_end + 1, current_scope:type()
         end
-        local current_scope = locals.containing_scope(cursor_node, 0)
-        if not current_scope then
-            return false
-        end
-        local node_start, _, node_end, _ = current_scope:range()
-        if node_start == node_end then
-            return false
-        end
-        return true, node_start + 1, node_end + 1, current_scope:type()
     end
 
     while cursor_node do
@@ -246,9 +246,9 @@ M.reset_highlights = function()
     } do
         local current_highlight = vim.fn.synIDtrans(vim.fn.hlID(highlight_name))
         if
-            vim.fn.synIDattr(current_highlight, "fg") == ""
-            and vim.fn.synIDattr(current_highlight, "bg") == ""
-            and vim.fn.synIDattr(current_highlight, "sp") == ""
+                vim.fn.synIDattr(current_highlight, "fg") == ""
+                and vim.fn.synIDattr(current_highlight, "bg") == ""
+                and vim.fn.synIDattr(current_highlight, "sp") == ""
         then
             if highlight_name == "IndentBlanklineContextStart" then
                 vim.cmd(
@@ -335,10 +335,6 @@ M.binary_search_ranges = function(ranges, target_range)
     end
 
     return idx_mid
-end
-
-M.has_ts_parser = function(filetype)
-    return pcall(vim.treesitter.language.add, vim.treesitter.language.get_lang(filetype))
 end
 
 return M
