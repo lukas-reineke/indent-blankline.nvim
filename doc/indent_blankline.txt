@@ -49,9 +49,9 @@ update({config})                                                *ibl.update()*
 
  Updates the indent-blankline configuration
 
-  The first parameter is a configuration table.
-  All values that are not passed in the table are kept as they are.
-  List values get merged with the current list value.
+ The first parameter is a configuration table.
+ All values that are not passed in the table are kept as they are.
+ List values get merged with the current list value.
 
  Parameters: ~
    • {config}  (|ibl.config|) Configuration table
@@ -59,6 +59,24 @@ update({config})                                                *ibl.update()*
  Example: ~
    >lua
    require "ibl".update { enabled = false }
+<
+
+overwrite({config})                                          *ibl.overwrite()*
+
+ Overwrites the indent-blankline configuration
+
+ The first parameter is a configuration table.
+ All values that are not passed in the table are kept as they are.
+ All values that are passed overwrite existing and default values.
+
+ Parameters: ~
+   • {config}  (|ibl.config|) Configuration table
+
+ Example: ~
+   >lua
+   require "ibl".overwrite {
+     exclude = { filetypes = {} }
+   }
 <
 
 setup_buffer({bufnr}, {config})                           *ibl.setup_buffer()*
@@ -458,7 +476,7 @@ config.exclude                                            *ibl.config.exclude*
        filetypes = { "rust" },
        filetypes = { "terminal" },
    }
-
+<
 
 indent.whitespace                                      *ibl.indent.whitespace*
 
@@ -639,7 +657,7 @@ hooks.builtin.scope_highlight_from_extmark
      hooks.type.SCOPE_HIGHLIGHT,
      hooks.builtin.scope_highlight_from_extmark
    )
-
+<
 ==============================================================================
  4. COMMANDS                                                    *ibl.commands*
 

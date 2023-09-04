@@ -72,6 +72,16 @@ M.update = function(config)
     setup(conf.update_config(config))
 end
 
+--- Overwrites the indent-blankline configuration
+---
+--- The first parameter is a configuration table.
+--- All values that are not passed in the table are kept as they are.
+--- All values that are passed overwrite existing and default values.
+---@param config ibl.config
+M.overwrite = function(config)
+    setup(conf.overwrite_config(config))
+end
+
 --- Configures indent-blankline for one buffer
 ---
 --- All values that are not passed are cleared, and will fall back to the global config
