@@ -20,7 +20,7 @@ CONTENTS                                              *ibl* *indent-blankline*
 
  To start using indent-blankline, call the |ibl.setup()| function.
 
- This plugin requires the latests stable version of Neovim.
+ This plugin requires the latest stable version of Neovim.
 
 ==============================================================================
  2. FUNCTIONS                                                  *ibl.functions*
@@ -180,8 +180,8 @@ config                                                            *ibl.config*
 
                         Default: `true` ~
 
-                                                          *ibl.config.deboune*
-   • {deboune}          (number)
+                                                         *ibl.config.debounce*
+   • {debounce}         (number)
                         Sets the amount indent-blankline debounces
                         refreshes in milliseconds
 
@@ -206,7 +206,7 @@ config                                                            *ibl.config*
  Example: ~
    >lua
    {
-       debounce: 100,
+       debounce = 100,
        indent = { char = "|" },
        whitespace = { highlight = { "Whitespace", "NonText" } },
        scope = { exclude = { "lua" } },
@@ -236,7 +236,7 @@ config.viewport_buffer                            *ibl.config.viewport_buffer*
 
  Example: ~
    >lua
-   { min: 100, max: 600 }
+   { min = 100, max = 600 }
 <
 
 config.indent                                              *ibl.config.indent*
@@ -369,7 +369,6 @@ config.scope                                                *ibl.config.scope*
 
                            Default: `1024` ~
 
-                                                    *ibl.config.scope.exclude*
    • {exclude}             (|ibl.config.scope.exclude|)
                            Configures what is excluded from scope
 
@@ -515,7 +514,7 @@ hooks.cb.active({bufnr})                               *ibl.hooks.cb.active()*
 
  Gets called before refreshing indent-blankline for a buffer.
  If the callback returns false, the buffer will not be refreshed, and all
- existing indentation guids will be cleared.
+ existing indentation guides will be cleared.
 
  Parameters: ~
    • {bufnr}  (number) Buffer number
@@ -545,7 +544,7 @@ hooks.cb.whitespace({tick}, {bufnr}, {row}, {whitespace})
 
  Callback function for the |ibl.hooks.type|.WHITESPACE hook.
 
- Gets called for every line after the whitespace is determened.
+ Gets called for every line after the whitespace is determined.
  The return value overwrites the whitespace for that line.
 
  Parameters: ~

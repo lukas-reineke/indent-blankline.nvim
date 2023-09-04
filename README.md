@@ -5,7 +5,7 @@ It uses Neovim's virtual text feature and **no conceal**
 
 To start using indent-blankline, call the `ibl.setup()` function.
 
-This plugin requires the latests stable version of Neovim.
+This plugin requires the latest stable version of Neovim.
 
 ## Install
 
@@ -14,7 +14,7 @@ Use your favourite plugin manager to install.
 For [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
-{ "lukas-reineke/indent-blankline.nvim" },
+{ "lukas-reineke/indent-blankline.nvim", opts = {} },
 ```
 
 For [pckr.nvim](https://github.com/lewis6991/pckr.nvim):
