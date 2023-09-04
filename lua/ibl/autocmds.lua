@@ -10,7 +10,14 @@ M.setup = function()
         pattern = "*",
         callback = ibl.refresh_all,
     })
-    vim.api.nvim_create_autocmd({ "Filetype", "BufWinEnter" }, {
+    vim.api.nvim_create_autocmd({
+        "BufWinEnter",
+        "CompleteChanged",
+        "FileChangedShellPost",
+        "FileType",
+        "TextChanged",
+        "TextChangedI",
+    }, {
         group = group,
         pattern = "*",
         callback = function(opts)
@@ -29,13 +36,6 @@ M.setup = function()
         pattern = "*",
         callback = function(opts)
             ibl.debounced_refresh(opts.buf)
-        end,
-    })
-    vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "FileChangedShellPost", "CompleteChanged" }, {
-        group = group,
-        pattern = "*",
-        callback = function(opts)
-            ibl.refresh(opts.buf)
         end,
     })
     vim.api.nvim_create_autocmd("WinScrolled", {
