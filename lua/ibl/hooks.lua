@@ -185,33 +185,43 @@ M.builtin = {
         local end_row = scope:end_()
         local start_line = vim.api.nvim_buf_get_lines(bufnr, start_row, start_row + 1, false)
         local end_line = vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, false)
+        local end_pos
+        local start_pos
 
-        if start_line == nil or end_line == nil then
+        if end_line[1] then
+            end_pos = vim.inspect_pos(bufnr, end_row, #end_line[1] - 1, {
+                extmarks = true,
+                syntax = false,
+                treesitter = false,
+                semantic_tokens = false,
+            })
+        end
+        if start_line[1] then
+            start_pos = vim.inspect_pos(bufnr, start_row, #start_line[1] - 1, {
+                extmarks = true,
+                syntax = false,
+                treesitter = false,
+                semantic_tokens = false,
+            })
+        end
+
+        if not end_pos and not start_pos then
             return scope_index
         end
 
-        local end_pos = vim.inspect_pos(bufnr, end_row, #end_line[1] - 1, {
-            extmarks = true,
-            syntax = false,
-            treesitter = false,
-            semantic_tokens = false,
-        })
-        local start_pos = vim.inspect_pos(bufnr, start_row, #start_line[1] - 1, {
-            extmarks = true,
-            syntax = false,
-            treesitter = false,
-            semantic_tokens = false,
-        })
-
         for i, hl_group in ipairs(highlight) do
-            for _, extmark in ipairs(end_pos.extmarks) do
-                if extmark.opts.hl_group == hl_group then
-                    return i
+            if end_pos then
+                for _, extmark in ipairs(end_pos.extmarks) do
+                    if extmark.opts.hl_group == hl_group then
+                        return i
+                    end
                 end
             end
-            for _, extmark in ipairs(start_pos.extmarks) do
-                if extmark.opts.hl_group == hl_group then
-                    return i
+            if start_pos then
+                for _, extmark in ipairs(start_pos.extmarks) do
+                    if extmark.opts.hl_group == hl_group then
+                        return i
+                    end
                 end
             end
         end

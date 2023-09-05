@@ -53,6 +53,8 @@ require("ibl").setup()
 
 ### Scope
 
+Scope requires [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter) to be installed.
+
 ```lua
 require("ibl").setup()
 ```
