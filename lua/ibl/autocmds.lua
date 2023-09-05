@@ -31,7 +31,7 @@ M.setup = function()
             ibl.debounced_refresh(opts.buf)
         end,
     })
-    vim.api.nvim_create_autocmd({ "TextChanged", "FileChangedShellPost", "CompleteChanged" }, {
+    vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "FileChangedShellPost", "CompleteChanged" }, {
         group = group,
         pattern = "*",
         callback = function(opts)
