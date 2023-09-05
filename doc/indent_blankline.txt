@@ -369,7 +369,6 @@ config.scope                                                *ibl.config.scope*
 
                            Default: `1024` ~
 
-                                                    *ibl.config.scope.exclude*
    • {exclude}             (|ibl.config.scope.exclude|)
                            Configures what is excluded from scope
 
