@@ -188,7 +188,7 @@ M.refresh = function(bufnr)
         shiftwidth = vim.api.nvim_get_option_value("shiftwidth", { buf = bufnr }),
         smart_indent_cap = config.indent.smart_indent_cap,
     }
-    local listchars = utils.get_listchars()
+    local listchars = utils.get_listchars(bufnr)
     if listchars.tabstop_overwrite then
         indent_opts.tabstop = 2
         indent_opts.vartabstop = ""

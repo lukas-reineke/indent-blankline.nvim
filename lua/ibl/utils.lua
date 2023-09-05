@@ -19,10 +19,32 @@ end
 ---@field tab_char_fill string
 ---@field tab_char_end string?
 
+---@param bufnr number
 ---@return ibl.listchars
-M.get_listchars = function()
-    if vim.opt.list:get() then
-        local listchars = vim.opt.listchars:get()
+M.get_listchars = function(bufnr)
+    local listchars
+    local list = vim.opt.list:get()
+    if list then
+        listchars = vim.opt.listchars:get()
+    end
+
+    if bufnr ~= vim.api.nvim_get_current_buf() then
+        local win_list = vim.fn.win_findbuf(bufnr)
+        local win = win_list and win_list[1]
+        if win then
+            list = vim.api.nvim_get_option_value("list", { win = win })
+            if list then
+                local raw_value = vim.api.nvim_get_option_value("listchars", { win = win })
+                listchars = {}
+                for _, key_value_str in ipairs(vim.split(raw_value, ",")) do
+                    local key, value = unpack(vim.split(key_value_str, ":"))
+                    listchars[vim.trim(key)] = value
+                end
+            end
+        end
+    end
+
+    if list then
         local tabstop_overwrite = false
         local tab_char
         local space_char = listchars.space or " "
