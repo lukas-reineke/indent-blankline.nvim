@@ -96,10 +96,10 @@ M.get_filetypes = function(bufnr)
     )
 end
 
+local has_end_reg = vim.regex "^\\s*\\(}\\|]\\|)\\|end\\)" --[[@as vim.regex]]
 ---@param line string
 M.has_end = function(line)
-    local reg = vim.regex "^\\s*\\(}\\|]\\|)\\|end\\)"
-    if reg and reg:match_str(line) ~= nil then
+    if has_end_reg:match_str(line) ~= nil then
         return true
     end
     return false
