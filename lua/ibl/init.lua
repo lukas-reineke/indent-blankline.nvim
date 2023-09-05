@@ -284,8 +284,15 @@ M.refresh = function(bufnr)
 
                 if utils.has_end(lines[j]) then
                     local trail = last_whitespace_tbl[indent_state.stack[#indent_state.stack] + 1]
+                    local trail_whitespace = last_whitespace_tbl[indent_state.stack[#indent_state.stack]]
                     if trail then
                         table.insert(whitespace_tbl, trail)
+                    elseif trail_whitespace then
+                        if indent.is_space_indent(trail_whitespace) then
+                            table.insert(whitespace_tbl, indent.whitespace.INDENT)
+                        else
+                            table.insert(whitespace_tbl, indent.whitespace.TAB_START)
+                        end
                     end
                 end
             end

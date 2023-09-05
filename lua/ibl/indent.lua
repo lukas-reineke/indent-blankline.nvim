@@ -107,4 +107,11 @@ M.is_indent = function(whitespace)
     return vim.tbl_contains({ M.whitespace.INDENT, M.whitespace.TAB_START, M.whitespace.TAB_START_SINGLE }, whitespace)
 end
 
+--- Returns true if the passed whitespace belongs to space indent
+---
+---@param whitespace ibl.indent.whitespace
+M.is_space_indent = function(whitespace)
+    return vim.tbl_contains({ M.whitespace.INDENT, M.whitespace.SPACE }, whitespace)
+end
+
 return M
