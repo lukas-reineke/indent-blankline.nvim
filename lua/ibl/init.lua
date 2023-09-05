@@ -116,8 +116,11 @@ local debounced_refresh = setmetatable({
         bufnr = utils.get_bufnr(bufnr)
         local config = conf.get_config(bufnr)
         if not self.timers[bufnr] or self.timers[bufnr]:is_closing() then
-            ---@diagnostic disable-next-line:undefined-field
-            self.timers[bufnr] = vim.uv.new_timer()
+            if vim.uv then
+                self.timers[bufnr] = vim.uv.new_timer()
+            else
+                self.timers[bufnr] = vim.loop.new_timer()
+            end
         end
         self.timers[bufnr]:start(config.debounce, 0, function()
             vim.schedule_wrap(M.refresh)(bufnr)
