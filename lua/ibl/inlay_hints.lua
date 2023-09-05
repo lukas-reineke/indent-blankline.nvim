@@ -33,7 +33,7 @@ local set_extmark = function(bufnr, row, col, hl, hl_empty)
             end
         end
         inlay_opt.ns_id = nil
-        vim.api.nvim_buf_set_extmark(bufnr, inlayhint_namespace, inlay_row, inlay_col, inlay_opt)
+        pcall(vim.api.nvim_buf_set_extmark, bufnr, inlayhint_namespace, inlay_row, inlay_col, inlay_opt)
     end
 end
 
