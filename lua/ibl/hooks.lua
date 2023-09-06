@@ -1,5 +1,6 @@
 local conf = require "ibl.config"
 local utils = require "ibl.utils"
+local indent = require "ibl.indent"
 local M = {}
 
 ---@enum ibl.hooks.type
@@ -226,6 +227,14 @@ M.builtin = {
             end
         end
         return scope_index
+    end,
+
+    ---@type ibl.hooks.cb.whitespace
+    hide_first_space_indent_level = function(_, _, _, whitespace_tbl)
+        if whitespace_tbl[1] == indent.whitespace.INDENT then
+            whitespace_tbl[1] = indent.whitespace.SPACE
+        end
+        return whitespace_tbl
     end,
 }
 

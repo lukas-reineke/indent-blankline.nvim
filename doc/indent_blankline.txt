@@ -666,6 +666,19 @@ hooks.builtin.scope_highlight_from_extmark
      hooks.builtin.scope_highlight_from_extmark
    )
 <
+                             *ibl.hooks.builtin.hide_first_space_indent_level*
+hooks.builtin.hide_first_space_indent_level
+
+ Hides the first indentation guide for space indentation.
+
+ Example: ~
+   >lua
+   local hooks = require "ibl.hooks"
+   hooks.register(
+     hooks.type.WHITESPACE,
+     hooks.builtin.hide_first_space_indent_level
+   )
+<
 ==============================================================================
  4. COMMANDS                                                    *ibl.commands*
 
