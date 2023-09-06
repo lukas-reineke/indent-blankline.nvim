@@ -36,6 +36,7 @@ M.default_config = {
     },
     scope = {
         enabled = true,
+        char = nil,
         show_start = true,
         show_end = true,
         injected_languages = true,
@@ -210,6 +211,15 @@ local validate_config = function(config)
             priority = { config.scope.priority, "number", true },
             exclude = { config.scope.exclude, "table", true },
         }
+        if config.scope.char then
+            vim.validate {
+                char = {
+                    config.scope.char,
+                    validate_char,
+                    "scope.char to have a display width of 0 or 1",
+                },
+            }
+        end
         if type(config.scope.highlight) == "table" then
             vim.validate {
                 tab_char = {

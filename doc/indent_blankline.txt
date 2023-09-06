@@ -334,6 +334,15 @@ config.scope                                                *ibl.config.scope*
 
                            Default: `true` ~
 
+                                                       *ibl.config.scope.char*
+   • {char}                (string|string[])
+                           Character, or list of characters, that get used to
+                           display the scope indentation guide
+                           Each character has to have a display width
+                           of 0 or 1
+
+                           Default: |ibl.config.indent.char| ~
+
                                                  *ibl.config.scope.show_start*
    • {show_start}          (boolean)
                            Shows an underline on the first line of the scope

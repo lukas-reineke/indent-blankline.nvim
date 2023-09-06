@@ -54,6 +54,10 @@
 ---@class ibl.config.scope
 --- Enables or disables scope
 ---@field enabled boolean?
+--- Character, or list of characters, that get used to display the scope indentation guide
+---
+--- Each character has to have a display width of 0 or 1
+---@field char string|string[]?
 --- Shows an underline on the first line of the scope
 ---@field show_start boolean?
 --- Shows an underline on the last line of the scope
@@ -146,6 +150,10 @@
 ---@class ibl.config.full.scope: ibl.config.scope
 --- Enables or disables scope
 ---@field enabled boolean
+--- Character, or list of characters, that get used to display the scope indentation guide
+---
+--- Each character has to have a display width of 0 or 1
+---@field char string|string[]?
 --- Shows an underline on the first line of the scope
 ---@field show_start boolean
 --- Shows an underline on the last line of the scope

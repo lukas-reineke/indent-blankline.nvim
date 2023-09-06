@@ -7,6 +7,16 @@ local M = {}
 ---@alias ibl.virtual_text { [1]: string, [2]: string|string[] }[]
 ---@alias ibl.char_map { [ibl.indent.whitespace]: string|string[] }
 
+---@param input string|string[]
+---@param index number
+---@return string
+local get_char = function(input, index)
+    if type(input) == "string" then
+        return input
+    end
+    return utils.tbl_get_index(input, index)
+end
+
 ---@param config ibl.config
 ---@param listchars ibl.listchars
 ---@param whitespace_only boolean
@@ -63,21 +73,17 @@ M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, sc
         utils.tbl_get_index(highlights.scope[utils.tbl_get_index(highlights.whitespace, scope_index)], scope_index)
     local indent_index = 1
     local virt_text = {}
-    for j, char in ipairs(whitespace_tbl) do
+    for j, ws in ipairs(whitespace_tbl) do
         local whitespace_hl = utils.tbl_get_index(highlights.whitespace, indent_index - 1)
         local hl = whitespace_hl
         local sa = scope_active
+        local char = get_char(char_map[ws], indent_index)
 
-        local c = char_map[char]
-        if type(c) ~= "string" then
-            c = utils.tbl_get_index(c, indent_index)
-        end
-
-        if indent.is_indent(char) then
+        if indent.is_indent(ws) then
             whitespace_hl = utils.tbl_get_index(highlights.whitespace, indent_index)
-            if vim.fn.strdisplaywidth(c) == 0 then
+            if vim.fn.strdisplaywidth(char) == 0 then
                 hl = whitespace_hl
-                c = char_map[whitespace.SPACE]
+                char = char_map[whitespace.SPACE] --[[@as string]]
                 sa = false
             else
                 hl = utils.tbl_get_index(highlights.indent, indent_index)
@@ -93,12 +99,16 @@ M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, sc
         if sa and j - 1 == scope_col_start_single then
             hl = scope_hl.char
 
+            if config.scope.char then
+                char = get_char(config.scope.char, scope_index)
+            end
+
             if config.scope.show_end and scope_end then
                 hl = scope_hl.corner
             end
         end
 
-        table.insert(virt_text, { c, hl })
+        table.insert(virt_text, { char, hl })
     end
 
     return virt_text, scope_hl
