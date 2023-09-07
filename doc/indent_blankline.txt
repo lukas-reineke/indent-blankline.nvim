@@ -275,6 +275,20 @@ config.indent                                              *ibl.config.indent*
 
                          Default: `true` ~
 
+                         Example: ~
+                           >c
+                           # OFF
+                           {
+                           ▎ foo_bar(a, b,
+                           ▎ ▎ ▎ ▎ ▎ c, d);
+                           }
+
+                           # ON
+                           {
+                           ▎ foo_bar(a, b,
+                           ▎ ▎       c, d);
+                           }
+<
                                                   *ibl.config.indent.priority*
    • {priority}          (number)
                          Virtual text priority for the indentation guide
