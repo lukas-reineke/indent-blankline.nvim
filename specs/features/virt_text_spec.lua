@@ -26,7 +26,7 @@ describe("get_char_map", function()
             lead_char = nil,
             multispace_chars = nil,
             leadmultispace_chars = nil,
-            tab_char_start = nil,
+            tab_char_start = ">",
             tab_char_fill = " ",
             tab_char_end = nil,
         }
@@ -35,8 +35,8 @@ describe("get_char_map", function()
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
 
         assert.are.same(char_map, {
-            [TAB_START] = " ",
-            [TAB_START_SINGLE] = " ",
+            [TAB_START] = ">",
+            [TAB_START_SINGLE] = ">",
             [TAB_FILL] = " ",
             [TAB_END] = " ",
             [SPACE] = " ",
@@ -64,6 +64,33 @@ describe("get_char_map", function()
         assert.are.same(char_map, {
             [TAB_START] = "t",
             [TAB_START_SINGLE] = "t",
+            [TAB_FILL] = " ",
+            [TAB_END] = " ",
+            [SPACE] = " ",
+            [INDENT] = "i",
+        })
+    end)
+
+    it("uses char for tabs if everything else is nil", function()
+        local config = conf.set_config { indent = { char = "i" } }
+        local listchars = {
+            tabstop_overwrite = false,
+            space_char = " ",
+            trail_char = nil,
+            lead_char = nil,
+            multispace_chars = nil,
+            leadmultispace_chars = nil,
+            tab_char_start = nil,
+            tab_char_fill = " ",
+            tab_char_end = nil,
+        }
+        local whitespace_only = false
+        local blankline = false
+        local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
+
+        assert.are.same(char_map, {
+            [TAB_START] = "i",
+            [TAB_START_SINGLE] = "i",
             [TAB_FILL] = " ",
             [TAB_END] = " ",
             [SPACE] = " ",

@@ -24,17 +24,11 @@ end
 ---@return ibl.char_map
 M.get_char_map = function(config, listchars, whitespace_only, blankline)
     return {
-        [whitespace.TAB_START] = config.indent.tab_char
-            or listchars.tab_char_start
-            or listchars.leadmultispace_chars
-            or listchars.lead_char
-            or listchars.multispace_chars
-            or listchars.space_char,
+        [whitespace.TAB_START] = config.indent.tab_char or listchars.tab_char_start or config.indent.char,
         [whitespace.TAB_START_SINGLE] = config.indent.tab_char
             or listchars.tab_char_end
             or listchars.tab_char_start
-            or listchars.lead_char
-            or listchars.space_char,
+            or config.indent.char,
         [whitespace.TAB_FILL] = (blankline and " ") or listchars.tab_char_fill,
         [whitespace.TAB_END] = (blankline and " ") or listchars.tab_char_end or listchars.tab_char_fill,
         [whitespace.SPACE] = (blankline and " ")
