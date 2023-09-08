@@ -116,7 +116,7 @@ M.get_offset = function(bufnr)
     else
         local win_list = vim.fn.win_findbuf(bufnr)
         if not win_list or not win_list[1] then
-            return 0, 0, 0
+            return 0, 0, 0, 0
         end
         win = win_list[1]
         win_view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
