@@ -236,6 +236,17 @@ M.builtin = {
         end
         return whitespace_tbl
     end,
+
+    ---@type ibl.hooks.cb.whitespace
+    hide_first_tab_indent_level = function(_, _, _, whitespace_tbl)
+        if
+            whitespace_tbl[1] == indent.whitespace.TAB_START
+            or whitespace_tbl[1] == indent.whitespace.TAB_START_SINGLE
+        then
+            whitespace_tbl[1] = indent.whitespace.TAB_FILL
+        end
+        return whitespace_tbl
+    end,
 }
 
 return M

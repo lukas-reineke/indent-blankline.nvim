@@ -684,7 +684,8 @@ hooks.builtin.scope_highlight_from_extmark
                              *ibl.hooks.builtin.hide_first_space_indent_level*
 hooks.builtin.hide_first_space_indent_level
 
- Hides the first indentation guide for space indentation.
+ Replaces the first indentation guide for space indentation with a normal
+ space.
 
  Example: ~
    >lua
@@ -692,6 +693,20 @@ hooks.builtin.hide_first_space_indent_level
    hooks.register(
      hooks.type.WHITESPACE,
      hooks.builtin.hide_first_space_indent_level
+   )
+<
+                               *ibl.hooks.builtin.hide_first_tab_indent_level*
+hooks.builtin.hide_tab_space_indent_level
+
+ Replaces the first indentation guide for tab indentation with
+ |lcs-tab| tab fill.
+
+ Example: ~
+   >lua
+   local hooks = require "ibl.hooks"
+   hooks.register(
+     hooks.type.WHITESPACE,
+     hooks.builtin.hide_first_tab_indent_level
    )
 <
 ==============================================================================
