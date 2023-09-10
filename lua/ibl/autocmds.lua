@@ -12,6 +12,7 @@ M.setup = function()
         callback = ibl.refresh_all,
     })
     vim.api.nvim_create_autocmd({
+        "CursorMoved",
         "BufWinEnter",
         "CompleteChanged",
         "FileChangedShellPost",
@@ -22,19 +23,12 @@ M.setup = function()
         group = group,
         pattern = "*",
         callback = function(opts)
-            ibl.refresh(opts.buf)
+            ibl.debounced_refresh(opts.buf)
         end,
     })
     vim.api.nvim_create_autocmd("OptionSet", {
         group = group,
         pattern = "list,listchars,shiftwidth,tabstop,vartabstop",
-        callback = function(opts)
-            ibl.refresh(opts.buf)
-        end,
-    })
-    vim.api.nvim_create_autocmd("CursorMoved", {
-        group = group,
-        pattern = "*",
         callback = function(opts)
             ibl.debounced_refresh(opts.buf)
         end,

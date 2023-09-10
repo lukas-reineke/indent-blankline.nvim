@@ -110,22 +110,28 @@ end
 
 local debounced_refresh = setmetatable({
     timers = {},
+    queued_buffers = {},
 }, {
     ---@param bufnr number
     __call = function(self, bufnr)
         bufnr = utils.get_bufnr(bufnr)
-        local config = conf.get_config(bufnr)
-        if not self.timers[bufnr] or self.timers[bufnr]:is_closing() then
-            if vim.uv then
-                self.timers[bufnr] = vim.uv.new_timer()
-            else
-                self.timers[bufnr] = vim.loop.new_timer()
-            end
+        local uv = vim.uv or vim.loop
+        if not self.timers[bufnr] then
+            self.timers[bufnr] = uv.new_timer()
         end
-        self.timers[bufnr]:start(config.debounce, 0, function()
-            vim.schedule_wrap(M.refresh)(bufnr)
-            self.timers[bufnr]:stop()
-        end)
+        if uv.timer_get_due_in(self.timers[bufnr]) <= 50 then
+            M.refresh(bufnr)
+
+            local config = conf.get_config(bufnr)
+            self.timers[bufnr]:start(config.debounce, 0, function()
+                if self.queued_buffers[bufnr] then
+                    self.queued_buffers[bufnr] = nil
+                    vim.schedule_wrap(M.refresh)(bufnr)
+                end
+            end)
+        else
+            self.queued_buffers[bufnr] = true
+        end
     end,
 })
 

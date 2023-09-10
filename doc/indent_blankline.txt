@@ -185,7 +185,7 @@ config                                                            *ibl.config*
                         Sets the amount indent-blankline debounces
                         refreshes in milliseconds
 
-                        Default: `50` ~
+                        Default: `200` ~
 
    • {viewport_buffer}  (|ibl.config.viewport_buffer|)
                         Configures the viewport of where indentation guides

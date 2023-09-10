@@ -18,7 +18,7 @@ M.buffer_config = {}
 ---@type ibl.config.full
 M.default_config = {
     enabled = true,
-    debounce = 50,
+    debounce = 200,
     viewport_buffer = {
         min = 30,
         max = 500,
