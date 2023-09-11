@@ -46,7 +46,7 @@ describe("set_config", function()
                 exclude = {
                     node_type = {
                         foo = { "a", "b" },
-                        rust = { "c" },
+                        lua = { "c" },
                     },
                 },
             },
@@ -54,8 +54,8 @@ describe("set_config", function()
 
         assert.are.equal(vim.tbl_contains(config.scope.exclude.node_type.foo, "a"), true)
         assert.are.equal(vim.tbl_contains(config.scope.exclude.node_type.foo, "b"), true)
-        assert.are.equal(vim.tbl_contains(config.scope.exclude.node_type.rust, "c"), true)
-        assert.are.equal(vim.tbl_contains(config.scope.exclude.node_type.rust, "use_declaration"), true)
+        assert.are.equal(vim.tbl_contains(config.scope.exclude.node_type.lua, "c"), true)
+        assert.are.equal(vim.tbl_contains(config.scope.exclude.node_type.lua, "chunk"), true)
     end)
 end)
 
