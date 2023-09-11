@@ -504,6 +504,7 @@ hooks.type                                                    *ibl.hooks.type*
 
  Variants: ~
    • {ACTIVE}
+   • {SCOPE_ACTIVE}
    • {SKIP_LINE}
    • {WHITESPACE}
    • {VIRTUAL_TEXT}
@@ -523,6 +524,20 @@ hooks.cb.active({bufnr})                               *ibl.hooks.cb.active()*
  Gets called before refreshing indent-blankline for a buffer.
  If the callback returns false, the buffer will not be refreshed, and all
  existing indentation guides will be cleared.
+
+ Parameters: ~
+   • {bufnr}  (number) Buffer number
+
+ Return: ~
+   (boolean)
+
+
+hooks.cb.scope_active({bufnr})                    *ibl.hooks.cb.scope_active()*
+
+ Callback function for the |ibl.hooks.type|.SCOPE_ACTIVE hook.
+
+ Gets called before refreshing indent-blankline for a buffer.
+ If the callback returns false, |ibl.config.scope| will be disabled.
 
  Parameters: ~
    • {bufnr}  (number) Buffer number

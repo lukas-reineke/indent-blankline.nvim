@@ -2,9 +2,10 @@ local utils = require "ibl.utils"
 local scope_lang = require "ibl.scope_languages"
 local M = {}
 
+---@param win number
 ---@return table<number, number>
-M.get_cursor_range = function()
-    local pos = vim.api.nvim_win_get_cursor(0)
+M.get_cursor_range = function(win)
+    local pos = vim.api.nvim_win_get_cursor(win)
     local row, col = pos[1] - 1, pos[2]
     return { row, 0, row, col }
 end
@@ -40,7 +41,18 @@ M.get = function(bufnr, config)
         return nil
     end
 
-    local range = M.get_cursor_range()
+    local win
+    if bufnr ~= vim.api.nvim_get_current_buf() then
+        local win_list = vim.fn.win_findbuf(bufnr)
+        win = win_list and win_list[1]
+        if not win then
+            return nil
+        end
+    else
+        win = 0
+    end
+
+    local range = M.get_cursor_range(win)
     lang_tree = M.language_for_range(lang_tree, range, config)
     if not lang_tree then
         return nil

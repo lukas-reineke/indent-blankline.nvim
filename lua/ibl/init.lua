@@ -176,8 +176,19 @@ M.refresh = function(bufnr)
     end
 
     local offset = math.max(top_offset - 1 - config.viewport_buffer.min, 0)
+
+    local scope_disabled = false
+    for _, fn in
+        pairs(hooks.get(bufnr, hooks.type.SCOPE_ACTIVE) --[[ @as ibl.hooks.cb.scope_active[] ]])
+    do
+        if not fn(bufnr) then
+            scope_disabled = true
+            break
+        end
+    end
+
     local scope
-    if config.scope.enabled and is_current_buffer then
+    if not scope_disabled and config.scope.enabled then
         scope = scp.get(bufnr, config)
         if scope and scope:start() >= 0 then
             offset = top_offset - math.min(top_offset - math.min(offset, scope:start()), config.viewport_buffer.max)

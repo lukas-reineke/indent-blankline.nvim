@@ -6,6 +6,7 @@ local M = {}
 ---@enum ibl.hooks.type
 M.type = {
     ACTIVE = "ACTIVE",
+    SCOPE_ACTIVE = "SCOPE_ACTIVE",
     SKIP_LINE = "SKIP_LINE",
     WHITESPACE = "WHITESPACE",
     VIRTUAL_TEXT = "VIRTUAL_TEXT",
@@ -21,6 +22,7 @@ local default_opts = {
 
 local hooks = {
     [M.type.ACTIVE] = {},
+    [M.type.SCOPE_ACTIVE] = {},
     [M.type.SKIP_LINE] = {},
     [M.type.WHITESPACE] = {},
     [M.type.VIRTUAL_TEXT] = {},
@@ -31,6 +33,7 @@ local hooks = {
 local count = 0
 
 ---@alias ibl.hooks.cb.active fun(bufnr: number): boolean
+---@alias ibl.hooks.cb.scope_active fun(bufnr: number): boolean
 ---@alias ibl.hooks.cb.skip_line fun(tick: number, bufnr: number, row: number, line: string): boolean
 ---@alias ibl.hooks.cb.whitespace fun(tick: number, bufnr: number, row: number, whitespace: ibl.indent.whitespace[]): ibl.indent.whitespace[]
 ---@alias ibl.hooks.cb.virtual_text fun(tick: number, bufnr: number, row: number, virt_text: ibl.virtual_text): ibl.virtual_text
@@ -44,6 +47,7 @@ local count = 0
 ---@param cb function
 ---@param opts ibl.hooks.options
 ---@overload fun(type: 'ACTIVE', cb: ibl.hooks.cb.active, opts: ibl.hooks.options?): string
+---@overload fun(type: 'SCOPE_ACTIVE', cb: ibl.hooks.cb.scope_active, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'SKIP_LINE', cb: ibl.hooks.cb.skip_line, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'WHITESPACE', cb: ibl.hooks.cb.whitespace, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'VIRTUAL_TEXT', cb: ibl.hooks.cb.virtual_text, opts: ibl.hooks.options?): string
@@ -76,6 +80,7 @@ M.register = function(type, cb, opts)
         if not hooks.buffer_scoped[bufnr] then
             hooks.buffer_scoped[bufnr] = {
                 [M.type.ACTIVE] = {},
+                [M.type.SCOPE_ACTIVE] = {},
                 [M.type.SKIP_LINE] = {},
                 [M.type.WHITESPACE] = {},
                 [M.type.VIRTUAL_TEXT] = {},
@@ -108,6 +113,7 @@ end
 M.clear_all = function()
     hooks = {
         [M.type.ACTIVE] = {},
+        [M.type.SCOPE_ACTIVE] = {},
         [M.type.SKIP_LINE] = {},
         [M.type.WHITESPACE] = {},
         [M.type.VIRTUAL_TEXT] = {},
@@ -122,6 +128,7 @@ end
 ---@param bufnr number
 ---@param type ibl.hooks.type
 ---@overload fun(bufnr: number, type: 'ACTIVE'): ibl.hooks.cb.active[]
+---@overload fun(bufnr: number, type: 'SCOPE_ACTIVE'): ibl.hooks.cb.scope_active[]
 ---@overload fun(bufnr: number, type: 'SKIP_LINE'): ibl.hooks.cb.skip_line[]
 ---@overload fun(bufnr: number, type: 'WHITESPACE'): ibl.hooks.cb.whitespace[]
 ---@overload fun(bufnr: number, type: 'VIRTUAL_TEXT'): ibl.hooks.cb.virtual_text[]

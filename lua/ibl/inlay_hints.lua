@@ -42,7 +42,9 @@ M.setup = function()
         handler = vim.lsp.handlers["textDocument/inlayHint"]
 
         vim.lsp.handlers["textDocument/inlayHint"] = function(err, result, ctx, conf)
-            handler(err, result, ctx, conf)
+            if handler then
+                handler(err, result, ctx, conf)
+            end
             require("ibl").debounced_refresh(ctx.bufnr)
         end
     end
