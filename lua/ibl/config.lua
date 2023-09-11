@@ -43,41 +43,17 @@ M.default_config = {
         highlight = "LineNr",
         priority = 1024,
         exclude = {
-            language = {
-                "markdown",
-                "markdown_inline",
-                "comment",
-                "jsdoc",
-                "org",
-            },
+            language = {},
             node_type = {
                 ["*"] = {
                     "source_file",
-                    "comment",
-                    "line_comment",
-                },
-                rust = {
-                    "use_declaration",
-                    "identifier",
-                    "scoped_identifier",
+                    "program",
                 },
                 lua = {
                     "chunk",
-                    "block",
-                },
-                typescript = {
-                    "identifier",
-                    "import_statement",
-                    "program",
                 },
                 python = {
                     "module",
-                },
-                html = {
-                    "fragment",
-                },
-                bash = {
-                    "program",
                 },
             },
         },

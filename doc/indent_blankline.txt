@@ -339,8 +339,11 @@ config.scope                                                *ibl.config.scope*
 
  Configures the scope
 
- Scope requires https://github.com/nvim-treesitter/nvim-treesitter to be
- installed
+ The scope is *not* the current indentation level! Instead, it is the
+ indentation level where variables or functions are accessible. This depends
+ on the language you are writing.
+
+ Note: Scope requires treesitter to be set up ~
 
  Fields: ~
                                                     *ibl.config.scope.enabled*
@@ -417,12 +420,7 @@ config.scope.exclude                                *ibl.config.scope.exclude*
    • {language}   (string[])
                   List of treesitter languages for which scope is disabled
 
-                  Default: ~
-                    • `markdown`
-                    • `markdown_inline`
-                    • `comment`
-                    • `jsdoc`
-                    • `org`
+                  Default: empty ~
 
                                           *ibl.config.scope.exclude.node_type*
    • {node_type}  (table<string, string[]>)
@@ -434,25 +432,11 @@ config.scope.exclude                                *ibl.config.scope.exclude*
                   Default: ~
                     • `*`:
                       • `source_file`
-                      • `comment`
-                      • `line_comment`
-                    • `rust`:
-                      • `use_declaration`
-                      • `identifier`
-                      • `scoped_identifier`
+                      • `program`
                     • `lua`:
                       • `chunk`
-                      • `block`
-                    • `typescript`:
-                      • `identifier`
-                      • `import_statement`
-                      • `program`
                     • `python`:
                       • `module`
-                    • `html`:
-                      • `fragment`
-                    • `bash`:
-                      • `program`
 
  Example: ~
    >lua
