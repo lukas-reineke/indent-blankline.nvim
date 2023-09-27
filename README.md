@@ -44,6 +44,21 @@ require("indent_blankline").setup {
 }
 ```
 
+Indent Blankline relies on the value of `shiftwidth` and `tabstop` to determine
+the indentation guides positions. A mismatch between these options and the
+actual indentation width used on the current buffer will result in rendering
+errors. To set them up put the following somewhere on your configuration:
+
+```lua
+-- Set the indentation width when using spaces
+vim.opt.shiftwidth = 4  -- Or your preferred value for the identation width
+-- Set the indentation width when using tabs
+vim.opt.tabstop = 4
+-- Turn all tabs into spaces if you don't want to use tabs at all
+-- If `expandtab` is true, then set shiftwidth and tabstop to the same value
+vim.opt.expandtab = true
+```
+
 Please see `:help indent_blankline.txt` for more details and all possible values.
 
 A lot of [Yggdroot/indentLine](https://github.com/Yggdroot/indentLine) options should work out of the box.
