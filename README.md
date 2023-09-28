@@ -14,7 +14,7 @@ Use your favourite plugin manager to install.
 For [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
-{ "lukas-reineke/indent-blankline.nvim", opts = {} },
+{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} }
 ```
 
 For [pckr.nvim](https://github.com/lewis6991/pckr.nvim):

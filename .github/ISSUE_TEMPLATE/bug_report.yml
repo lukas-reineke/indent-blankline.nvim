@@ -20,7 +20,7 @@ body:
         - Share your configurtaion and describe the steps to reproduce the issue.
         - See [Minimal-reproduction-template](https://github.com/lukas-reineke/indent-blankline.nvim/wiki/Minimal-reproduction-template#minimal-config) for how to create a minimal configuration.
       placeholder: |
-        nvim --clean
+        nvim --clean -u min-init.lua
         :edit foo
         yiwp
     validations:
