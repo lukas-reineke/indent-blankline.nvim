@@ -9,8 +9,9 @@ CONTENTS                                              *ibl* *indent-blankline*
   1. Introduction                          |ibl.introduction|
   2. Functions                             |ibl.functions|
   3. Types                                 |ibl.types|
-  4. Commands                              |ibl.commands|
-  5. License                               |ibl.license|
+  4. Highlights                            |ibl.highlights|
+  5. Commands                              |ibl.commands|
+  6. License                               |ibl.license|
 
 ==============================================================================
  1. INTRODUCTION                                            *ibl.introduction*
@@ -266,7 +267,7 @@ config.indent                                              *ibl.config.indent*
                          Highlight group, or list of highlight groups, that
                          get applied to the indentation guide
 
-                         Default: |hl-Whitespace| ~
+                         Default: |hl-IblIndent| ~
 
                                           *ibl.config.indent.smart_indent_cap*
    • {smart_indent_cap}  (boolean)
@@ -316,7 +317,7 @@ config.whitespace                                      *ibl.config.whitespace*
                                Highlight group, or list of highlight groups,
                                that get applied to the whitespace
 
-                               Default: |hl-Whitespace| ~
+                               Default: |hl-IblWhitespace| ~
 
                                 *ibl.config.whitespace.remove_blankline_trail*
    • {remove_blankline_trail}  (boolean)
@@ -388,7 +389,7 @@ config.scope                                                *ibl.config.scope*
                            Highlight group, or list of highlight groups,
                            that get applied to the scope
 
-                           Default: |hl-LineNr| ~
+                           Default: |hl-IblScope| ~
 
                                                    *ibl.config.scope.priority*
    • {priority}            (number)
@@ -760,7 +761,30 @@ hooks.builtin.hide_tab_space_indent_level
    )
 <
 ==============================================================================
- 4. COMMANDS                                                    *ibl.commands*
+ 4. HIGHLIGHTS                                                *ibl.highlights*
+
+IblIndent                                                       *hl-IblIndent*
+
+ The default highlight group for indentation characters.
+
+ Default: takes the values from |hl-Whitespace| when not defined ~
+
+
+IblWhitespace                                               *hl-IblWhitespace*
+
+ The default highlight group for whitespace characters.
+
+ Default: takes the values from |hl-Whitespace| when not defined ~
+
+
+IblScope                                                         *hl-IblScope*
+
+ The default highlight group for |ibl.config.scope| characters.
+
+ Default: takes the values from |hl-LineNr| when not defined ~
+
+==============================================================================
+ 5. COMMANDS                                                    *ibl.commands*
 
 :IBLEnable                                                        *:IBLEnable*
 
@@ -787,7 +811,7 @@ hooks.builtin.hide_tab_space_indent_level
  Toggles indent-blanklines scope on and off
 
 ==============================================================================
- 5. LICENSE                                                      *ibl.license*
+ 6. LICENSE                                                      *ibl.license*
 
  The MIT Licence
  http://www.opensource.org/licenses/mit-license.php
