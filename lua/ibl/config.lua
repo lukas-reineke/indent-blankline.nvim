@@ -26,12 +26,12 @@ M.default_config = {
     indent = {
         char = "▎",
         tab_char = nil,
-        highlight = "Whitespace",
+        highlight = "IblIndent",
         smart_indent_cap = true,
         priority = 1,
     },
     whitespace = {
-        highlight = "Whitespace",
+        highlight = "IblWhitespace",
         remove_blankline_trail = true,
     },
     scope = {
@@ -40,7 +40,7 @@ M.default_config = {
         show_start = true,
         show_end = true,
         injected_languages = true,
-        highlight = "LineNr",
+        highlight = "IblScope",
         priority = 1024,
         include = {
             node_type = {},
