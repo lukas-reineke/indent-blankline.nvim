@@ -40,13 +40,10 @@ local setup = function(config)
         return
     end
 
-    vim.schedule_wrap(function()
-        inlay_hints.setup()
-        highlights.setup()
-        autocmds.setup()
-
-        M.refresh_all()
-    end)()
+    inlay_hints.setup()
+    highlights.setup()
+    autocmds.setup()
+    M.refresh_all()
 end
 
 --- Initializes and configures indent-blankline.
