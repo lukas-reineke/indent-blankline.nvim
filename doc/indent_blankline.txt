@@ -344,6 +344,31 @@ config.scope                                                *ibl.config.scope*
  indentation level where variables or functions are accessible. This depends
  on the language you are writing.
 
+ Example: ~
+
+ In Python, an `if` block is not a new scope, variables defined inside `if`
+ are accessible outside. The scope is the function `foo`.
+ (please don't actually write code like this)
+ >python
+ def foo();
+ ┋   if True:
+ ┋       a = "foo █ar"
+ ┋       #        ↳ cursor here 
+ ┋   print(a)
+<
+ In Rust on the other hand, `if` blocks are a new scope. Variables defined
+ inside are not accesible outside. Indent-blanklines scope reflects this, and
+ the scope is just the `if` block.
+ (this code would not compile)
+ >rust
+ fn foo() {
+     if true {
+     ┋   let a = "foo █ar";
+     ┋   //           ↳ cursor here 
+     }
+     print(a);
+ }
+<
  Note: Scope requires treesitter to be set up ~
 
  Fields: ~
