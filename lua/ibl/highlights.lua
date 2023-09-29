@@ -15,7 +15,14 @@ local M = {
 }
 
 local get = function(name)
-    return vim.api.nvim_get_hl(0, { name = name })
+    local hl
+    if vim.api.nvim_get_hl then -- check for new neovim 0.9 API
+        hl = vim.api.nvim_get_hl(0, { name = name })
+    else
+        ---@diagnostic disable-next-line
+        hl = vim.api.nvim_get_hl_by_name(name, true)
+    end
+    return hl
 end
 
 local not_set = function(hl)
