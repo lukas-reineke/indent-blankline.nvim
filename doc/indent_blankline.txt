@@ -253,6 +253,32 @@ config.indent                                              *ibl.config.indent*
 
                          Default: `▎` ~
 
+                         Alternatives: ~
+                           • left aligned solid
+                             • `▏`
+                             • `▎` (default)
+                             • `▍`
+                             • `▌`
+                             • `▋`
+                             • `▊`
+                             • `▉`
+                             • `█`
+                           • center aligned solid
+                             • `│`
+                             • `┃`
+                           • right aligned solid
+                             • `▕`
+                             • `▐`
+                           • center aligned dashed
+                             • `╎`
+                             • `╏`
+                             • `┆`
+                             • `┇`
+                             • `┊`
+                             • `┋`
+                           • center aligned double
+                             • `║`
+
                                                   *ibl.config.indent.tab_char*
    • {tab_char}          (string|string[])
                          Character, or list of characters, that get used to
@@ -451,8 +477,8 @@ config.scope.include                                *ibl.config.scope.include*
                   map of language to a list of node types which can be
                   used as scope
 
-                  Use `*` as a wildcard as the key for all languages
-                  Use `*` as a wildcard as a type for all types
+                  Use `*` as the language to act as a wildcard for all languages
+                  Use `*` as a node type to act as a wildcard for all node types
 
                   Default: empty ~
 
