@@ -79,6 +79,7 @@ M.get = function(bufnr, config)
         if
             (scope_lang[lang][type] and not vim.tbl_contains(excluded_node_types, type))
             or vim.tbl_contains(include_node_types, type)
+            or vim.tbl_contains(include_node_types, "*")
         then
             return node
         else

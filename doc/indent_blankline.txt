@@ -451,14 +451,21 @@ config.scope.include                                *ibl.config.scope.include*
                   map of language to a list of node types which can be
                   used as scope
 
-                  Use `*` as a wildcard for all languages
+                  Use `*` as a wildcard as the key for all languages
+                  Use `*` as a wildcard as a type for all types
 
                   Default: empty ~
 
  Example: ~
    >lua
+   -- Add some node types to lua
    {
        node_type = { lua = { "return_statement", "table_constructor" } },
+   }
+   -- Make every node type valid. Note that this can lead to some weird
+   -- behavior
+   {
+       node_type = { ["*"] = { "*" } },
    }
 
 

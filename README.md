@@ -46,13 +46,17 @@ require("ibl").setup()
 
 ### Scope
 
-Scope requires treesitter to be setup.
+Scope requires treesitter to be set up.
 
 ```lua
 require("ibl").setup()
 ```
 
 <img width="900" src="https://github.com/lukas-reineke/indent-blankline.nvim/assets/12900252/a9d2426f-56a4-44bd-8bb5-2a3c5f5ca384" alt="Screenshot" />
+
+The scope is _not_ the current indentation level! Instead, it is the
+indentation level where variables or functions are accessible, as in [Wikipedia Scope (Computer Science)](<https://en.wikipedia.org/wiki/Scope_(computer_science)>). This depends
+on the language you are writing. For more information, see `:help ibl.config.scope`.
 
 The start and end of scope uses underline, so to achieve the best result you
 might need to tweak the underline position. In Kitty terminal for example you
