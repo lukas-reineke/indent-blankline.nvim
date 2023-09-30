@@ -42,7 +42,6 @@ local M = {
         for_statement = true,
         if_statement = true,
         while_statement = true,
-        translation_unit = true,
         function_definition = true,
         compound_statement = true,
         struct_specifier = true,
