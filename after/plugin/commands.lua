@@ -50,3 +50,33 @@ end, {
     bar = true,
     desc = "Toggles indent-blanklines scope on and off",
 })
+
+
+
+
+
+vim.api.nvim_create_user_command("IBLEnableContext", function()
+    ibl.update { context = { enabled = true } }
+end, {
+    bar = true,
+    desc = "Enables indent-blanklines context",
+})
+
+vim.api.nvim_create_user_command("IBLDisableContext", function()
+    ibl.update { context = { enabled = false } }
+end, {
+    bar = true,
+    desc = "Disables indent-blanklines context",
+})
+
+vim.api.nvim_create_user_command("IBLToggleContext", function()
+    if ibl.initialized then
+        ibl.update { context = { enabled = not conf.get_config(-1).context.enabled } }
+    else
+        ibl.setup {}
+    end
+end, {
+    bar = true,
+    desc = "Toggles indent-blanklines context on and off",
+})
+

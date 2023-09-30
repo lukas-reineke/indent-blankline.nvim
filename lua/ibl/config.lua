@@ -61,6 +61,22 @@ M.default_config = {
             },
         },
     },
+    context = {
+        enabled = true,
+        char = nil,
+        show_start = false,
+        show_end = false,
+        highlight = "IblContext",
+        priority = 512,
+        injected_languages = false,
+        include = {
+            node_type = {},
+        },
+        exclude = {
+            language = {},
+            node_type = {},
+        },
+    },
     exclude = {
         filetypes = {
             "lspinfo",
@@ -114,6 +130,7 @@ local validate_config = function(config)
         indent = { config.indent, "table", true },
         whitespace = { config.whitespace, "table", true },
         scope = { config.scope, "table", true },
+        context = { config.context, "table", true },
         exclude = { config.exclude, "table", true },
     }
 
@@ -224,6 +241,56 @@ local validate_config = function(config)
         end
     end
 
+
+
+
+    if config.context then
+        vim.validate {
+            enabled = { config.context.enabled, "boolean", true },
+            show_start = { config.context.show_start, "boolean", true },
+            show_end = { config.context.show_end, "boolean", true },
+            injected_languages = { config.context.injected_languages, "boolean", true },
+            highlight = { config.context.highlight, { "string", "table" }, true },
+            priority = { config.context.priority, "number", true },
+            include = { config.context.include, "table", true },
+            exclude = { config.context.exclude, "table", true },
+        }
+        if config.context.char then
+            vim.validate {
+                char = {
+                    config.context.char,
+                    validate_char,
+                    "context.char to have a display width of 0 or 1",
+                },
+            }
+        end
+        if type(config.context.highlight) == "table" then
+            vim.validate {
+                tab_char = {
+                    config.context.highlight,
+                    function(highlight)
+                        return #highlight > 0
+                    end,
+                    "context.highlight to be not empty",
+                },
+            }
+        end
+        if config.context.exclude then
+            vim.validate {
+                language = { config.context.exclude.language, "table", true },
+                node_type = { config.context.exclude.node_type, "table", true },
+            }
+        end
+        if config.context.include then
+            vim.validate {
+                node_type = { config.context.include.node_type, "table", true },
+            }
+        end
+    end
+
+
+
+
     if config.exclude then
         if config.exclude then
             vim.validate {
@@ -245,12 +312,31 @@ local merge_configs = function(behavior, base, input)
         result.scope.exclude.language =
             utils.tbl_join(base.scope.exclude.language, vim.tbl_get(input, "scope", "exclude", "language"))
 
-        local node_type = vim.tbl_get(input, "scope", "exclude", "node_type")
-        if node_type then
-            for k, v in pairs(node_type) do
+
+        result.context.exclude.language =
+            utils.tbl_join(base.context.exclude.language, vim.tbl_get(input, "context", "exclude", "language"))
+
+
+
+        local scope_node_type = vim.tbl_get(input, "scope", "exclude", "node_type")
+        if scope_node_type then
+            for k, v in pairs(scope_node_type) do
                 result.scope.exclude.node_type[k] = utils.tbl_join(v, base.scope.exclude.node_type[k])
             end
         end
+
+
+
+        local context_node_type = vim.tbl_get(input, "context", "exclude", "node_type")
+        if context_node_type then
+            for k, v in pairs(context_node_type) do
+                result.context.exclude.node_type[k] = utils.tbl_join(v, base.context.exclude.node_type[k])
+            end
+        end
+
+
+
+
         result.exclude.filetypes = utils.tbl_join(base.exclude.filetypes, vim.tbl_get(input, "exclude", "filetypes"))
         result.exclude.buftypes = utils.tbl_join(base.exclude.buftypes, vim.tbl_get(input, "exclude", "buftypes"))
     end

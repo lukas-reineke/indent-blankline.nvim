@@ -12,6 +12,8 @@ local M = {
     whitespace = {},
     ---@type ibl.highlight[]
     scope = {},
+    ---@type ibl.highlight[]
+    context = {},
 }
 
 local get = function(name)
@@ -25,9 +27,11 @@ end
 local setup_builtin_hl_groups = function()
     local whitespace_hl = get "Whitespace"
     local line_nr_hl = get "LineNr"
+    local cursor_line_nr_hl = get "CursorLineNr"
     local ibl_indent_hl_name = "IblIndent"
     local ibl_whitespace_hl_name = "IblWhitespace"
     local ibl_scope_hl_name = "IblScope"
+    local ibl_context_hl_name = "IblContext"
 
     if not_set(get(ibl_indent_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_indent_hl_name, whitespace_hl)
@@ -37,6 +41,9 @@ local setup_builtin_hl_groups = function()
     end
     if not_set(get(ibl_scope_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_scope_hl_name, line_nr_hl)
+    end
+    if not_set(get(ibl_context_hl_name)) then
+        vim.api.nvim_set_hl(0, ibl_context_hl_name, cursor_line_nr_hl)
     end
 end
 
@@ -99,6 +106,32 @@ M.setup = function()
         vim.api.nvim_set_hl(0, M.scope[i].char, char_hl)
         vim.api.nvim_set_hl(0, M.scope[i].underline, { sp = char_hl.fg, underline = true })
     end
+
+
+
+
+
+    local context_highlights = config.context.highlight
+    if type(context_highlights) == "string" then
+        context_highlights = { context_highlights }
+    end
+    M.context = {}
+    for i, context_name in ipairs(context_highlights) do
+        local char_hl = get(context_name)
+        if not_set(char_hl) then
+            error(string.format("No highlight group '%s' found", context_name))
+        end
+        char_hl.nocombine = true
+        M.context[i] = {
+            char = string.format("@ibl.context.char.%d", i),
+            underline = string.format("@ibl.context.underline.%d", i),
+        }
+        vim.api.nvim_set_hl(0, M.context[i].char, char_hl)
+        vim.api.nvim_set_hl(0, M.context[i].underline, { sp = char_hl.fg, underline = true })
+    end
 end
+
+
+
 
 return M
