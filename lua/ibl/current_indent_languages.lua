@@ -66,6 +66,7 @@ local M = {
     },
     haskell = {
         haskell = true,
+        ERROR = true,
     },
     html = {
     },
