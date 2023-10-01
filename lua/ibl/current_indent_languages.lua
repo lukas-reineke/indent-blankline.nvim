@@ -14,6 +14,7 @@ local M = {
     bitbake = {
     },
     c = {
+        translation_unit = true,
     },
     c_sharp = {
     },
