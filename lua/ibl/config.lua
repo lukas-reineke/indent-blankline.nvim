@@ -61,20 +61,23 @@ M.default_config = {
             },
         },
     },
-    context = {
+    current_indent = {
         enabled = true,
         char = nil,
-        show_start = false,
-        show_end = false,
-        highlight = "IblContext",
+        highlight = "IblCurrentIndent",
         priority = 512,
-        injected_languages = false,
+        injected_languages = true,
         include = {
             node_type = {},
         },
         exclude = {
             language = {},
-            node_type = {},
+            node_type = {
+                ["*"] = {
+                    "source_file",
+                    "program",
+                },
+            },
         },
     },
     exclude = {
@@ -130,7 +133,7 @@ local validate_config = function(config)
         indent = { config.indent, "table", true },
         whitespace = { config.whitespace, "table", true },
         scope = { config.scope, "table", true },
-        context = { config.context, "table", true },
+        current_indent = { config.current_indent, "table", true },
         exclude = { config.exclude, "table", true },
     }
 
@@ -244,46 +247,44 @@ local validate_config = function(config)
 
 
 
-    if config.context then
+    if config.current_indent then
         vim.validate {
-            enabled = { config.context.enabled, "boolean", true },
-            show_start = { config.context.show_start, "boolean", true },
-            show_end = { config.context.show_end, "boolean", true },
-            injected_languages = { config.context.injected_languages, "boolean", true },
-            highlight = { config.context.highlight, { "string", "table" }, true },
-            priority = { config.context.priority, "number", true },
-            include = { config.context.include, "table", true },
-            exclude = { config.context.exclude, "table", true },
+            enabled = { config.current_indent.enabled, "boolean", true },
+            injected_languages = { config.current_indent.injected_languages, "boolean", true },
+            highlight = { config.current_indent.highlight, { "string", "table" }, true },
+            priority = { config.current_indent.priority, "number", true },
+            include = { config.current_indent.include, "table", true },
+            exclude = { config.current_indent.exclude, "table", true },
         }
-        if config.context.char then
+        if config.current_indent.char then
             vim.validate {
                 char = {
-                    config.context.char,
+                    config.current_indent.char,
                     validate_char,
-                    "context.char to have a display width of 0 or 1",
+                    "current_indent.char to have a display width of 0 or 1",
                 },
             }
         end
-        if type(config.context.highlight) == "table" then
+        if type(config.current_indent.highlight) == "table" then
             vim.validate {
                 tab_char = {
-                    config.context.highlight,
+                    config.current_indent.highlight,
                     function(highlight)
                         return #highlight > 0
                     end,
-                    "context.highlight to be not empty",
+                    "current_indent.highlight to be not empty",
                 },
             }
         end
-        if config.context.exclude then
+        if config.current_indent.exclude then
             vim.validate {
-                language = { config.context.exclude.language, "table", true },
-                node_type = { config.context.exclude.node_type, "table", true },
+                language = { config.current_indent.exclude.language, "table", true },
+                node_type = { config.current_indent.exclude.node_type, "table", true },
             }
         end
-        if config.context.include then
+        if config.current_indent.include then
             vim.validate {
-                node_type = { config.context.include.node_type, "table", true },
+                node_type = { config.current_indent.include.node_type, "table", true },
             }
         end
     end
@@ -313,8 +314,8 @@ local merge_configs = function(behavior, base, input)
             utils.tbl_join(base.scope.exclude.language, vim.tbl_get(input, "scope", "exclude", "language"))
 
 
-        result.context.exclude.language =
-            utils.tbl_join(base.context.exclude.language, vim.tbl_get(input, "context", "exclude", "language"))
+        result.current_indent.exclude.language =
+            utils.tbl_join(base.current_indent.exclude.language, vim.tbl_get(input, "current_indent", "exclude", "language"))
 
 
 
@@ -327,10 +328,10 @@ local merge_configs = function(behavior, base, input)
 
 
 
-        local context_node_type = vim.tbl_get(input, "context", "exclude", "node_type")
-        if context_node_type then
-            for k, v in pairs(context_node_type) do
-                result.context.exclude.node_type[k] = utils.tbl_join(v, base.context.exclude.node_type[k])
+        local current_indent_node_type = vim.tbl_get(input, "current_indent", "exclude", "node_type")
+        if current_indent_node_type then
+            for k, v in pairs(current_indent_node_type) do
+                result.current_indent.exclude.node_type[k] = utils.tbl_join(v, base.current_indent.exclude.node_type[k])
             end
         end
 

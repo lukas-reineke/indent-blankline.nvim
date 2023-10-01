@@ -5,7 +5,7 @@ local inlay_hints = require "ibl.inlay_hints"
 local indent = require "ibl.indent"
 local vt = require "ibl.virt_text"
 local scp = require "ibl.scope"
-local cont = require "ibl.context"
+local cont = require "ibl.current_indent"
 local conf = require "ibl.config"
 local utils = require "ibl.utils"
 
@@ -16,7 +16,7 @@ local M = {}
 ---@package
 M.initialized = false
 
----@type table<number, { scope: TSNode?, context: TSNode?, left_offset: number, top_offset: number, tick: number }>
+---@type table<number, { scope: TSNode?, current_indent: TSNode?, left_offset: number, top_offset: number, tick: number }>
 local global_buffer_state = {}
 
 ---@param bufnr number
@@ -195,28 +195,23 @@ M.refresh = function(bufnr)
         end
     end
 
-
-
-    local context_disabled = false
+    local current_indent_disabled = false
     for _, fn in
-        pairs(hooks.get(bufnr, hooks.type.CONTEXT_ACTIVE) --[[ @as ibl.hooks.cb.context_active[] ]])
+        pairs(hooks.get(bufnr, hooks.type.CURRENT_INDENT_ACTIVE) --[[ @as ibl.hooks.cb.current_indent_active[] ]])
     do
         if not fn(bufnr) then
-            context_disabled = true
+            current_indent_disabled = true
             break
         end
     end
 
-    local context
-    if not context_disabled and config.context.enabled then
-        context = cont.get(bufnr, config)
-        if context and context:start() >= 0 then
-            offset = top_offset - math.min(top_offset - math.min(offset, context:start()), config.viewport_buffer.max)
+    local current_indent
+    if not current_indent_disabled and config.current_indent.enabled then
+        current_indent = cont.get(bufnr, config)
+        if current_indent and current_indent:start() >= 0 then
+            offset = top_offset - math.min(top_offset - math.min(offset, current_indent:start()), config.viewport_buffer.max)
         end
     end
-
-
-
 
     local range = math.min(win_end + config.viewport_buffer.min, vim.api.nvim_buf_line_count(bufnr))
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
@@ -241,7 +236,7 @@ M.refresh = function(bufnr)
     local buffer_state = global_buffer_state[bufnr]
         or {
             scope = nil,
-            context = nil,
+            current_indent = nil,
             left_offset = -1,
             top_offset = -1,
             tick = 0,
@@ -253,22 +248,17 @@ M.refresh = function(bufnr)
         inlay_hints.clear_buffer(bufnr)
     end
 
+    local same_current_indent = (current_indent and current_indent:id()) == (buffer_state.current_indent and buffer_state.current_indent:id())
 
-
-
-    local same_context = (context and context:id()) == (buffer_state.context and buffer_state.context:id())
-
-    if not same_context then
+    if not same_current_indent then
         inlay_hints.clear_buffer(bufnr)
     end
-
-
 
     global_buffer_state[bufnr] = {
         left_offset = left_offset,
         top_offset = top_offset,
         scope = scope,
-        context = context,
+        current_indent = current_indent,
         tick = buffer_state.tick + 1,
     }
 
@@ -280,18 +270,13 @@ M.refresh = function(bufnr)
         scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
     end
 
-
-
-
-    local context_col_start_single = -1
-    local context_row_start, context_col_start, context_row_end, context_col_end = -1, -1, -1, -1
-    local context_index = -1
-    if context then
-        context_row_start, context_col_start, context_row_end, context_col_end = context:range()
-        context_row_start, context_col_start, context_row_end = context_row_start + 1, context_col_start + 1, context_row_end + 1
+    local current_indent_col_start_single = -1
+    local current_indent_row_start, current_indent_col_start, current_indent_row_end = -1, -1, -1
+    local current_indent_index = -1
+    if current_indent then
+        current_indent_row_start, current_indent_col_start, current_indent_row_end, _ = current_indent:range()
+        current_indent_row_start, current_indent_col_start, current_indent_row_end = current_indent_row_start + 1, current_indent_col_start + 1, current_indent_row_end + 1
     end
-
-
 
     local last_whitespace_tbl = {}
 
@@ -329,11 +314,9 @@ M.refresh = function(bufnr)
         local scope_active = row >= scope_row_start and row <= scope_row_end
         local scope_start = row == scope_row_start
         local scope_end = row == scope_row_end
-
-        local context_active = row >= context_row_start and row <= context_row_end
-        local context_start = row == context_row_start
-        local context_end = row == context_row_end
-
+        local current_indent_active = row >= current_indent_row_start and row <= current_indent_row_end
+        local current_indent_start = row == current_indent_row_start
+        local current_indent_end = row == current_indent_row_end
 
         -- #### calculate indent ####
         if not blankline then
@@ -409,34 +392,21 @@ M.refresh = function(bufnr)
             end
         end
 
-
-
-
-
-
-
-        if context_start and context then
-            context_col_start = #whitespace
-            context_col_start_single = #whitespace_tbl
-            context_index = #vim.tbl_filter(function(w)
+        if current_indent_start and current_indent then
+            current_indent_col_start = #whitespace
+            current_indent_col_start_single = #whitespace_tbl
+            current_indent_index = #vim.tbl_filter(function(w)
                 return indent.is_indent(w)
             end, whitespace_tbl) + 1
             for _, fn in
-                pairs(hooks.get(bufnr, hooks.type.CONTEXT_HIGHLIGHT) --[[ @as ibl.hooks.cb.context_highlight[] ]])
+                pairs(hooks.get(bufnr, hooks.type.CURRENT_INDENT_HIGHLIGHT) --[[ @as ibl.hooks.cb.current_indent_highlight[] ]])
             do
-                context_index = fn(buffer_state.tick, bufnr, context, context_index)
+                current_indent_index = fn(buffer_state.tick, bufnr, current_indent, current_indent_index)
             end
         end
 
-
-
-
-
-
-
-
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
-        local virt_text, scope_hl, context_hl =
+        local virt_text, scope_hl =
             vt.get(
                 config,
                 char_map,
@@ -445,16 +415,9 @@ M.refresh = function(bufnr)
                 scope_index,
                 scope_end,
                 scope_col_start_single,
-                context_active,
-                context_index,
-                context_end,
-                context_col_start_single)
-
-
-
-
-
-
+                current_indent_active,
+                current_indent_index,
+                current_indent_col_start_single)
 
         -- #### set virtual text ####
         vt.clear_buffer(bufnr, row)
@@ -481,45 +444,11 @@ M.refresh = function(bufnr)
             inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
         end
 
-
-
-        -- Context start
-        if config.context.show_start and context_start then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, #whitespace, {
-                end_col = #line,
-                hl_group = context_hl.underline,
-                priority = config.context.priority,
-                strict = false,
-            })
-            inlay_hints.set(bufnr, row - 1, #whitespace, context_hl.underline, context_hl.underline)
-        end
-
-        -- Context end
-        if config.context.show_end and context_end and #whitespace_tbl > context_col_start_single then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, context_col_start, {
-                end_col = context_col_end,
-                hl_group = context_hl.underline,
-                priority = config.context.priority,
-                strict = false,
-            })
-            inlay_hints.set(bufnr, row - 1, #whitespace, context_hl.underline, context_hl.underline)
-        end
-
-
-
-
         for _, fn in
             pairs(hooks.get(bufnr, hooks.type.VIRTUAL_TEXT) --[[ @as ibl.hooks.cb.virtual_text[] ]])
         do
             virt_text = fn(buffer_state.tick, bufnr, row - 1, virt_text)
         end
-
-
-
-
-
-
-
 
         -- Indent
         if #virt_text > 0 then
@@ -531,16 +460,6 @@ M.refresh = function(bufnr)
                 strict = false,
             })
         end
-
-
-
-
-
-
-
-
-
-
 
         ::continue::
     end

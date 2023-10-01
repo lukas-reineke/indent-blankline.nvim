@@ -18,7 +18,7 @@
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.exclude?
 --- Configures the scope
----@field context ibl.config.context?
+---@field current_indent ibl.config.current_indent?
 
 
 ---@class ibl.config.viewport_buffer
@@ -132,8 +132,8 @@
 ---@field scope ibl.config.full.scope: ig.config.scope
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.full.exclude: ibl.config.exclude
---- Configures the context
----@field context ibl.config.full.context
+--- Configures the current_indent
+---@field current_indent ibl.config.full.current_indent
 
 ---@class ibl.config.full.viewport_buffer: ibl.config.viewport_buffer
 --- Minimum number of lines above and below of what is currently visible in the window for which indentation guides will
@@ -236,32 +236,28 @@
 
 
 
----@class ibl.config.context
---- Enables or disables context
+---@class ibl.config.current_indent
+--- Enables or disables current_indent
 ---@field enabled boolean?
---- Character, or list of characters, that get used to display the context indentation guide
+--- Character, or list of characters, that get used to display the current_indent indentation guide
 ---
 --- Each character has to have a display width of 0 or 1
 ---@field char string|string[]?
---- Shows an underline on the first line of the context
----@field show_start boolean?
---- Shows an underline on the last line of the context
----@field show_end boolean?
---- Checks for the current context in injected treesitter languages
+--- Checks for the current current_indent in injected treesitter languages
 ---
---- This also influences if the context gets excluded or not
+--- This also influences if the current_indent gets excluded or not
 ---@field injected_languages boolean?
---- Highlight group, or list of highlight groups, that get applied to the context
+--- Highlight group, or list of highlight groups, that get applied to the current_indent
 ---@field highlight string|string[]?
---- Virtual text priority for the context
+--- Virtual text priority for the current_indent
 ---@field priority number?
---- Configures additional nodes to be used as context
----@field include ibl.config.context.include?
---- Configures nodes or languages to be excluded from context
----@field exclude ibl.config.context.exclude?
+--- Configures additional nodes to be used as current_indent
+---@field include ibl.config.current_indent.include?
+--- Configures nodes or languages to be excluded from current_indent
+---@field exclude ibl.config.current_indent.exclude?
 
----@class ibl.config.context.include
---- map of language to a list of node types which can be used as context
+---@class ibl.config.current_indent.include
+--- map of language to a list of node types which can be used as current_indent
 ---
 --- Use `*` as a wildcard for all languages
 ---
@@ -274,10 +270,10 @@
 --- </code>
 ---@field node_type table<string, string[]>?
 
----@class ibl.config.context.exclude
---- List of treesitter languages for which context is disabled
+---@class ibl.config.current_indent.exclude
+--- List of treesitter languages for which current_indent is disabled
 ---@field language string[]?
---- map of language to a list of node types which should not be used as context
+--- map of language to a list of node types which should not be used as current_indent
 ---
 --- Use `*` as a wildcard for all languages
 ---
@@ -290,11 +286,6 @@
 --- </code>
 ---@field node_type table<string, string[]>?
 
----@class ibl.config.exclude
---- List of `filetypes` for which indent-blankline is disabled
----@field filetypes string[]?
---- List of `buftypes` for which indent-blankline is disabled
----@field buftypes string[]?
 
 
 
@@ -302,33 +293,28 @@
 
 
 
-
----@class ibl.config.full.context: ibl.config.context
---- Enables or disables context
+---@class ibl.config.full.current_indent: ibl.config.current_indent
+--- Enables or disables current_indent
 ---@field enabled boolean
---- Character, or list of characters, that get used to display the context indentation guide
+--- Character, or list of characters, that get used to display the current_indent indentation guide
 ---
 --- Each character has to have a display width of 0 or 1
 ---@field char string|string[]?
---- Shows an underline on the first line of the context
----@field show_start boolean
---- Shows an underline on the last line of the context
----@field show_end boolean
---- Checks for the current context in injected treesitter languages
+--- Checks for the current current_indent in injected treesitter languages
 ---
---- This also influences if the context gets excluded or not
+--- This also influences if the current_indent gets excluded or not
 ---@field injected_languages boolean
---- Highlight group, or list of highlight groups, that get applied to the context
+--- Highlight group, or list of highlight groups, that get applied to the current_indent
 ---@field highlight string|string[]
---- Virtual text priority for the context
+--- Virtual text priority for the current_indent
 ---@field priority number
---- Configures additional nodes to be used as context
----@field include ibl.config.full.context.include
---- Configures nodes or languages to be excluded from context
----@field exclude ibl.config.full.context.exclude: ibl.config.context.exclude
+--- Configures additional nodes to be used as current_indent
+---@field include ibl.config.full.current_indent.include
+--- Configures nodes or languages to be excluded from current_indent
+---@field exclude ibl.config.full.current_indent.exclude: ibl.config.current_indent.exclude
 
----@class ibl.config.full.context.include: ibl.config.context.include
---- map of language to a list of node types which can be used as context
+---@class ibl.config.full.current_indent.include: ibl.config.current_indent.include
+--- map of language to a list of node types which can be used as current_indent
 ---
 --- Use `*` as a wildcard for all languages
 ---
@@ -341,10 +327,10 @@
 --- </code>
 ---@field node_type table<string, string[]>
 
----@class ibl.config.full.context.exclude: ibl.config.context.exclude
---- List of treesitter languages for which context is disabled
+---@class ibl.config.full.current_indent.exclude: ibl.config.current_indent.exclude
+--- List of treesitter languages for which current_indent is disabled
 ---@field language string[]
---- map of language to a list of node types which should not be used as context
+--- map of language to a list of node types which should not be used as current_indent
 ---
 --- Use `*` as a wildcard for all languages
 ---
@@ -357,8 +343,3 @@
 --- </code>
 ---@field node_type table<string, string[]>
 
----@class ibl.config.full.exclude: ibl.config.exclude
---- List of `filetypes` for which indent-blankline is disabled
----@field filetypes string[]
---- List of `buftypes` for which indent-blankline is disabled
----@field buftypes string[]

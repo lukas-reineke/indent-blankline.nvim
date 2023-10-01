@@ -1,4 +1,5 @@
 local utils = require "ibl.utils"
+local current_indent_lang = require "ibl.current_indent_languages"
 local M = {}
 
 ---@param win number
@@ -15,7 +16,7 @@ end
 ---@param range table<number, number>
 ---@param config ibl.config.full
 M.language_for_range = function(language_tree, range, config)
-    if config.context.injected_languages then
+    if config.current_indent.injected_languages then
         for _, child in pairs(language_tree:children()) do
             if child:contains(range) then
                 local lang_tree = M.language_for_range(child, range, config)
@@ -26,7 +27,7 @@ M.language_for_range = function(language_tree, range, config)
         end
     end
 
-    if not vim.tbl_contains(config.context.exclude.language, language_tree:lang()) then
+    if not vim.tbl_contains(config.current_indent.exclude.language, language_tree:lang()) then
         return language_tree
     end
 end
@@ -66,15 +67,15 @@ M.get = function(bufnr, config)
 
 
     local excluded_node_types =
-        utils.tbl_join(config.context.exclude.node_type["*"] or {}, config.context.exclude.node_type[lang] or {})
+        utils.tbl_join(config.current_indent.exclude.node_type["*"] or {}, config.current_indent.exclude.node_type[lang] or {})
     local include_node_types =
-        utils.tbl_join(config.context.include.node_type["*"] or {}, config.context.include.node_type[lang] or {})
+        utils.tbl_join(config.current_indent.include.node_type["*"] or {}, config.current_indent.include.node_type[lang] or {})
 
     while node do
         local type = node:type()
 
         if
-            (not vim.tbl_contains(excluded_node_types, type))
+            ((not current_indent_lang[lang][type]) and (not vim.tbl_contains(excluded_node_types, type)))
             or vim.tbl_contains(include_node_types, type)
             or vim.tbl_contains(include_node_types, "*")
         then

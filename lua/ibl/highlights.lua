@@ -13,7 +13,7 @@ local M = {
     ---@type ibl.highlight[]
     scope = {},
     ---@type ibl.highlight[]
-    context = {},
+    current_indent = {},
 }
 
 local get = function(name)
@@ -31,7 +31,7 @@ local setup_builtin_hl_groups = function()
     local ibl_indent_hl_name = "IblIndent"
     local ibl_whitespace_hl_name = "IblWhitespace"
     local ibl_scope_hl_name = "IblScope"
-    local ibl_context_hl_name = "IblContext"
+    local ibl_current_indent_hl_name = "IblCurrentIndent"
 
     if not_set(get(ibl_indent_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_indent_hl_name, whitespace_hl)
@@ -42,8 +42,8 @@ local setup_builtin_hl_groups = function()
     if not_set(get(ibl_scope_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_scope_hl_name, line_nr_hl)
     end
-    if not_set(get(ibl_context_hl_name)) then
-        vim.api.nvim_set_hl(0, ibl_context_hl_name, cursor_line_nr_hl)
+    if not_set(get(ibl_current_indent_hl_name)) then
+        vim.api.nvim_set_hl(0, ibl_current_indent_hl_name, cursor_line_nr_hl)
     end
 end
 
@@ -111,23 +111,23 @@ M.setup = function()
 
 
 
-    local context_highlights = config.context.highlight
-    if type(context_highlights) == "string" then
-        context_highlights = { context_highlights }
+    local current_indent_highlights = config.current_indent.highlight
+    if type(current_indent_highlights) == "string" then
+        current_indent_highlights = { current_indent_highlights }
     end
-    M.context = {}
-    for i, context_name in ipairs(context_highlights) do
-        local char_hl = get(context_name)
+    M.current_indent = {}
+    for i, current_indent_name in ipairs(current_indent_highlights) do
+        local char_hl = get(current_indent_name)
         if not_set(char_hl) then
-            error(string.format("No highlight group '%s' found", context_name))
+            error(string.format("No highlight group '%s' found", current_indent_name))
         end
         char_hl.nocombine = true
-        M.context[i] = {
-            char = string.format("@ibl.context.char.%d", i),
-            underline = string.format("@ibl.context.underline.%d", i),
+        M.current_indent[i] = {
+            char = string.format("@ibl.current_indent.char.%d", i),
+            underline = string.format("@ibl.current_indent.underline.%d", i),
         }
-        vim.api.nvim_set_hl(0, M.context[i].char, char_hl)
-        vim.api.nvim_set_hl(0, M.context[i].underline, { sp = char_hl.fg, underline = true })
+        vim.api.nvim_set_hl(0, M.current_indent[i].char, char_hl)
+        vim.api.nvim_set_hl(0, M.current_indent[i].underline, { sp = char_hl.fg, underline = true })
     end
 end
 

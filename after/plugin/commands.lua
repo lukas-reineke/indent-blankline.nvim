@@ -55,28 +55,28 @@ end, {
 
 
 
-vim.api.nvim_create_user_command("IBLEnableContext", function()
-    ibl.update { context = { enabled = true } }
+vim.api.nvim_create_user_command("IBLEnableCurrentIndent", function()
+    ibl.update { current_indent = { enabled = true } }
 end, {
     bar = true,
-    desc = "Enables indent-blanklines context",
+    desc = "Enables indent-blanklines current_indent",
 })
 
-vim.api.nvim_create_user_command("IBLDisableContext", function()
-    ibl.update { context = { enabled = false } }
+vim.api.nvim_create_user_command("IBLDisableCurrentIndent", function()
+    ibl.update { current_indent = { enabled = false } }
 end, {
     bar = true,
-    desc = "Disables indent-blanklines context",
+    desc = "Disables indent-blanklines current_indent",
 })
 
-vim.api.nvim_create_user_command("IBLToggleContext", function()
+vim.api.nvim_create_user_command("IBLToggleCurrentIndent", function()
     if ibl.initialized then
-        ibl.update { context = { enabled = not conf.get_config(-1).context.enabled } }
+        ibl.update { current_indent = { enabled = not conf.get_config(-1).current_indent.enabled } }
     else
         ibl.setup {}
     end
 end, {
     bar = true,
-    desc = "Toggles indent-blanklines context on and off",
+    desc = "Toggles indent-blanklines current_indent on and off",
 })
 
