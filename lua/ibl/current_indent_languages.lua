@@ -108,6 +108,8 @@ local M = {
     python = {
         module = true,
         block = true,
+        string_content = true,
+        string = true,
     },
     ql = {
     },
