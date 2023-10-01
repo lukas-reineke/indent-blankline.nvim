@@ -77,7 +77,7 @@ M.register = function(type, cb, opts)
         cb = { cb, "function" },
         opts = { opts, "table", true },
     }
-    opts = vim.tbl_deep_extend("keep", opts or {}, default_opts)
+    opts = vim.tbl_deep_extend("keep", opts or {}, default_opts) or {}
     vim.validate {
         bufnr = { opts.bufnr, "number", true },
     }
@@ -257,14 +257,6 @@ M.builtin = {
         return scope_index
     end,
 
-
-
-
-
-
-
-
-
     ---@type ibl.hooks.cb.current_indent_highlight
     current_indent_highlight_from_extmark = function(_, bufnr, current_indent, current_indent_index)
         local config = conf.get_config(bufnr)
@@ -320,15 +312,6 @@ M.builtin = {
         end
         return current_indent_index
     end,
-
-
-
-
-
-
-
-
-
 
     ---@type ibl.hooks.cb.whitespace
     hide_first_space_indent_level = function(_, _, _, whitespace_tbl)

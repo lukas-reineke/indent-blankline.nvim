@@ -107,10 +107,6 @@ M.setup = function()
         vim.api.nvim_set_hl(0, M.scope[i].underline, { sp = char_hl.fg, underline = true })
     end
 
-
-
-
-
     local current_indent_highlights = config.current_indent.highlight
     if type(current_indent_highlights) == "string" then
         current_indent_highlights = { current_indent_highlights }
@@ -130,8 +126,5 @@ M.setup = function()
         vim.api.nvim_set_hl(0, M.current_indent[i].underline, { sp = char_hl.fg, underline = true })
     end
 end
-
-
-
 
 return M

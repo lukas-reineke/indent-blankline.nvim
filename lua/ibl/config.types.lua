@@ -228,14 +228,6 @@
 --- List of `buftypes` for which indent-blankline is disabled
 ---@field buftypes string[]
 
-
-
-
-
-
-
-
-
 ---@class ibl.config.current_indent
 --- Enables or disables current_indent
 ---@field enabled boolean?
@@ -285,13 +277,6 @@
 --- }
 --- </code>
 ---@field node_type table<string, string[]>?
-
-
-
-
-
-
-
 
 ---@class ibl.config.full.current_indent: ibl.config.current_indent
 --- Enables or disables current_indent

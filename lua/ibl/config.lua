@@ -244,9 +244,6 @@ local validate_config = function(config)
         end
     end
 
-
-
-
     if config.current_indent then
         vim.validate {
             enabled = { config.current_indent.enabled, "boolean", true },
@@ -289,9 +286,6 @@ local validate_config = function(config)
         end
     end
 
-
-
-
     if config.exclude then
         if config.exclude then
             vim.validate {
@@ -318,7 +312,6 @@ local merge_configs = function(behavior, base, input)
             utils.tbl_join(base.current_indent.exclude.language, vim.tbl_get(input, "current_indent", "exclude", "language"))
 
 
-
         local scope_node_type = vim.tbl_get(input, "scope", "exclude", "node_type")
         if scope_node_type then
             for k, v in pairs(scope_node_type) do
@@ -327,15 +320,12 @@ local merge_configs = function(behavior, base, input)
         end
 
 
-
         local current_indent_node_type = vim.tbl_get(input, "current_indent", "exclude", "node_type")
         if current_indent_node_type then
             for k, v in pairs(current_indent_node_type) do
                 result.current_indent.exclude.node_type[k] = utils.tbl_join(v, base.current_indent.exclude.node_type[k])
             end
         end
-
-
 
 
         result.exclude.filetypes = utils.tbl_join(base.exclude.filetypes, vim.tbl_get(input, "exclude", "filetypes"))

@@ -51,10 +51,6 @@ end, {
     desc = "Toggles indent-blanklines scope on and off",
 })
 
-
-
-
-
 vim.api.nvim_create_user_command("IBLEnableCurrentIndent", function()
     ibl.update { current_indent = { enabled = true } }
 end, {

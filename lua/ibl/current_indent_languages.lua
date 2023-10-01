@@ -1,4 +1,5 @@
--- from nvim-treesitter/queries/{lang}/locals
+-- This is filled out by hand based on what type treesitter reports
+-- blank lines and/or lists of commands as in the given language
 
 local M = {
     ada = {
@@ -61,6 +62,9 @@ local M = {
     hare = {
     },
     heex = {
+    },
+    haskell = {
+        haskell = true,
     },
     html = {
     },

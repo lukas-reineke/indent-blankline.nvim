@@ -59,12 +59,14 @@ M.get = function(bufnr, config)
     end
 
     local lang = lang_tree:lang()
+    if not current_indent_lang[lang] then
+        return nil
+    end
 
     local node = lang_tree:named_node_for_range(range, { bufnr = bufnr })
     if not node then
         return nil
     end
-
 
     local excluded_node_types =
         utils.tbl_join(config.current_indent.exclude.node_type["*"] or {}, config.current_indent.exclude.node_type[lang] or {})
@@ -87,9 +89,3 @@ M.get = function(bufnr, config)
 end
 
 return M
-
-
-
-
-
-
