@@ -89,11 +89,11 @@ end
 
 ---@param bufnr number
 M.get_filetypes = function(bufnr)
-    return vim.split(
-        vim.api.nvim_get_option_value("filetype", { buf = bufnr }),
-        ".",
-        { plain = true, trimempty = true }
-    )
+    local filetype = vim.api.nvim_get_option_value("filetype", { buf = bufnr })
+    if filetype == "" then
+        return { "" }
+    end
+    return vim.split(filetype, ".", { plain = true, trimempty = true })
 end
 
 local has_end_reg = vim.regex "^\\s*\\(}\\|]\\|)\\|end\\)"
