@@ -316,7 +316,6 @@ M.refresh = function(bufnr)
         local scope_end = row == scope_row_end
         local current_indent_active = row >= current_indent_row_start and row <= current_indent_row_end
         local current_indent_start = row == current_indent_row_start
-        local current_indent_end = row == current_indent_row_end
 
         -- #### calculate indent ####
         if not blankline then

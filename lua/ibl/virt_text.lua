@@ -107,7 +107,7 @@ M.get = function(
             indent_hl = current_indent_hl.char
 
             if config.current_indent.char then
-                local current_indent_char = get_char(config.current_indent.char, scope_index)
+                local current_indent_char = get_char(config.current_indent.char, current_indent_index)
                 if vim.fn.strdisplaywidth(current_indent_char) == 1 then
                     char = current_indent_char
                 end
