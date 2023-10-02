@@ -1,0 +1,56 @@
+name: Run Lua Language Server check
+
+on:
+  workflow_call:
+    inputs:
+      lua_ls_version:
+        required: true
+        type: string
+      neovim_versions:
+        required: true
+        type: string
+
+jobs:
+  lua-language-server:
+    name: lua language server
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        rev: ${{ fromJson(inputs.neovim_versions) }}
+    steps:
+      - uses: actions/checkout@v3
+      - run: date +%F > todays-date
+      - name: Restore cache for Neovim
+        uses: actions/cache@v3
+        with:
+          path: _neovim
+          key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
+      - name: Restore cache for vendor dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ hashFiles('todays-date') }}
+      - name: Restore cache for lua LS
+        uses: actions/cache@v3
+        with:
+          path: _lua-ls
+          key: ${{ inputs.lua_ls_version }}
+      - name: Prepare
+        run: |
+          test -d _neovim || {
+            mkdir -p _neovim
+            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}/nvim-linux64.tar.gz" | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
+          }
+          test -d _lua-ls || {
+            mkdir -p _lua-ls
+            curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/${{ inputs.lua_ls_version }}/lua-language-server-${{ inputs.lua_ls_version }}-linux-x64.tar.gz" | tar xzf - -C "${PWD}/_lua-ls"
+          }
+
+      - name: Run check
+        run: |
+          export PATH="${PWD}/_neovim/bin:${PATH}"
+          export PATH="${PWD}/_lua-ls/bin:${PATH}"
+          export VIM="${PWD}/_neovim/share/nvim/runtime"
+          nvim --version
+          make lua-language-server version=${{ matrix.rev == 'nightly' && 'nightly' || 'stable' }}

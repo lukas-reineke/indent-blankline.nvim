@@ -9,85 +9,17 @@ concurrency:
 
 jobs:
   tests:
-    name: unit tests
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - version: nightly
-            rev: nightly/nvim-linux64.tar.gz
-          - version: stable
-            rev: v0.9.2/nvim-linux64.tar.gz
-    steps:
-      - uses: actions/checkout@v3
-      - run: date +%F > todays-date
-      - name: Restore cache for today's nightly.
-        uses: actions/cache@v3
-        with:
-          path: _neovim
-          key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
-      - name: Prepare
-        run: |
-          test -d _neovim || {
-            mkdir -p _neovim
-            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}" | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
-          }
-
-      - name: Run tests
-        run: |
-          export PATH="${PWD}/_neovim/bin:${PATH}"
-          export VIM="${PWD}/_neovim/share/nvim/runtime"
-          nvim --version
-          make test
+    uses: ./.github/workflows/tests.yml
+    with:
+      neovim_versions: |
+        [ "nightly", "v0.9.2" ]
 
   lua-language-server:
-    name: lua language server
-    runs-on: ubuntu-22.04
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - version: nightly
-            rev: nightly/nvim-linux64.tar.gz
-          - version: stable
-            rev: v0.9.2/nvim-linux64.tar.gz
-    steps:
-      - uses: actions/checkout@v3
-      - run: date +%F > todays-date
-      - name: Restore cache for today's nightly.
-        uses: actions/cache@v3
-        with:
-          path: _neovim
-          key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
-      - name: Restore vendor dependencies
-        uses: actions/cache@v3
-        with:
-          path: vendor
-          key: ${{ hashFiles('todays-date') }}
-      - name: Restore cache for lua LS
-        uses: actions/cache@v3
-        with:
-          path: _lua-ls
-          key: 3.7.0
-      - name: Prepare
-        run: |
-          test -d _neovim || {
-            mkdir -p _neovim
-            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}" | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
-          }
-          test -d _lua-ls || {
-            mkdir -p _lua-ls
-            curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/3.7.0/lua-language-server-3.7.0-linux-x64.tar.gz" | tar xzf - -C "${PWD}/_lua-ls"
-          }
-
-      - name: Run check
-        run: |
-          export PATH="${PWD}/_neovim/bin:${PATH}"
-          export PATH="${PWD}/_lua-ls/bin:${PATH}"
-          export VIM="${PWD}/_neovim/share/nvim/runtime"
-          nvim --version
-          make lua-language-server version=${{ matrix.version }}
+    uses: ./.github/workflows/lua_language_server.yml
+    with:
+      lua_ls_version: 3.7.0
+      neovim_versions: |
+        [ "nightly", "v0.9.2" ]
 
   stylua:
     name: stylua
