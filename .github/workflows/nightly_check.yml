@@ -1,0 +1,25 @@
+name: Nightly Neovim check
+# Checks LSP and unit tests against new Neovim nightly once a week
+
+on:
+  schedule:
+    - cron: '30 21 * * 0' # 6:30 AM JST, Monday
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+    with:
+      neovim_versions: |
+        [ "nightly" ]
+
+  lua-language-server:
+    uses: ./.github/workflows/lua_language_server.yml
+    with:
+      lua_ls_version: 3.7.0
+      neovim_versions: |
+        [ "nightly" ]
