@@ -210,7 +210,7 @@ config                                                            *ibl.config*
        debounce = 100,
        indent = { char = "|" },
        whitespace = { highlight = { "Whitespace", "NonText" } },
-       scope = { exclude = { "lua" } },
+       scope = { exclude = { language = { "lua" } } },
    }
 <
 
