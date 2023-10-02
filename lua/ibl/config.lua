@@ -183,6 +183,7 @@ local validate_config = function(config)
     if config.scope then
         vim.validate {
             enabled = { config.scope.enabled, "boolean", true },
+            char = { config.scope.char, { "string", "table" }, true },
             show_start = { config.scope.show_start, "boolean", true },
             show_end = { config.scope.show_end, "boolean", true },
             injected_languages = { config.scope.injected_languages, "boolean", true },
