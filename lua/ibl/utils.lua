@@ -8,6 +8,18 @@ M.get_whitespace = function(line)
     return string.match(line, "^%s+") or ""
 end
 
+---@param opt table
+---@param input table
+---@param path string
+M.validate = function(opt, input, path)
+    vim.validate(opt)
+    for key, _ in pairs(input) do
+        if not opt[key] then
+            error(string.format("'%s' is not a valid key of %s", key, path))
+        end
+    end
+end
+
 ---@class ibl.listchars
 ---@field tabstop_overwrite boolean
 ---@field space_char string

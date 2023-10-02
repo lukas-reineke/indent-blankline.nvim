@@ -108,29 +108,31 @@ local validate_config = function(config)
         return
     end
 
-    vim.validate {
+    utils.validate({
         enabled = { config.enabled, "boolean", true },
+        debounce = { config.debounce, "number", true },
         viewport_buffer = { config.viewport_buffer, "table", true },
         indent = { config.indent, "table", true },
         whitespace = { config.whitespace, "table", true },
         scope = { config.scope, "table", true },
         exclude = { config.exclude, "table", true },
-    }
+    }, config, "ibl.config")
 
     if config.viewport_buffer then
-        vim.validate {
+        utils.validate({
             min = { config.viewport_buffer.min, "number", true },
             max = { config.viewport_buffer.max, "number", true },
-        }
+        }, config.viewport_buffer, "ibl.config.viewport_buffer")
     end
 
     if config.indent then
-        vim.validate {
+        utils.validate({
             char = { config.indent.char, { "string", "table" }, true },
+            tab_char = { config.indent.char, { "string", "table" }, true },
             highlight = { config.indent.highlight, { "string", "table" }, true },
             smart_indent_cap = { config.indent.smart_indent_cap, "boolean", true },
             priority = { config.indent.priority, "number", true },
-        }
+        }, config.indent, "ibl.config.indent")
         if config.indent.char then
             vim.validate {
                 char = {
@@ -163,10 +165,10 @@ local validate_config = function(config)
     end
 
     if config.whitespace then
-        vim.validate {
+        utils.validate({
             highlight = { config.whitespace.highlight, { "string", "table" }, true },
             remove_blankline_trail = { config.whitespace.remove_blankline_trail, "boolean", true },
-        }
+        }, config.whitespace, "ibl.config.whitespace")
         if type(config.whitespace.highlight) == "table" then
             vim.validate {
                 tab_char = {
@@ -181,7 +183,7 @@ local validate_config = function(config)
     end
 
     if config.scope then
-        vim.validate {
+        utils.validate({
             enabled = { config.scope.enabled, "boolean", true },
             show_start = { config.scope.show_start, "boolean", true },
             show_end = { config.scope.show_end, "boolean", true },
@@ -190,7 +192,7 @@ local validate_config = function(config)
             priority = { config.scope.priority, "number", true },
             include = { config.scope.include, "table", true },
             exclude = { config.scope.exclude, "table", true },
-        }
+        }, config.scope, "ibl.config.scope")
         if config.scope.char then
             vim.validate {
                 char = {
@@ -212,24 +214,24 @@ local validate_config = function(config)
             }
         end
         if config.scope.exclude then
-            vim.validate {
+            utils.validate({
                 language = { config.scope.exclude.language, "table", true },
                 node_type = { config.scope.exclude.node_type, "table", true },
-            }
+            }, config.scope.exclude, "ibl.config.scope.exclude")
         end
         if config.scope.include then
-            vim.validate {
+            utils.validate({
                 node_type = { config.scope.include.node_type, "table", true },
-            }
+            }, config.scope.include, "ibl.config.scope.include")
         end
     end
 
     if config.exclude then
         if config.exclude then
-            vim.validate {
+            utils.validate({
                 filetypes = { config.exclude.filetypes, "table", true },
                 buftypes = { config.exclude.buftypes, "table", true },
-            }
+            }, config.exclude, "ibl.config.exclude")
         end
     end
 end
