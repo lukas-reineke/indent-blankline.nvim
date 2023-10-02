@@ -25,6 +25,13 @@ describe("set_config", function()
         assert.are.equal(ok, false)
     end)
 
+    it("does not allow extra keys", function()
+        ---@diagnostic disable-next-line
+        local ok = pcall(conf.set_config, { this_does_not_exist = "string" })
+
+        assert.are.equal(ok, false)
+    end)
+
     it("resets the config every time", function()
         conf.set_config { enabled = false }
         local config = conf.set_config { debounce = 100 }
