@@ -1,4 +1,1 @@
-vendor/*
-lua-language-server-log/*
-_neovim/*
-_lua-ls/*
+.ci/*

@@ -21,18 +21,18 @@ jobs:
       - name: Restore cache for Neovim
         uses: actions/cache@v3
         with:
-          path: _neovim
+          path: .ci/neovim
           key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
       - name: Prepare
         run: |
-          test -d _neovim || {
-            mkdir -p _neovim
-            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}/nvim-linux64.tar.gz" | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
+          test -d .ci/neovim || {
+            mkdir -p .ci/neovim
+            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}/nvim-linux64.tar.gz" | tar xzf - --strip-components=1 -C "${PWD}/.ci/neovim"
           }
 
       - name: Run tests
         run: |
-          export PATH="${PWD}/_neovim/bin:${PATH}"
-          export VIM="${PWD}/_neovim/share/nvim/runtime"
+          export PATH="${PWD}/.ci/neovim/bin:${PATH}"
+          export VIM="${PWD}/.ci/neovim/share/nvim/runtime"
           nvim --version
           make test

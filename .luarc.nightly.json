@@ -12,7 +12,7 @@
     "diagnostics.libraryFiles": "Disable",
     "workspace.library": [
         "/usr/local/share/nvim/runtime/lua",
-        "_neovim/share/nvim/runtime/lua",
-        "vendor/pack/vendor/start/neodev.nvim/types/nightly"
+        ".ci/neovim/share/nvim/runtime/lua",
+        ".ci/vendor/pack/vendor/start/neodev.nvim/types/nightly"
     ]
 }

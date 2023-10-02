@@ -24,33 +24,33 @@ jobs:
       - name: Restore cache for Neovim
         uses: actions/cache@v3
         with:
-          path: _neovim
+          path: .ci/neovim
           key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
       - name: Restore cache for vendor dependencies
         uses: actions/cache@v3
         with:
-          path: vendor
+          path: .ci/vendor
           key: ${{ hashFiles('todays-date') }}
       - name: Restore cache for lua LS
         uses: actions/cache@v3
         with:
-          path: _lua-ls
+          path: .ci/lua-ls
           key: ${{ inputs.lua_ls_version }}
       - name: Prepare
         run: |
-          test -d _neovim || {
-            mkdir -p _neovim
-            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}/nvim-linux64.tar.gz" | tar xzf - --strip-components=1 -C "${PWD}/_neovim"
+          test -d .ci/neovim || {
+            mkdir -p .ci/neovim
+            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}/nvim-linux64.tar.gz" | tar xzf - --strip-components=1 -C "${PWD}/.ci/neovim"
           }
-          test -d _lua-ls || {
-            mkdir -p _lua-ls
-            curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/${{ inputs.lua_ls_version }}/lua-language-server-${{ inputs.lua_ls_version }}-linux-x64.tar.gz" | tar xzf - -C "${PWD}/_lua-ls"
+          test -d .ci/lua-ls || {
+            mkdir -p .ci/lua-ls
+            curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/${{ inputs.lua_ls_version }}/lua-language-server-${{ inputs.lua_ls_version }}-linux-x64.tar.gz" | tar xzf - -C "${PWD}/.ci/lua-ls"
           }
 
       - name: Run check
         run: |
-          export PATH="${PWD}/_neovim/bin:${PATH}"
-          export PATH="${PWD}/_lua-ls/bin:${PATH}"
-          export VIM="${PWD}/_neovim/share/nvim/runtime"
+          export PATH="${PWD}/.ci/neovim/bin:${PATH}"
+          export PATH="${PWD}/.ci/lua-ls/bin:${PATH}"
+          export VIM="${PWD}/.ci/neovim/share/nvim/runtime"
           nvim --version
           make lua-language-server version=${{ matrix.rev == 'nightly' && 'nightly' || 'stable' }}

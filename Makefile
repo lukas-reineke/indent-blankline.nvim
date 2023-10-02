@@ -17,16 +17,16 @@ stylua:
 	stylua --check .
 
 lua-language-server: dependencies
-	rm -rf lua-language-server-log
-	lua-language-server --configpath .luarc.$(version).json --logpath lua-language-server-log --check .
-	[ -f lua-language-server-log/check.json ] && { cat lua-language-server-log/check.json 2>/dev/null; exit 1; } || true
+	rm -rf .ci/lua-language-server-log
+	lua-language-server --configpath .luarc.$(version).json --logpath .ci/lua-language-server-log --check .
+	[ -f .ci/lua-language-server-log/check.json ] && { cat .ci/lua-language-server-log/check.json 2>/dev/null; exit 1; } || true
 
 dependencies:
-	if [ ! -d vendor ]; then \
+	if [ ! -d .ci/vendor ]; then \
 		git clone --depth 1 \
 			https://github.com/nvim-lua/plenary.nvim \
-			vendor/pack/vendor/start/plenary.nvim; \
+			.ci/vendor/pack/vendor/start/plenary.nvim; \
 		git clone --depth 1 \
 			https://github.com/folke/neodev.nvim \
-			vendor/pack/vendor/start/neodev.nvim; \
+			.ci/vendor/pack/vendor/start/neodev.nvim; \
 	fi
