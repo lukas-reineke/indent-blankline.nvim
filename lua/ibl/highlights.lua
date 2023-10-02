@@ -32,9 +32,11 @@ end
 local setup_builtin_hl_groups = function()
     local whitespace_hl = get "Whitespace"
     local line_nr_hl = get "LineNr"
+    local cursor_line_nr_hl = get "CursorLineNr"
     local ibl_indent_hl_name = "IblIndent"
     local ibl_whitespace_hl_name = "IblWhitespace"
     local ibl_scope_hl_name = "IblScope"
+    local ibl_current_indent_hl_name = "IblCurrentIndent"
 
     if not_set(get(ibl_indent_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_indent_hl_name, whitespace_hl)
@@ -45,13 +47,16 @@ local setup_builtin_hl_groups = function()
     if not_set(get(ibl_scope_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_scope_hl_name, line_nr_hl)
     end
+    if not_set(get(ibl_current_indent_hl_name)) then
+        vim.api.nvim_set_hl(0, ibl_current_indent_hl_name, cursor_line_nr_hl)
+    end
 end
 
 M.setup = function()
     local config = conf.get_config(-1)
 
     for _, fn in
-        pairs(hooks.get(-1, hooks.type.HIGHLIGHT_SETUP) --[[ @as ibl.hooks.cb.highlight_setup[] ]])
+    pairs(hooks.get(-1, hooks.type.HIGHLIGHT_SETUP) --[[ @as ibl.hooks.cb.highlight_setup[] ]])
     do
         fn()
     end
@@ -106,6 +111,17 @@ M.setup = function()
         vim.api.nvim_set_hl(0, M.scope[i].char, char_hl)
         vim.api.nvim_set_hl(0, M.scope[i].underline, { sp = char_hl.fg, underline = true })
     end
+    local current_indent_highlight = config.current_indent.highlight
+    M.current_indent = {}
+    local char_hl = get(current_indent_highlight)
+    if not_set(char_hl) then
+        error(string.format("No highlight group '%s' found", current_indent_highlight))
+    end
+    char_hl.nocombine = true
+    M.current_indent = {
+        char = "@ibl.current_indent.char",
+    }
+    vim.api.nvim_set_hl(0, M.current_indent.char, char_hl)
 end
 
 return M

@@ -61,6 +61,12 @@ M.default_config = {
             },
         },
     },
+    current_indent = {
+        enabled = false,
+        char = nil,
+        priority = 2,
+        highlight = "IblCurrentIndent",
+    },
     exclude = {
         filetypes = {
             "lspinfo",

@@ -8,6 +8,7 @@ local scp = require "ibl.scope"
 local conf = require "ibl.config"
 local utils = require "ibl.utils"
 
+local namespace_underscore = vim.api.nvim_create_namespace "indent_blankline_underscore"
 local namespace = vim.api.nvim_create_namespace "indent_blankline"
 
 local M = {}
@@ -363,7 +364,7 @@ M.refresh = function(bufnr)
 
         -- Scope start
         if config.scope.show_start and scope_start then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, #whitespace, {
+            vim.api.nvim_buf_set_extmark(bufnr, namespace_underscore, row - 1, #whitespace, {
                 end_col = #line,
                 hl_group = scope_hl.underline,
                 priority = config.scope.priority,
@@ -374,7 +375,7 @@ M.refresh = function(bufnr)
 
         -- Scope end
         if config.scope.show_end and scope_end and #whitespace_tbl > scope_col_start_single then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
+            vim.api.nvim_buf_set_extmark(bufnr, namespace_underscore, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,
                 priority = config.scope.priority,
@@ -398,10 +399,152 @@ M.refresh = function(bufnr)
                 priority = config.indent.priority,
                 strict = false,
             })
+        else
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, 0, {
+                virt_text = {},
+                virt_text_pos = "overlay",
+                hl_mode = "combine",
+                priority = 0,
+                strict = false,
+            })
         end
 
         ::continue::
     end
+
+    if config.current_indent.enabled then
+
+        local current_indent_col = -1
+        local row = vim.api.nvim_win_get_cursor(0)[1]
+
+        local row_extmark_tmp = vim.api.nvim_buf_get_extmarks(bufnr, namespace, {row-1, 0}, {row-1, 0}, { details = true })
+        local row_extmark
+        local row_old_id
+        if row_extmark_tmp[1] ~= nil then
+            if row_extmark_tmp[1][4] ~= nil then
+                row_old_id = row_extmark_tmp[1][1]
+                row_extmark = row_extmark_tmp[1][4]
+            end
+        end
+        if row_extmark ~= nil then
+            if row_extmark.virt_text ~= nil then
+                local row_virt = row_extmark.virt_text
+                local row_virt_len = #row_virt
+                for i = 0, row_virt_len-1 do
+                    local row_virt_entry = row_virt[row_virt_len - i]
+                    if row_virt_entry[1] == config.indent.char then
+                        if string.find(row_virt_entry[2][2], "@ibl.scope.char.") then
+                            goto continue4
+                        else
+                            row_virt[row_virt_len - i][2][2] = "@ibl.current_indent.char"
+                            current_indent_col = row_virt_len - i
+                            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, 0, {
+                                virt_text = row_virt,
+                                virt_text_pos = "overlay",
+                                hl_mode = "combine",
+                                priority = config.current_indent.priority,
+                                strict = false,
+                            })
+                            vim.api.nvim_buf_del_extmark(bufnr, namespace, row_old_id)
+                            goto continue2
+                        end
+                    end
+                end
+            else
+                goto continue4
+            end
+        else
+            goto continue4
+        end
+
+        ::continue2::
+
+        if current_indent_col >= 0 then
+            local visible_line_start = vim.fn.line('w0')
+            local visible_line_end = vim.fn.line('w$')
+
+            local extmarks = vim.api.nvim_buf_get_extmarks(bufnr, namespace, {visible_line_start - 1, 0}, {visible_line_end, 0}, { details = true })
+
+            -- upwards while it makes sense
+            local i = 1
+            while row - i >= visible_line_start  do
+                local top_to_row = row - visible_line_start
+                local extmark
+                local old_id
+                if extmarks[top_to_row + 1 - i] ~= nil then
+                    if extmarks[top_to_row + 1 - i][4] ~= nil then
+                        old_id = extmarks[top_to_row + 1 - i][1]
+                        extmark = extmarks[top_to_row + 1 - i][4]
+                    end
+                end
+                if extmark ~= nil then
+                    if extmark.virt_text ~= nil then
+                        local virt = extmark.virt_text
+                        if virt[current_indent_col] ~= nil then
+                            virt[current_indent_col][2][2] = "@ibl.current_indent.char"
+                            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - i - 1, 0, {
+                                virt_text = virt,
+                                virt_text_pos = "overlay",
+                                hl_mode = "combine",
+                                priority = config.current_indent.priority,
+                                strict = false,
+                            })
+                            vim.api.nvim_buf_del_extmark(bufnr, namespace, old_id)
+                        else
+                            goto continue3
+                        end
+                    else
+                        goto continue3
+                    end
+                else
+                    goto continue3
+                end
+                i = i + 1
+            end
+
+            ::continue3::
+
+            -- downwards while it makes sense
+            i = 1
+            while row + i <= visible_line_end  do
+                local top_to_row = row - visible_line_start
+                local extmark
+                local old_id
+                if extmarks[top_to_row + 1 + i] ~= nil then
+                    if extmarks[top_to_row + 1 + i][4] ~= nil then
+                        old_id = extmarks[top_to_row + 1 + i][1]
+                        extmark = extmarks[top_to_row + 1 + i][4]
+                    end
+                end
+                if extmark ~= nil then
+                    if extmark.virt_text ~= nil then
+                        local virt = extmark.virt_text
+                        if virt[current_indent_col] ~= nil then
+                            virt[current_indent_col][2][2] = "@ibl.current_indent.char"
+                            vim.api.nvim_buf_set_extmark(bufnr, namespace, row + i - 1, 0, {
+                                virt_text = virt,
+                                virt_text_pos = "overlay",
+                                hl_mode = "combine",
+                                priority = config.current_indent.priority,
+                                strict = false,
+                            })
+                            vim.api.nvim_buf_del_extmark(bufnr, namespace, old_id)
+                        else
+                            goto continue4
+                        end
+                    else
+                        goto continue4
+                    end
+                else
+                    goto continue4
+                end
+                i = i + 1
+            end
+        end
+
+    end
+    ::continue4::
+
 end
 
 return M

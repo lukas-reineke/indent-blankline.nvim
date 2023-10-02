@@ -15,6 +15,8 @@
 ---@field whitespace ibl.config.whitespace?
 --- Configures the scope
 ---@field scope ibl.config.scope?
+--- Configures the current_indent
+---@field current_indent ibl.config.current_indent?
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.exclude?
 
@@ -75,6 +77,18 @@
 --- Configures nodes or languages to be excluded from scope
 ---@field exclude ibl.config.scope.exclude?
 
+---@class ibl.config.current_indent
+--- Enables or disables scope
+---@field enabled boolean?
+--- Character, or list of characters, that get used to display the scope indentation guide
+---
+--- Each character has to have a display width of 0 or 1
+---@field char string?
+--- Highlight group, or list of highlight groups, that get applied to the scope
+---@field highlight string?
+--- Virtual text priority for the scope
+---@field priority number?
+
 ---@class ibl.config.scope.include
 --- map of language to a list of node types which can be used as scope
 ---
@@ -126,7 +140,9 @@
 --- Configures the whitespace
 ---@field whitespace ibl.config.full.whitespace: ibl.config.whitespace
 --- Configures the scope
----@field scope ibl.config.full.scope: ig.config.scope
+---@field scope ibl.config.full.scope: ibl.config.scope
+--- Configures the scope
+---@field current_indent ibl.config.full.current_indent: ibl.config.current_indent
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.full.exclude: ibl.config.exclude
 
@@ -186,6 +202,18 @@
 ---@field include ibl.config.full.scope.include
 --- Configures nodes or languages to be excluded from scope
 ---@field exclude ibl.config.full.scope.exclude: ibl.config.scope.exclude
+
+---@class ibl.config.full.current_indent: ibl.config.current_indent
+--- Enables or disables scope
+---@field enabled boolean
+--- Character, or list of characters, that get used to display the scope indentation guide
+---
+--- Each character has to have a display width of 0 or 1
+---@field char string?
+--- Highlight group, or list of highlight groups, that get applied to the scope
+---@field highlight string
+--- Virtual text priority for the scope
+---@field priority number
 
 ---@class ibl.config.full.scope.include: ibl.config.scope.include
 --- map of language to a list of node types which can be used as scope
