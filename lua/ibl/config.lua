@@ -62,7 +62,7 @@ M.default_config = {
         },
     },
     current_indent = {
-        enabled = false,
+        enabled = true,
         char = nil,
         priority = 2,
         highlight = "IblCurrentIndent",
@@ -121,6 +121,7 @@ local validate_config = function(config)
         indent = { config.indent, "table", true },
         whitespace = { config.whitespace, "table", true },
         scope = { config.scope, "table", true },
+        current_indent = { config.current_indent, "table", true },
         exclude = { config.exclude, "table", true },
     }, config, "ibl.config")
 
@@ -231,6 +232,15 @@ local validate_config = function(config)
                 node_type = { config.scope.include.node_type, "table", true },
             }, config.scope.include, "ibl.config.scope.include")
         end
+    end
+
+    if config.current_indent then
+        utils.validate({
+            enabled = { config.scope.enabled, "boolean", true },
+            char = { config.scope.char, "string", true },
+            highlight = { config.scope.highlight, "string", true },
+            priority = { config.scope.priority, "number", true },
+        }, config.current_indent, "ibl.config.current_indent")
     end
 
     if config.exclude then
