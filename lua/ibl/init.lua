@@ -211,7 +211,7 @@ M.refresh = function(bufnr)
     end
 
     local indent_state
-    local next_virtual_string = {}
+    local next_whitespace_tbl = {}
     local empty_line_counter = 0
 
     local buffer_state = global_buffer_state[bufnr]
@@ -285,7 +285,7 @@ M.refresh = function(bufnr)
             whitespace_tbl, indent_state = indent.get(whitespace, indent_opts, indent_state)
         elseif empty_line_counter > 0 then
             empty_line_counter = empty_line_counter - 1
-            whitespace_tbl = next_virtual_string
+            whitespace_tbl = next_whitespace_tbl
         else
             if i == #lines then
                 whitespace_tbl = {}
@@ -312,7 +312,7 @@ M.refresh = function(bufnr)
                     end
                 end
             end
-            next_virtual_string = whitespace_tbl
+            next_whitespace_tbl = whitespace_tbl
         end
 
         -- remove blankline trail
