@@ -170,7 +170,7 @@ M.refresh = function(bufnr)
         end
     end
 
-    local left_offset, top_offset, win_end, win_height = utils.get_offset(bufnr)
+    local left_offset, top_offset, win_end, win_height, cursor_row = utils.get_offset(bufnr)
     if top_offset >= win_end then
         return
     end
@@ -212,7 +212,6 @@ M.refresh = function(bufnr)
     end
 
     local indent_state
-    local next_whitespace_tbl = {}
     local empty_line_counter = 0
 
     local buffer_state = global_buffer_state[bufnr]
@@ -244,12 +243,28 @@ M.refresh = function(bufnr)
         scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
     end
 
-    local last_whitespace_tbl = {}
+    local next_whitespace_tbl = {}
+    local arr_whitespace_tbl = {}
+    local arr_last_indent = {}
+
+    local find_last_indent = function(ws_tbl)
+        if ws_tbl == {} then
+            return 0
+        end
+        local k = 0
+        while k < #ws_tbl do
+            if indent.is_indent(ws_tbl[#ws_tbl - k]) then
+                return #ws_tbl - k
+            end
+            k = k + 1
+        end
+    end
 
     for i, line in ipairs(lines) do
         local row = i + offset
         local whitespace = utils.get_whitespace(line)
         local foldclosed = vim.fn.foldclosed(row)
+        arr_last_indent[i] = -1
 
         for _, fn in
             pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
@@ -275,11 +290,7 @@ M.refresh = function(bufnr)
         end
 
         local blankline = line:len() == 0
-        local whitespace_only = not blankline and line == whitespace
         local whitespace_tbl
-        local scope_active = row >= scope_row_start and row <= scope_row_end
-        local scope_start = row == scope_row_start
-        local scope_end = row == scope_row_end
 
         -- #### calculate indent ####
         if not blankline then
@@ -300,6 +311,7 @@ M.refresh = function(bufnr)
                 whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state)
 
                 if utils.has_end(lines[j]) then
+                    local last_whitespace_tbl = arr_whitespace_tbl[i-1] or {}
                     local trail = last_whitespace_tbl[indent_state.stack[#indent_state.stack] + 1]
                     local trail_whitespace = last_whitespace_tbl[indent_state.stack[#indent_state.stack]]
                     if trail then
@@ -339,7 +351,74 @@ M.refresh = function(bufnr)
             whitespace_tbl = fn(buffer_state.tick, bufnr, row - 1, whitespace_tbl)
         end
 
-        last_whitespace_tbl = whitespace_tbl
+        -- last_whitespace_tbl = whitespace_tbl
+        arr_whitespace_tbl[i] = whitespace_tbl
+
+        arr_last_indent[i] = find_last_indent(whitespace_tbl)
+
+        ::continue::
+    end
+
+    local current_indent_col, current_indent_row_start, current_indent_row_end = -1, -1, -1
+    if config.current_indent.enabled and arr_last_indent[cursor_row - offset] ~= nil then
+        current_indent_col = arr_last_indent[cursor_row - offset]
+        current_indent_row_start = cursor_row - offset
+        current_indent_row_end = cursor_row - offset
+        while arr_last_indent[current_indent_row_start - 1] ~= nil do
+            if arr_last_indent[current_indent_row_start - 1] >= current_indent_col then
+                current_indent_row_start = current_indent_row_start - 1
+            else
+                break
+            end
+        end
+        while arr_last_indent[current_indent_row_end + 1] ~= nil do
+            if arr_last_indent[current_indent_row_end + 1] >= current_indent_col then
+                current_indent_row_end = current_indent_row_end + 1
+            else
+                break
+            end
+        end
+        current_indent_row_start = current_indent_row_start + offset
+        current_indent_row_end = current_indent_row_end + offset
+    end
+
+    for i, line in ipairs(lines) do
+        local row = i + offset
+        local whitespace = utils.get_whitespace(line)
+        local foldclosed = vim.fn.foldclosed(row)
+
+        for _, fn in
+            pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
+        do
+            if fn(buffer_state.tick, bufnr, row - 1, line) then
+                vt.clear_buffer(bufnr, row)
+                goto continue1
+            end
+        end
+
+        if is_current_buffer and foldclosed == row then
+            local foldtext = vim.fn.foldtextresult(row)
+            local foldtext_whitespace = utils.get_whitespace(foldtext)
+            if vim.fn.strdisplaywidth(foldtext_whitespace, 0) < vim.fn.strdisplaywidth(whitespace, 0) then
+                vt.clear_buffer(bufnr, row)
+                goto continue1
+            end
+        end
+
+        if is_current_buffer and foldclosed > -1 and foldclosed + win_height < row then
+            vt.clear_buffer(bufnr, row)
+            goto continue1
+        end
+
+        local blankline = line:len() == 0
+        local whitespace_tbl = arr_whitespace_tbl[i]
+        local whitespace_only = not blankline and line == whitespace
+
+        local scope_active = row >= scope_row_start and row <= scope_row_end
+        local scope_start = row == scope_row_start
+        local scope_end = row == scope_row_end
+
+        local current_indent_active = row >= current_indent_row_start and row <= current_indent_row_end
 
         -- #### make virtual text ####
         if scope_start and scope then
@@ -357,7 +436,7 @@ M.refresh = function(bufnr)
 
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
         local virt_text, scope_hl =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single)
+            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
 
         -- #### set virtual text ####
         vt.clear_buffer(bufnr, row)
@@ -399,151 +478,10 @@ M.refresh = function(bufnr)
                 priority = config.indent.priority,
                 strict = false,
             })
-        else
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, 0, {
-                virt_text = {},
-                virt_text_pos = "overlay",
-                hl_mode = "combine",
-                priority = 0,
-                strict = false,
-            })
         end
 
-        ::continue::
+        ::continue1::
     end
-
-    if config.current_indent.enabled then
-
-        local current_indent_col = -1
-        local row = vim.api.nvim_win_get_cursor(0)[1]
-
-        local row_extmark_tmp = vim.api.nvim_buf_get_extmarks(bufnr, namespace, {row-1, 0}, {row-1, 0}, { details = true })
-        local row_extmark
-        local row_old_id
-        if row_extmark_tmp[1] ~= nil then
-            if row_extmark_tmp[1][4] ~= nil then
-                row_old_id = row_extmark_tmp[1][1]
-                row_extmark = row_extmark_tmp[1][4]
-            end
-        end
-        if row_extmark ~= nil then
-            if row_extmark.virt_text ~= nil then
-                local row_virt = row_extmark.virt_text
-                local row_virt_len = #row_virt
-                for i = 0, row_virt_len-1 do
-                    local row_virt_entry = row_virt[row_virt_len - i]
-                    if row_virt_entry[1] == config.indent.char then
-                        if string.find(row_virt_entry[2][2], "@ibl.scope.char.") then
-                            goto continue4
-                        else
-                            row_virt[row_virt_len - i][2][2] = "@ibl.current_indent.char"
-                            current_indent_col = row_virt_len - i
-                            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, 0, {
-                                virt_text = row_virt,
-                                virt_text_pos = "overlay",
-                                hl_mode = "combine",
-                                priority = config.current_indent.priority,
-                                strict = false,
-                            })
-                            vim.api.nvim_buf_del_extmark(bufnr, namespace, row_old_id)
-                            goto continue2
-                        end
-                    end
-                end
-            else
-                goto continue4
-            end
-        else
-            goto continue4
-        end
-
-        ::continue2::
-
-        if current_indent_col >= 0 then
-            local visible_line_start = vim.fn.line('w0')
-            local visible_line_end = vim.fn.line('w$')
-
-            local extmarks = vim.api.nvim_buf_get_extmarks(bufnr, namespace, {visible_line_start - 1, 0}, {visible_line_end, 0}, { details = true })
-
-            -- upwards while it makes sense
-            local i = 1
-            while row - i >= visible_line_start  do
-                local top_to_row = row - visible_line_start
-                local extmark
-                local old_id
-                if extmarks[top_to_row + 1 - i] ~= nil then
-                    if extmarks[top_to_row + 1 - i][4] ~= nil then
-                        old_id = extmarks[top_to_row + 1 - i][1]
-                        extmark = extmarks[top_to_row + 1 - i][4]
-                    end
-                end
-                if extmark ~= nil then
-                    if extmark.virt_text ~= nil then
-                        local virt = extmark.virt_text
-                        if virt[current_indent_col] ~= nil then
-                            virt[current_indent_col][2][2] = "@ibl.current_indent.char"
-                            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - i - 1, 0, {
-                                virt_text = virt,
-                                virt_text_pos = "overlay",
-                                hl_mode = "combine",
-                                priority = config.current_indent.priority,
-                                strict = false,
-                            })
-                            vim.api.nvim_buf_del_extmark(bufnr, namespace, old_id)
-                        else
-                            goto continue3
-                        end
-                    else
-                        goto continue3
-                    end
-                else
-                    goto continue3
-                end
-                i = i + 1
-            end
-
-            ::continue3::
-
-            -- downwards while it makes sense
-            i = 1
-            while row + i <= visible_line_end  do
-                local top_to_row = row - visible_line_start
-                local extmark
-                local old_id
-                if extmarks[top_to_row + 1 + i] ~= nil then
-                    if extmarks[top_to_row + 1 + i][4] ~= nil then
-                        old_id = extmarks[top_to_row + 1 + i][1]
-                        extmark = extmarks[top_to_row + 1 + i][4]
-                    end
-                end
-                if extmark ~= nil then
-                    if extmark.virt_text ~= nil then
-                        local virt = extmark.virt_text
-                        if virt[current_indent_col] ~= nil then
-                            virt[current_indent_col][2][2] = "@ibl.current_indent.char"
-                            vim.api.nvim_buf_set_extmark(bufnr, namespace, row + i - 1, 0, {
-                                virt_text = virt,
-                                virt_text_pos = "overlay",
-                                hl_mode = "combine",
-                                priority = config.current_indent.priority,
-                                strict = false,
-                            })
-                            vim.api.nvim_buf_del_extmark(bufnr, namespace, old_id)
-                        else
-                            goto continue4
-                        end
-                    else
-                        goto continue4
-                    end
-                else
-                    goto continue4
-                end
-                i = i + 1
-            end
-        end
-
-    end
-    ::continue4::
 
 end
 

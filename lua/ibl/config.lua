@@ -64,7 +64,6 @@ M.default_config = {
     current_indent = {
         enabled = true,
         char = nil,
-        priority = 2,
         highlight = "IblCurrentIndent",
     },
     exclude = {
@@ -233,16 +232,6 @@ local validate_config = function(config)
             }, config.scope.include, "ibl.config.scope.include")
         end
     end
-
-    if config.current_indent then
-        utils.validate({
-            enabled = { config.scope.enabled, "boolean", true },
-            char = { config.scope.char, "string", true },
-            highlight = { config.scope.highlight, "string", true },
-            priority = { config.scope.priority, "number", true },
-        }, config.current_indent, "ibl.config.current_indent")
-    end
-
     if config.exclude then
         if config.exclude then
             utils.validate({

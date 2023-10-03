@@ -12,6 +12,8 @@ local M = {
     whitespace = {},
     ---@type ibl.highlight[]
     scope = {},
+    ---@type ibl.highlight[]
+    current_indent = {},
 }
 
 local get = function(name)
@@ -111,6 +113,7 @@ M.setup = function()
         vim.api.nvim_set_hl(0, M.scope[i].char, char_hl)
         vim.api.nvim_set_hl(0, M.scope[i].underline, { sp = char_hl.fg, underline = true })
     end
+
     local current_indent_highlight = config.current_indent.highlight
     M.current_indent = {}
     local char_hl = get(current_indent_highlight)

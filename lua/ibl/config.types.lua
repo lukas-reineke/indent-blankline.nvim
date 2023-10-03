@@ -86,8 +86,6 @@
 ---@field char string?
 --- Highlight group, or list of highlight groups, that get applied to the scope
 ---@field highlight string?
---- Virtual text priority for the scope
----@field priority number?
 
 ---@class ibl.config.scope.include
 --- map of language to a list of node types which can be used as scope
@@ -212,8 +210,6 @@
 ---@field char string?
 --- Highlight group, or list of highlight groups, that get applied to the scope
 ---@field highlight string
---- Virtual text priority for the scope
----@field priority number
 
 ---@class ibl.config.full.scope.include: ibl.config.scope.include
 --- map of language to a list of node types which can be used as scope
