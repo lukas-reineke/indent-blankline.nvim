@@ -52,7 +52,7 @@ M.setup = function()
         group = group,
         pattern = "*",
         callback = function()
-            highlights.setup()
+            highlights.setup(true)
             ibl.refresh_all()
         end,
     })

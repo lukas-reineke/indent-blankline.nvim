@@ -29,25 +29,25 @@ local not_set = function(hl)
     return not hl or vim.tbl_count(hl) == 0
 end
 
-local setup_builtin_hl_groups = function()
+local setup_builtin_hl_groups = function(force_refresh)
     local whitespace_hl = get "Whitespace"
     local line_nr_hl = get "LineNr"
     local ibl_indent_hl_name = "IblIndent"
     local ibl_whitespace_hl_name = "IblWhitespace"
     local ibl_scope_hl_name = "IblScope"
 
-    if not_set(get(ibl_indent_hl_name)) then
+    if not_set(get(ibl_indent_hl_name)) or force_refresh then
         vim.api.nvim_set_hl(0, ibl_indent_hl_name, whitespace_hl)
     end
-    if not_set(get(ibl_whitespace_hl_name)) then
+    if not_set(get(ibl_whitespace_hl_name)) or force_refresh then
         vim.api.nvim_set_hl(0, ibl_whitespace_hl_name, whitespace_hl)
     end
-    if not_set(get(ibl_scope_hl_name)) then
+    if not_set(get(ibl_scope_hl_name)) or force_refresh then
         vim.api.nvim_set_hl(0, ibl_scope_hl_name, line_nr_hl)
     end
 end
 
-M.setup = function()
+M.setup = function(force_refresh)
     local config = conf.get_config(-1)
 
     for _, fn in
@@ -56,7 +56,7 @@ M.setup = function()
         fn()
     end
 
-    setup_builtin_hl_groups()
+    setup_builtin_hl_groups(force_refresh)
 
     local indent_highlights = config.indent.highlight
     if type(indent_highlights) == "string" then
