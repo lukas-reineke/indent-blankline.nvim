@@ -42,32 +42,21 @@ M.utf8_encode = function(codepoint)
     end
 end
 
----@param char string
-M.hex_to_unicode = function(char)
-    local prefix = char:sub(1, 2)
-
-    if prefix == "\\x" then
-        return string.char(tonumber(char:sub(3, 4), 16))
-    elseif prefix == "\\u" then
-        local codepoint = tonumber(char:sub(3, 6), 16)
-        return M.utf8_encode(codepoint)
-    elseif prefix == "\\U" then
-        -- Note: This won't work for characters outside the range Lua's string can handle.
-        local codepoint = tonumber(char:sub(3, 10), 16)
-        return M.utf8_encode(codepoint)
-    else
-        return char
-    end
-end
-
 ---@param input string?
 M.encode = function(input)
     return (
         input
         and input
-            :gsub("\\x%x%x", M.hex_to_unicode)
-            :gsub("\\u%x%x%x%x", M.hex_to_unicode)
-            :gsub("\\U%x%x%x%x%x%x%x%x", M.hex_to_unicode)
+            :gsub("\\x%x%x", function(hex)
+                return string.char(tonumber(hex:sub(3, 4), 16))
+            end)
+            :gsub("\\u%x%x%x%x", function(hex)
+                return M.utf8_encode(tonumber(hex:sub(3, 6), 16))
+            end)
+            :gsub("\\U%x%x%x%x%x%x%x%x", function(hex)
+                -- Note: This won't work for characters outside the range Lua's string can handle.
+                return M.utf8_encode(tonumber(hex:sub(3, 10), 16))
+            end)
     )
 end
 
