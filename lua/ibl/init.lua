@@ -246,6 +246,7 @@ M.refresh = function(bufnr)
     local next_whitespace_tbl = {}
     local arr_whitespace_tbl = {}
     local arr_last_indent = {}
+    local arr_skip_this_i = {}
 
     local find_last_indent = function(ws_tbl)
         if ws_tbl == {} then
@@ -265,12 +266,14 @@ M.refresh = function(bufnr)
         local whitespace = utils.get_whitespace(line)
         local foldclosed = vim.fn.foldclosed(row)
         arr_last_indent[i] = -1
+        arr_skip_this_i[i] = false
 
         for _, fn in
             pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
         do
             if fn(buffer_state.tick, bufnr, row - 1, line) then
                 vt.clear_buffer(bufnr, row)
+                arr_skip_this_i[i] = true
                 goto continue
             end
         end
@@ -280,12 +283,14 @@ M.refresh = function(bufnr)
             local foldtext_whitespace = utils.get_whitespace(foldtext)
             if vim.fn.strdisplaywidth(foldtext_whitespace, 0) < vim.fn.strdisplaywidth(whitespace, 0) then
                 vt.clear_buffer(bufnr, row)
+                arr_skip_this_i[i] = true
                 goto continue
             end
         end
 
         if is_current_buffer and foldclosed > -1 and foldclosed + win_height < row then
             vt.clear_buffer(bufnr, row)
+            arr_skip_this_i[i] = true
             goto continue
         end
 
@@ -383,32 +388,12 @@ M.refresh = function(bufnr)
     end
 
     for i, line in ipairs(lines) do
-        local row = i + offset
-        local whitespace = utils.get_whitespace(line)
-        local foldclosed = vim.fn.foldclosed(row)
-
-        for _, fn in
-            pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
-        do
-            if fn(buffer_state.tick, bufnr, row - 1, line) then
-                vt.clear_buffer(bufnr, row)
-                goto continue1
-            end
-        end
-
-        if is_current_buffer and foldclosed == row then
-            local foldtext = vim.fn.foldtextresult(row)
-            local foldtext_whitespace = utils.get_whitespace(foldtext)
-            if vim.fn.strdisplaywidth(foldtext_whitespace, 0) < vim.fn.strdisplaywidth(whitespace, 0) then
-                vt.clear_buffer(bufnr, row)
-                goto continue1
-            end
-        end
-
-        if is_current_buffer and foldclosed > -1 and foldclosed + win_height < row then
-            vt.clear_buffer(bufnr, row)
+        if arr_skip_this_i[i] then
             goto continue1
         end
+
+        local row = i + offset
+        local whitespace = utils.get_whitespace(line)
 
         local blankline = line:len() == 0
         local whitespace_tbl = arr_whitespace_tbl[i]
