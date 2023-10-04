@@ -20,6 +20,57 @@ M.validate = function(opt, input, path)
     end
 end
 
+---@param codepoint integer
+M.utf8_encode = function(codepoint)
+    if codepoint <= 0x7F then
+        return string.char(codepoint)
+    elseif codepoint <= 0x7FF then
+        return string.char(0xC0 + math.floor(codepoint / 0x40), 0x80 + (codepoint % 0x40))
+    elseif codepoint <= 0xFFFF then
+        return string.char(
+            0xE0 + math.floor(codepoint / 0x1000),
+            0x80 + math.floor((codepoint % 0x1000) / 0x40),
+            0x80 + (codepoint % 0x40)
+        )
+    else
+        return string.char(
+            0xF0 + math.floor(codepoint / 0x40000),
+            0x80 + math.floor((codepoint % 0x40000) / 0x1000),
+            0x80 + math.floor((codepoint % 0x1000) / 0x40),
+            0x80 + (codepoint % 0x40)
+        )
+    end
+end
+
+---@param char string
+M.hex_to_unicode = function(char)
+    local prefix = char:sub(1, 2)
+
+    if prefix == "\\x" then
+        return string.char(tonumber(char:sub(3, 4), 16))
+    elseif prefix == "\\u" then
+        local codepoint = tonumber(char:sub(3, 6), 16)
+        return M.utf8_encode(codepoint)
+    elseif prefix == "\\U" then
+        -- Note: This won't work for characters outside the range Lua's string can handle.
+        local codepoint = tonumber(char:sub(3, 10), 16)
+        return M.utf8_encode(codepoint)
+    else
+        return char
+    end
+end
+
+---@param input string?
+M.encode = function(input)
+    return (
+        input
+        and input
+            :gsub("\\x%x%x", M.hex_to_unicode)
+            :gsub("\\u%x%x%x%x", M.hex_to_unicode)
+            :gsub("\\U%x%x%x%x%x%x%x%x", M.hex_to_unicode)
+    )
+end
+
 ---@class ibl.listchars
 ---@field tabstop_overwrite boolean
 ---@field space_char string
@@ -59,28 +110,28 @@ M.get_listchars = function(bufnr)
     if list then
         local tabstop_overwrite = false
         local tab_char
-        local space_char = listchars.space or " "
+        local space_char = M.encode(listchars.space) or " "
         local multispace_chars
         local leadmultispace_chars
         if listchars.tab then
-            tab_char = vim.fn.split(listchars.tab, "\\zs")
+            tab_char = vim.fn.split(M.encode(listchars.tab), "\\zs")
         else
             tabstop_overwrite = true
             tab_char = { "^", "I" }
         end
         if listchars.multispace then
-            multispace_chars = vim.fn.split(listchars.multispace, "\\zs")
+            multispace_chars = vim.fn.split(M.encode(listchars.multispace), "\\zs")
         end
         if listchars.leadmultispace then
-            leadmultispace_chars = vim.fn.split(listchars.leadmultispace, "\\zs")
+            leadmultispace_chars = vim.fn.split(M.encode(listchars.leadmultispace), "\\zs")
         end
         return {
             tabstop_overwrite = tabstop_overwrite,
             space_char = space_char,
-            trail_char = listchars.trail,
-            multispace_char = multispace_chars,
-            leadmultispace_char = leadmultispace_chars,
-            lead_char = listchars.lead,
+            trail_char = M.encode(listchars.trail),
+            multispace_chars = multispace_chars,
+            leadmultispace_chars = leadmultispace_chars,
+            lead_char = M.encode(listchars.lead),
             tab_char_start = tab_char[1] or space_char,
             tab_char_fill = tab_char[2] or space_char,
             tab_char_end = tab_char[3],

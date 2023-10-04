@@ -49,4 +49,16 @@ describe("get_listchars", function()
             tab_char_fill = "󰗲",
         })
     end)
+
+    it("supports hex values", function()
+        vim.opt.list = true
+        vim.opt.listchars = { tab = "\\x24\\u21b5\\U000021b5", space = "\\u00B7" }
+        assert.are.same(utils.get_listchars(0), {
+            tabstop_overwrite = false,
+            space_char = "·",
+            tab_char_start = "$",
+            tab_char_fill = "↵",
+            tab_char_end = "↵",
+        })
+    end)
 end)
