@@ -98,10 +98,10 @@ M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, sc
         if ca and i == current_indent_col then
             indent_hl = current_indent_hl
 
-            if config.current_indent.char ~= nil then
+            if config.current_indent.char then
                 local current_indent_char = config.current_indent.char
-                if vim.fn.strdisplaywidth(current_indent_char) == 1 then
-                    char = current_indent_char
+                if vim.fn.strdisplaywidth(current_indent_char or "") == 1 then
+                    char = current_indent_char or ""
                 end
             elseif not indent.is_indent(ws) then
                 if indent.is_space_indent(ws) then

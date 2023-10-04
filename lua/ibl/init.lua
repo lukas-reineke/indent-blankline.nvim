@@ -243,10 +243,20 @@ M.refresh = function(bufnr)
         scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
     end
 
+    -- a table
     local next_whitespace_tbl = {}
+
+    -- array of tables
     local arr_whitespace_tbl = {}
+
+    -- arrays of numbers
     local arr_last_indent = {}
+    local arr_whitspace_len = {}
+
+    -- boolean arrays
     local arr_skip_this_i = {}
+    local arr_blankline = {}
+    local arr_whitespace_only = {}
 
     local find_last_indent = function(ws_tbl)
         if ws_tbl == {} then
@@ -266,7 +276,6 @@ M.refresh = function(bufnr)
         local whitespace = utils.get_whitespace(line)
         local foldclosed = vim.fn.foldclosed(row)
         arr_last_indent[i] = -1
-        arr_skip_this_i[i] = false
 
         for _, fn in
             pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
@@ -294,8 +303,16 @@ M.refresh = function(bufnr)
             goto continue
         end
 
+        arr_skip_this_i[i] = false
+        arr_whitspace_len[i] = #whitespace
+
         local blankline = line:len() == 0
+        arr_blankline[i] = blankline
+
+        arr_whitespace_only[i] = not blankline and line == whitespace
+
         local whitespace_tbl
+
 
         -- #### calculate indent ####
         if not blankline then
@@ -393,11 +410,11 @@ M.refresh = function(bufnr)
         end
 
         local row = i + offset
-        local whitespace = utils.get_whitespace(line)
+        local whitespace_len = arr_whitspace_len[i]
 
-        local blankline = line:len() == 0
+        local blankline = arr_blankline[i]
         local whitespace_tbl = arr_whitespace_tbl[i]
-        local whitespace_only = not blankline and line == whitespace
+        local whitespace_only = arr_whitespace_only[i]
 
         local scope_active = row >= scope_row_start and row <= scope_row_end
         local scope_start = row == scope_row_start
@@ -407,7 +424,7 @@ M.refresh = function(bufnr)
 
         -- #### make virtual text ####
         if scope_start and scope then
-            scope_col_start = #whitespace
+            scope_col_start = whitespace_len
             scope_col_start_single = #whitespace_tbl
             scope_index = #vim.tbl_filter(function(w)
                 return indent.is_indent(w)
@@ -428,13 +445,13 @@ M.refresh = function(bufnr)
 
         -- Scope start
         if config.scope.show_start and scope_start then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace_underscore, row - 1, #whitespace, {
+            vim.api.nvim_buf_set_extmark(bufnr, namespace_underscore, row - 1, whitespace_len, {
                 end_col = #line,
                 hl_group = scope_hl.underline,
                 priority = config.scope.priority,
                 strict = false,
             })
-            inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
+            inlay_hints.set(bufnr, row - 1, whitespace_len, scope_hl.underline, scope_hl.underline)
         end
 
         -- Scope end
@@ -445,7 +462,7 @@ M.refresh = function(bufnr)
                 priority = config.scope.priority,
                 strict = false,
             })
-            inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
+            inlay_hints.set(bufnr, row - 1, whitespace_len, scope_hl.underline, scope_hl.underline)
         end
 
         for _, fn in
