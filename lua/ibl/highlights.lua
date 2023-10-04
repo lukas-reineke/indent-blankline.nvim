@@ -19,8 +19,13 @@ local get = function(name)
     if vim.api.nvim_get_hl then -- check for new neovim 0.9 API
         hl = vim.api.nvim_get_hl(0, { name = name })
     else
-        ---@diagnostic disable-next-line
-        hl = vim.api.nvim_get_hl_by_name(name, true)
+        if vim.fn.hlexists(name) == 1 then
+            ---@diagnostic disable-next-line
+            hl = vim.api.nvim_get_hl_by_name(name, true)
+        end
+        if hl == nil then
+            hl = vim.empty_dict() --[[ @as table ]]
+        end
     end
     return hl
 end
