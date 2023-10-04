@@ -14,22 +14,18 @@ local M = {
     scope = {},
 }
 
+---@param name string
 local get = function(name)
-    local hl
-    if vim.api.nvim_get_hl then -- check for new neovim 0.9 API
-        hl = vim.api.nvim_get_hl(0, { name = name })
-    else
-        if vim.fn.hlexists(name) == 1 then
-            ---@diagnostic disable-next-line
-            hl = vim.api.nvim_get_hl_by_name(name, true)
-        end
-        if hl == nil then
-            hl = vim.empty_dict() --[[ @as table ]]
-        end
+    -- TODO [Lukas]: remove this when AstroNvim drops support for 0.8
+    if not vim.api.nvim_get_hl then
+        ---@diagnostic disable-next-line
+        return (vim.fn.hlexists(name) == 1 and vim.api.nvim_get_hl_by_name(name, true)) or vim.emtpy_dict()
     end
-    return hl
+
+    return vim.api.nvim_get_hl(0, { name = name })
 end
 
+---@param hl table
 local not_set = function(hl)
     return not hl or vim.tbl_count(hl) == 0
 end
