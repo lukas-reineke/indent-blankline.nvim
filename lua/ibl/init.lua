@@ -245,18 +245,34 @@ M.refresh = function(bufnr)
 
     local last_whitespace_tbl = {}
 
+    ---@type table<integer, boolean>
+    local line_skipped = {}
+
+    ---@type ibl.hooks.cb.skip_line[]
+    local skip_line_hooks = hooks.get(bufnr, hooks.type.SKIP_LINE)
+
+    for i, line in ipairs(lines) do
+        local row = i + offset
+
+        local skipped = false
+        for _, fn in pairs(skip_line_hooks) do
+            if fn(buffer_state.tick, bufnr, row - 1, line) then
+                skipped = true
+                break
+            end
+        end
+
+        line_skipped[i] = skipped
+    end
+
     for i, line in ipairs(lines) do
         local row = i + offset
         local whitespace = utils.get_whitespace(line)
         local foldclosed = vim.fn.foldclosed(row)
 
-        for _, fn in
-            pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
-        do
-            if fn(buffer_state.tick, bufnr, row - 1, line) then
-                vt.clear_buffer(bufnr, row)
-                goto continue
-            end
+        if line_skipped[i] then
+            vt.clear_buffer(bufnr, row)
+            goto continue
         end
 
         if is_current_buffer and foldclosed == row then
@@ -291,10 +307,11 @@ M.refresh = function(bufnr)
                 whitespace_tbl = {}
             else
                 local j = i + 1
-                while j < #lines and lines[j]:len() == 0 do
+                while j < #lines and (lines[j]:len() == 0 or line_skipped[j]) do
                     j = j + 1
                     empty_line_counter = empty_line_counter + 1
                 end
+
                 local j_whitespace = utils.get_whitespace(lines[j])
                 whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state)
 
