@@ -162,7 +162,7 @@ M.refresh = function(bufnr)
     end
 
     for _, fn in
-        pairs(hooks.get(bufnr, hooks.type.ACTIVE) --[[ @as ibl.hooks.cb.active[] ]])
+    pairs(hooks.get(bufnr, hooks.type.ACTIVE) --[[ @as ibl.hooks.cb.active[] ]])
     do
         if not fn(bufnr) then
             clear_buffer(bufnr)
@@ -243,6 +243,10 @@ M.refresh = function(bufnr)
         scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
     end
 
+    local cursor_row_stack_size = -1
+    local current_indent_row_start = offset + 1
+    local current_indent_row_end = range
+
     -- a table
     local next_whitespace_tbl = {}
 
@@ -250,7 +254,7 @@ M.refresh = function(bufnr)
     local arr_whitespace_tbl = {}
 
     -- arrays of numbers
-    local arr_last_indent = {}
+    local current_indent_stack = {} -- current indent stack of line nr
     local arr_whitspace_len = {}
 
     -- boolean arrays
@@ -258,24 +262,11 @@ M.refresh = function(bufnr)
     local arr_blankline = {}
     local arr_whitespace_only = {}
 
-    local find_last_indent = function(ws_tbl)
-        if ws_tbl == {} then
-            return 0
-        end
-        local k = 0
-        while k < #ws_tbl do
-            if indent.is_indent(ws_tbl[#ws_tbl - k]) then
-                return #ws_tbl - k
-            end
-            k = k + 1
-        end
-    end
-
+    -- in the first loop we calculate the things we need to setup the virtual text via extmarks
     for i, line in ipairs(lines) do
         local row = i + offset
         local whitespace = utils.get_whitespace(line)
         local foldclosed = vim.fn.foldclosed(row)
-        arr_last_indent[i] = -1
 
         for _, fn in
             pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
@@ -313,6 +304,10 @@ M.refresh = function(bufnr)
 
         local whitespace_tbl
 
+        local prev_indent_stack_size = 0
+        if config.current_indent.enabled and indent_state then
+            prev_indent_stack_size = #indent_state.stack or 0
+        end
 
         -- #### calculate indent ####
         if not blankline then
@@ -333,7 +328,7 @@ M.refresh = function(bufnr)
                 whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state)
 
                 if utils.has_end(lines[j]) then
-                    local last_whitespace_tbl = arr_whitespace_tbl[i-1] or {}
+                    local last_whitespace_tbl = arr_whitespace_tbl[i - 1] or {}
                     local trail = last_whitespace_tbl[indent_state.stack[#indent_state.stack] + 1]
                     local trail_whitespace = last_whitespace_tbl[indent_state.stack[#indent_state.stack]]
                     if trail then
@@ -373,37 +368,54 @@ M.refresh = function(bufnr)
             whitespace_tbl = fn(buffer_state.tick, bufnr, row - 1, whitespace_tbl)
         end
 
-        -- last_whitespace_tbl = whitespace_tbl
         arr_whitespace_tbl[i] = whitespace_tbl
 
-        arr_last_indent[i] = find_last_indent(whitespace_tbl)
+        if config.current_indent.enabled then
+            local cur_indent_stack_size = #indent_state.stack
+            if row <= cursor_row then
+                if prev_indent_stack_size > cur_indent_stack_size then
+                    current_indent_stack[#current_indent_stack] = nil
+                elseif prev_indent_stack_size < cur_indent_stack_size then
+                    current_indent_stack[#current_indent_stack + 1] = row
+                end
+            else
+                -- row > cursor_row
+                if cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size then
+                    current_indent_row_end = row - 1
+                    cursor_row_stack_size = -1
+                end
+            end
+            if row == cursor_row then
+                cursor_row_stack_size = cur_indent_stack_size
+            end
+        end
 
         ::continue::
     end
 
-    local current_indent_col, current_indent_row_start, current_indent_row_end = -1, -1, -1
-    if config.current_indent.enabled and arr_last_indent[cursor_row - offset] ~= nil then
-        current_indent_col = arr_last_indent[cursor_row - offset]
-        current_indent_row_start = cursor_row - offset
-        current_indent_row_end = cursor_row - offset
-        while arr_last_indent[current_indent_row_start - 1] ~= nil do
-            if arr_last_indent[current_indent_row_start - 1] >= current_indent_col then
-                current_indent_row_start = current_indent_row_start - 1
-            else
-                break
-            end
+    -- between the two loops we find the current indent column and current indent start quickly
+    local find_last_indent = function(ws_tbl)
+        if not ws_tbl then
+            return 0
         end
-        while arr_last_indent[current_indent_row_end + 1] ~= nil do
-            if arr_last_indent[current_indent_row_end + 1] >= current_indent_col then
-                current_indent_row_end = current_indent_row_end + 1
-            else
-                break
+        local k = 0
+        while k < #ws_tbl do
+            if indent.is_indent(ws_tbl[#ws_tbl - k]) then
+                return #ws_tbl - k
             end
+            k = k + 1
         end
-        current_indent_row_start = current_indent_row_start + offset
-        current_indent_row_end = current_indent_row_end + offset
     end
 
+    local current_indent_col = -1
+    if config.current_indent.enabled then
+        current_indent_col = find_last_indent(arr_whitespace_tbl[cursor_row - offset])
+        if current_indent_stack[#current_indent_stack] then
+            current_indent_row_start = current_indent_stack[#current_indent_stack]
+        end
+    end
+
+    -- set up the virtual text via extmarks
     for i, line in ipairs(lines) do
         if arr_skip_this_i[i] then
             goto continue1
@@ -420,7 +432,8 @@ M.refresh = function(bufnr)
         local scope_start = row == scope_row_start
         local scope_end = row == scope_row_end
 
-        local current_indent_active = row >= current_indent_row_start and row <= current_indent_row_end
+        local current_indent_active = row >= current_indent_row_start and row <= current_indent_row_end and
+            config.current_indent.enabled
 
         -- #### make virtual text ####
         if scope_start and scope then
@@ -438,7 +451,8 @@ M.refresh = function(bufnr)
 
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
         local virt_text, scope_hl =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single,
+                current_indent_active, current_indent_col)
 
         -- #### set virtual text ####
         vt.clear_buffer(bufnr, row)
@@ -484,7 +498,6 @@ M.refresh = function(bufnr)
 
         ::continue1::
     end
-
 end
 
 return M
