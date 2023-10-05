@@ -162,7 +162,7 @@ M.refresh = function(bufnr)
     end
 
     for _, fn in
-    pairs(hooks.get(bufnr, hooks.type.ACTIVE) --[[ @as ibl.hooks.cb.active[] ]])
+        pairs(hooks.get(bufnr, hooks.type.ACTIVE) --[[ @as ibl.hooks.cb.active[] ]])
     do
         if not fn(bufnr) then
             clear_buffer(bufnr)
@@ -255,7 +255,7 @@ M.refresh = function(bufnr)
 
     -- arrays of numbers
     local current_indent_stack = {} -- current indent stack of line nr
-    local arr_whitspace_len = {}
+    local arr_whitespace_len = {}
 
     -- boolean arrays
     local arr_skip_this_i = {}
@@ -295,7 +295,7 @@ M.refresh = function(bufnr)
         end
 
         arr_skip_this_i[i] = false
-        arr_whitspace_len[i] = #whitespace
+        arr_whitespace_len[i] = #whitespace
 
         local blankline = line:len() == 0
         arr_blankline[i] = blankline
@@ -422,7 +422,7 @@ M.refresh = function(bufnr)
         end
 
         local row = i + offset
-        local whitespace_len = arr_whitspace_len[i]
+        local whitespace_len = arr_whitespace_len[i]
 
         local blankline = arr_blankline[i]
         local whitespace_tbl = arr_whitespace_tbl[i]

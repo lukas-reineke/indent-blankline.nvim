@@ -59,7 +59,7 @@ M.setup = function()
     local config = conf.get_config(-1)
 
     for _, fn in
-    pairs(hooks.get(-1, hooks.type.HIGHLIGHT_SETUP) --[[ @as ibl.hooks.cb.highlight_setup[] ]])
+        pairs(hooks.get(-1, hooks.type.HIGHLIGHT_SETUP) --[[ @as ibl.hooks.cb.highlight_setup[] ]])
     do
         fn()
     end
