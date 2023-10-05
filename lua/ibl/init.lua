@@ -8,7 +8,6 @@ local scp = require "ibl.scope"
 local conf = require "ibl.config"
 local utils = require "ibl.utils"
 
-local namespace_underscore = vim.api.nvim_create_namespace "indent_blankline_underscore"
 local namespace = vim.api.nvim_create_namespace "indent_blankline"
 
 local M = {}
@@ -459,7 +458,7 @@ M.refresh = function(bufnr)
 
         -- Scope start
         if config.scope.show_start and scope_start then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace_underscore, row - 1, whitespace_len, {
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, whitespace_len, {
                 end_col = #line,
                 hl_group = scope_hl.underline,
                 priority = config.scope.priority,
@@ -470,7 +469,7 @@ M.refresh = function(bufnr)
 
         -- Scope end
         if config.scope.show_end and scope_end and #whitespace_tbl > scope_col_start_single then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace_underscore, row - 1, scope_col_start, {
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,
                 priority = config.scope.priority,

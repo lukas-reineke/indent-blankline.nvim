@@ -62,7 +62,7 @@ M.default_config = {
         },
     },
     current_indent = {
-        enabled = true,
+        enabled = false,
         char = nil,
         highlight = "IblCurrentIndent",
     },

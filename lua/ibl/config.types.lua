@@ -139,7 +139,7 @@
 ---@field whitespace ibl.config.full.whitespace: ibl.config.whitespace
 --- Configures the scope
 ---@field scope ibl.config.full.scope: ibl.config.scope
---- Configures the scope
+--- Configures the current_indent
 ---@field current_indent ibl.config.full.current_indent: ibl.config.current_indent
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.full.exclude: ibl.config.exclude
@@ -202,13 +202,13 @@
 ---@field exclude ibl.config.full.scope.exclude: ibl.config.scope.exclude
 
 ---@class ibl.config.full.current_indent: ibl.config.current_indent
---- Enables or disables scope
+--- Enables or disables current_indent
 ---@field enabled boolean
---- Character, or list of characters, that get used to display the scope indentation guide
+--- Character that gets used to display the current_indent indentation guide
 ---
---- Each character has to have a display width of 0 or 1
+--- The character has to have a display width of 0 or 1
 ---@field char string?
---- Highlight group, or list of highlight groups, that get applied to the scope
+--- Highlight group that get applied to the current_indent
 ---@field highlight string
 
 ---@class ibl.config.full.scope.include: ibl.config.scope.include

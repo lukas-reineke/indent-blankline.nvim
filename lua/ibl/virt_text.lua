@@ -44,7 +44,6 @@ end
 ---@param bufnr number
 ---@param row number?
 M.clear_buffer = function(bufnr, row)
-    local namespace_underscore = vim.api.nvim_create_namespace "indent_blankline_underscore"
     local namespace = vim.api.nvim_create_namespace "indent_blankline"
     local line_start = 0
     local line_end = -1
@@ -52,7 +51,6 @@ M.clear_buffer = function(bufnr, row)
         line_start = row - 1
         line_end = row
     end
-    pcall(vim.api.nvim_buf_clear_namespace, bufnr, namespace_underscore, line_start, line_end)
     pcall(vim.api.nvim_buf_clear_namespace, bufnr, namespace, line_start, line_end)
 end
 
