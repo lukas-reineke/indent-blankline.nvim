@@ -241,6 +241,7 @@ M.refresh = function(bufnr)
         scope_row_start, scope_col_start, scope_row_end, scope_col_end = scope:range()
         scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
     end
+    local exact_scope_col_start = scope_col_start
 
     local cursor_row_stack_size = -1
     local current_indent_row_start = offset + 1
@@ -389,7 +390,10 @@ M.refresh = function(bufnr)
         arr_whitespace_tbl[i] = whitespace_tbl
 
         if config.current_indent.enabled then
-            local cur_indent_stack_size = #indent_state.stack
+            local cur_indent_stack_size = 0
+            if indent_state then
+                cur_indent_stack_size = #indent_state.stack
+            end
             if row <= cursor_row then
                 if prev_indent_stack_size > cur_indent_stack_size then
                     current_indent_stack[#current_indent_stack] = nil
@@ -493,9 +497,18 @@ M.refresh = function(bufnr)
         -- #### set virtual text ####
         vt.clear_buffer(bufnr, row)
 
+        -- Show exact scope
+        local scope_col_start_draw = whitespace_len
+        local show_end_cond = #whitespace_tbl > scope_col_start_single
+
+        if config.scope.show_exact_scope then
+            scope_col_start_draw = exact_scope_col_start - 1
+            show_end_cond = #whitespace_tbl >= scope_col_start_single
+        end
+
         -- Scope start
         if config.scope.show_start and scope_start then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, whitespace_len, {
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start_draw, {
                 end_col = #line,
                 hl_group = scope_hl.underline,
                 priority = config.scope.priority,
@@ -504,11 +517,6 @@ M.refresh = function(bufnr)
             inlay_hints.set(bufnr, row - 1, whitespace_len, scope_hl.underline, scope_hl.underline)
         end
 
-        -- Scope end
-        local show_end_cond = #whitespace_tbl > scope_col_start_single
-        if config.scope.show_end_always then
-            show_end_cond = #whitespace_tbl >= scope_col_start_single
-        end
         if config.scope.show_end and scope_end and show_end_cond then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,

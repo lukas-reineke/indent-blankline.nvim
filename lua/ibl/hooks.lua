@@ -200,30 +200,44 @@ M.builtin = {
             return scope_index
         end
 
-        -- local start_row = scope:start()
-        -- local end_row = scope:end_()
-        local scope_row_start, scope_col_start, scope_row_end, scope_col_end = scope:range()
-        local start_line = vim.api.nvim_buf_get_lines(bufnr, scope_row_start, scope_row_start + 1, false)
-        local end_line = vim.api.nvim_buf_get_lines(bufnr, scope_row_end, scope_row_end + 1, false)
+        local start_row, start_col = scope:start()
+        local end_row, end_col = scope:end_()
+        local start_line = vim.api.nvim_buf_get_lines(bufnr, start_row, start_row + 1, false)
+        local end_line = vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, false)
         local end_pos
         local start_pos
-
+        local start_pos_scope
+        local end_pos_scope
 
         if end_line[1] then
-            end_pos = vim.inspect_pos(bufnr, scope_row_end, scope_col_end, {
+            end_pos = vim.inspect_pos(bufnr, end_row, #end_line[1] - 1, {
                 extmarks = true,
                 syntax = false,
                 treesitter = false,
                 semantic_tokens = false,
             })
+            end_pos_scope = vim.inspect_pos(bufnr, end_row, end_col - 1, {
+                extmarks = true,
+                syntax = false,
+                treesitter = false,
+                semantic_tokens = false,
+            })
+
         end
         if start_line[1] then
-            start_pos = vim.inspect_pos(bufnr, scope_row_start, scope_col_start, {
+            start_pos = vim.inspect_pos(bufnr, start_row, #start_line[1] - 1, {
                 extmarks = true,
                 syntax = false,
                 treesitter = false,
                 semantic_tokens = false,
             })
+            start_pos_scope = vim.inspect_pos(bufnr, start_row, start_col, {
+                extmarks = true,
+                syntax = false,
+                treesitter = false,
+                semantic_tokens = false,
+            })
+
         end
 
         if not end_pos and not start_pos then
@@ -231,6 +245,14 @@ M.builtin = {
         end
 
         for i, hl_group in ipairs(highlight) do
+            -- in order by what is most likely to work
+            if end_pos_scope then
+                for _, extmark in ipairs(end_pos_scope.extmarks) do
+                    if extmark.opts.hl_group == hl_group then
+                        return i
+                    end
+                end
+            end
             if end_pos then
                 for _, extmark in ipairs(end_pos.extmarks) do
                     if extmark.opts.hl_group == hl_group then
@@ -240,6 +262,13 @@ M.builtin = {
             end
             if start_pos then
                 for _, extmark in ipairs(start_pos.extmarks) do
+                    if extmark.opts.hl_group == hl_group then
+                        return i
+                    end
+                end
+            end
+            if start_pos_scope then
+                for _, extmark in ipairs(start_pos_scope.extmarks) do
                     if extmark.opts.hl_group == hl_group then
                         return i
                     end

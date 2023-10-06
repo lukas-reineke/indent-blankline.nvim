@@ -65,7 +65,7 @@
 --- Shows an underline on the last line of the scope
 ---@field show_end boolean?
 --- Shows an underline on the last line of the scope (default is to ignore some cases)
----@field show_end_always boolean?
+---@field show_exact_scope boolean?
 --- Checks for the current scope in injected treesitter languages
 ---
 --- This also influences if the scope gets excluded or not
@@ -191,7 +191,7 @@
 --- Shows an underline on the last line of the scope
 ---@field show_end boolean
 --- Always shows an underline on the last line of the scope (default is to ignore some cases)
----@field show_end_always boolean
+---@field show_exact_scope boolean
 --- Checks for the current scope in injected treesitter languages
 ---
 --- This also influences if the scope gets excluded or not
