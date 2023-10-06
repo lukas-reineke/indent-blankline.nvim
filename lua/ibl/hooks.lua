@@ -200,15 +200,17 @@ M.builtin = {
             return scope_index
         end
 
-        local start_row = scope:start()
-        local end_row = scope:end_()
-        local start_line = vim.api.nvim_buf_get_lines(bufnr, start_row, start_row + 1, false)
-        local end_line = vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, false)
+        -- local start_row = scope:start()
+        -- local end_row = scope:end_()
+        local scope_row_start, scope_col_start, scope_row_end, scope_col_end = scope:range()
+        local start_line = vim.api.nvim_buf_get_lines(bufnr, scope_row_start, scope_row_start + 1, false)
+        local end_line = vim.api.nvim_buf_get_lines(bufnr, scope_row_end, scope_row_end + 1, false)
         local end_pos
         local start_pos
 
+
         if end_line[1] then
-            end_pos = vim.inspect_pos(bufnr, end_row, #end_line[1] - 1, {
+            end_pos = vim.inspect_pos(bufnr, scope_row_end, scope_col_end, {
                 extmarks = true,
                 syntax = false,
                 treesitter = false,
@@ -216,7 +218,7 @@ M.builtin = {
             })
         end
         if start_line[1] then
-            start_pos = vim.inspect_pos(bufnr, start_row, #start_line[1] - 1, {
+            start_pos = vim.inspect_pos(bufnr, scope_row_start, scope_col_start, {
                 extmarks = true,
                 syntax = false,
                 treesitter = false,
