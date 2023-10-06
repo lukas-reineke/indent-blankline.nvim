@@ -170,7 +170,7 @@ M.refresh = function(bufnr)
     end
 
     local left_offset, top_offset, win_end, win_height = utils.get_offset(bufnr)
-    if top_offset >= win_end then
+    if top_offset > win_end then
         return
     end
 
