@@ -467,12 +467,8 @@ M.refresh = function(bufnr)
             inlay_hints.set(bufnr, row - 1, whitespace_len, scope_hl.underline, scope_hl.underline)
         end
 
-        local show_scope_end_cond = #whitespace_tbl > scope_col_start_single
-        if config.scope.show_end_always then
-            show_scope_end_cond = #whitespace_tbl >= scope_col_start_single
-        end
         -- Scope end
-        if config.scope.show_end and scope_end and show_scope_end_cond then
+        if config.scope.show_end and scope_end and #whitespace_tbl >= scope_col_start_single then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,
