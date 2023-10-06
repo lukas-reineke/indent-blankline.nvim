@@ -170,7 +170,7 @@ M.refresh = function(bufnr)
     end
 
     local left_offset, top_offset, win_end, win_height, cursor_row = utils.get_offset(bufnr)
-    if top_offset >= win_end then
+    if top_offset > win_end then
         return
     end
 
@@ -246,67 +246,85 @@ M.refresh = function(bufnr)
     local current_indent_row_start = offset + 1
     local current_indent_row_end = range
 
+
+    ---@type table<integer, boolean>
+    local line_skipped = {}
+
+    ---@type ibl.hooks.cb.skip_line[]
+    local skip_line_hooks = hooks.get(bufnr, hooks.type.SKIP_LINE)
+
+    for i, line in ipairs(lines) do
+        local row = i + offset
+        line_skipped[i] = false
+        for _, fn in pairs(skip_line_hooks) do
+            if fn(buffer_state.tick, bufnr, row - 1, line) then
+                line_skipped[i] = true
+                break
+            end
+        end
+    end
+
     -- a table
+    ---@type ibl.indent.whitespace[]
     local next_whitespace_tbl = {}
 
     -- array of tables
+    ---@type table<integer, ibl.indent.whitespace[]>
     local arr_whitespace_tbl = {}
 
     -- arrays of numbers
+    ---@type table<integer, integer>
     local current_indent_stack = {} -- current indent stack of line nr
+    ---@type table<integer, integer>
     local arr_whitespace_len = {}
 
     -- boolean arrays
-    local arr_skip_this_i = {}
+    ---@type table<integer, boolean>
     local arr_blankline = {}
+    ---@type table<integer, boolean>
     local arr_whitespace_only = {}
 
     -- in the first loop we calculate the things we need to setup the virtual text via extmarks
     for i, line in ipairs(lines) do
         local row = i + offset
+
+        if line_skipped[i] then
+            vt.clear_buffer(bufnr, row)
+            goto continue
+        end
+
         local whitespace = utils.get_whitespace(line)
         local foldclosed = vim.fn.foldclosed(row)
-
-        for _, fn in
-            pairs(hooks.get(bufnr, hooks.type.SKIP_LINE) --[[ @as ibl.hooks.cb.skip_line[] ]])
-        do
-            if fn(buffer_state.tick, bufnr, row - 1, line) then
-                vt.clear_buffer(bufnr, row)
-                arr_skip_this_i[i] = true
-                goto continue
-            end
-        end
 
         if is_current_buffer and foldclosed == row then
             local foldtext = vim.fn.foldtextresult(row)
             local foldtext_whitespace = utils.get_whitespace(foldtext)
             if vim.fn.strdisplaywidth(foldtext_whitespace, 0) < vim.fn.strdisplaywidth(whitespace, 0) then
                 vt.clear_buffer(bufnr, row)
-                arr_skip_this_i[i] = true
+                line_skipped[i] = true
                 goto continue
             end
         end
 
         if is_current_buffer and foldclosed > -1 and foldclosed + win_height < row then
             vt.clear_buffer(bufnr, row)
-            arr_skip_this_i[i] = true
+            line_skipped[i] = true
             goto continue
         end
 
-        arr_skip_this_i[i] = false
-        arr_whitespace_len[i] = #whitespace
-
-        local blankline = line:len() == 0
-        arr_blankline[i] = blankline
-
-        arr_whitespace_only[i] = not blankline and line == whitespace
-
+        ---@type ibl.indent.whitespace[]
         local whitespace_tbl
 
         local prev_indent_stack_size = 0
         if config.current_indent.enabled and indent_state then
             prev_indent_stack_size = #indent_state.stack or 0
         end
+
+        local blankline = line:len() == 0
+        arr_blankline[i] = blankline
+
+        arr_whitespace_len[i] = #whitespace
+        arr_whitespace_only[i] = not blankline and line == whitespace
 
         -- #### calculate indent ####
         if not blankline then
@@ -319,10 +337,11 @@ M.refresh = function(bufnr)
                 whitespace_tbl = {}
             else
                 local j = i + 1
-                while j < #lines and lines[j]:len() == 0 do
+                while j < #lines and (lines[j]:len() == 0 or line_skipped[j]) do
                     j = j + 1
                     empty_line_counter = empty_line_counter + 1
                 end
+
                 local j_whitespace = utils.get_whitespace(lines[j])
                 whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state)
 
@@ -416,7 +435,7 @@ M.refresh = function(bufnr)
 
     -- set up the virtual text via extmarks
     for i, line in ipairs(lines) do
-        if arr_skip_this_i[i] then
+        if line_skipped[i] then
             goto continue1
         end
 
@@ -428,13 +447,31 @@ M.refresh = function(bufnr)
         local whitespace_only = arr_whitespace_only[i]
 
         local scope_active = row >= scope_row_start and row <= scope_row_end
+        if
+            scope_active
+            and scope_col_start_single > -1
+            and (whitespace_tbl[scope_col_start_single + 1] or blankline)
+            and not indent.is_indent(whitespace_tbl[scope_col_start_single + 1])
+        then
+            if indent.is_space_indent(whitespace_tbl[scope_col_start_single + 1]) then
+                whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.INDENT
+            else
+                whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.TAB_START
+            end
+            local k = scope_col_start_single
+            while not whitespace_tbl[k] and k >= 0 do
+                whitespace_tbl[k] = indent.whitespace.SPACE
+                k = k - 1
+            end
+        end
+
+        -- #### make virtual text ####
         local scope_start = row == scope_row_start
         local scope_end = row == scope_row_end
 
         local current_indent_active = row >= current_indent_row_start and row <= current_indent_row_end and
             config.current_indent.enabled
 
-        -- #### make virtual text ####
         if scope_start and scope then
             scope_col_start = whitespace_len
             scope_col_start_single = #whitespace_tbl
@@ -468,7 +505,11 @@ M.refresh = function(bufnr)
         end
 
         -- Scope end
-        if config.scope.show_end and scope_end and #whitespace_tbl >= scope_col_start_single then
+        local show_end_cond = #whitespace_tbl > scope_col_start_single
+        if config.scope.show_end_always then
+            show_end_cond = #whitespace_tbl >= scope_col_start_single
+        end
+        if config.scope.show_end and scope_end and show_end_cond then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,
