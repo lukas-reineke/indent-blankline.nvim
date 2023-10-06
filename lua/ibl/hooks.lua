@@ -171,16 +171,20 @@ M.builtin = {
     ---@type ibl.hooks.cb.skip_line
     skip_preproc_lines = function(_, _, _, line)
         for _, pattern in ipairs {
-            "#if",
-            "#ifdef",
-            "#ifndef",
-            "#elif",
-            "#elifdef",
-            "#elifndef",
-            "#else",
-            "#endif",
+            "^#%s*if",
+            "^#%s*ifdef",
+            "^#%s*ifndef",
+            "^#%s*elif",
+            "^#%s*elifdef",
+            "^#%s*elifndef",
+            "^#%s*else",
+            "^#%s*endif",
+            "^#%s*define",
+            "^#%s*undef",
+            "^#%s*warning",
+            "^#%s*error",
         } do
-            if vim.startswith(line, pattern) then
+            if line:match(pattern) then
                 return true
             end
         end

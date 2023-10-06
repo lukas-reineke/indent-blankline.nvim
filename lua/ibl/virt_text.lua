@@ -97,12 +97,6 @@ M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, sc
                 if vim.fn.strdisplaywidth(scope_char) == 1 then
                     char = scope_char
                 end
-            elseif not indent.is_indent(ws) then
-                if indent.is_space_indent(ws) then
-                    char = get_char(char_map[whitespace.INDENT], indent_index)
-                else
-                    char = get_char(char_map[whitespace.TAB_START], indent_index)
-                end
             end
 
             if config.scope.show_end and scope_end then

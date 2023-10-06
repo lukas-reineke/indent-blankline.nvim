@@ -243,38 +243,31 @@ M.refresh = function(bufnr)
         scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
     end
 
+    ---@type ibl.indent.whitespace[]
     local last_whitespace_tbl = {}
-
     ---@type table<integer, boolean>
     local line_skipped = {}
-
     ---@type ibl.hooks.cb.skip_line[]
     local skip_line_hooks = hooks.get(bufnr, hooks.type.SKIP_LINE)
-
     for i, line in ipairs(lines) do
         local row = i + offset
-
-        local skipped = false
         for _, fn in pairs(skip_line_hooks) do
             if fn(buffer_state.tick, bufnr, row - 1, line) then
-                skipped = true
+                line_skipped[i] = true
                 break
             end
         end
-
-        line_skipped[i] = skipped
     end
 
     for i, line in ipairs(lines) do
         local row = i + offset
-        local whitespace = utils.get_whitespace(line)
-        local foldclosed = vim.fn.foldclosed(row)
-
         if line_skipped[i] then
             vt.clear_buffer(bufnr, row)
             goto continue
         end
 
+        local whitespace = utils.get_whitespace(line)
+        local foldclosed = vim.fn.foldclosed(row)
         if is_current_buffer and foldclosed == row then
             local foldtext = vim.fn.foldtextresult(row)
             local foldtext_whitespace = utils.get_whitespace(foldtext)
@@ -289,12 +282,9 @@ M.refresh = function(bufnr)
             goto continue
         end
 
-        local blankline = line:len() == 0
-        local whitespace_only = not blankline and line == whitespace
+        ---@type ibl.indent.whitespace[]
         local whitespace_tbl
-        local scope_active = row >= scope_row_start and row <= scope_row_end
-        local scope_start = row == scope_row_start
-        local scope_end = row == scope_row_end
+        local blankline = line:len() == 0
 
         -- #### calculate indent ####
         if not blankline then
@@ -332,6 +322,25 @@ M.refresh = function(bufnr)
             next_whitespace_tbl = whitespace_tbl
         end
 
+        local scope_active = row >= scope_row_start and row <= scope_row_end
+        if
+            scope_active
+            and scope_col_start_single > -1
+            and (whitespace_tbl[scope_col_start_single + 1] or blankline)
+            and not indent.is_indent(whitespace_tbl[scope_col_start_single + 1])
+        then
+            if indent.is_space_indent(whitespace_tbl[scope_col_start_single + 1]) then
+                whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.INDENT
+            else
+                whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.TAB_START
+            end
+            local k = scope_col_start_single
+            while not whitespace_tbl[k] and k >= 0 do
+                whitespace_tbl[k] = indent.whitespace.SPACE
+                k = k - 1
+            end
+        end
+
         -- remove blankline trail
         if blankline and config.whitespace.remove_blankline_trail then
             while #whitespace_tbl > 0 do
@@ -358,6 +367,8 @@ M.refresh = function(bufnr)
         last_whitespace_tbl = whitespace_tbl
 
         -- #### make virtual text ####
+        local scope_start = row == scope_row_start
+        local scope_end = row == scope_row_end
         if scope_start and scope then
             scope_col_start = #whitespace
             scope_col_start_single = #whitespace_tbl
@@ -371,6 +382,7 @@ M.refresh = function(bufnr)
             end
         end
 
+        local whitespace_only = not blankline and line == whitespace
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
         local virt_text, scope_hl =
             vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single)
