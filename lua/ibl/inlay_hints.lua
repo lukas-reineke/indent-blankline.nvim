@@ -39,9 +39,9 @@ end
 
 M.setup = function()
     if not handler then
-        handler = vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_inlayHint]
+        handler = vim.lsp.handlers["textDocument/inlayHint"]
 
-        vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_inlayHint] = function(err, result, ctx, conf)
+        vim.lsp.handlers["textDocument/inlayHint"] = function(err, result, ctx, conf)
             if handler then
                 handler(err, result, ctx, conf)
             end
@@ -52,7 +52,7 @@ end
 
 M.clear = function()
     if handler then
-        vim.lsp.handlers[vim.lsp.protocol.Methods.textDocument_inlayHint] = handler
+        vim.lsp.handlers["textDocument/inlayHint"] = handler
         handler = nil
     end
     for bufnr, _ in pairs(buffer_state) do
