@@ -222,7 +222,6 @@ M.builtin = {
                 treesitter = false,
                 semantic_tokens = false,
             })
-
         end
         if start_line[1] then
             start_pos = vim.inspect_pos(bufnr, start_row, #start_line[1] - 1, {
@@ -237,7 +236,6 @@ M.builtin = {
                 treesitter = false,
                 semantic_tokens = false,
             })
-
         end
 
         if not end_pos and not start_pos then
@@ -248,11 +246,24 @@ M.builtin = {
             -- in order by what is most likely to work
             if end_pos_scope then
                 for _, extmark in ipairs(end_pos_scope.extmarks) do
+                    vim.print(extmark)
+                    vim.print(extmark.opts.hl_group)
+                    vim.print(hl_group)
                     if extmark.opts.hl_group == hl_group then
                         return i
                     end
                 end
             end
+            if start_pos_scope then
+                for _, extmark in ipairs(start_pos_scope.extmarks) do
+                    if extmark.opts.hl_group == hl_group then
+                        return i
+                    end
+                end
+            end
+        end
+        -- if we can't get highlight correctly by scope, go back to parentheses
+        for i, hl_group in ipairs(highlight) do
             if end_pos then
                 for _, extmark in ipairs(end_pos.extmarks) do
                     if extmark.opts.hl_group == hl_group then
@@ -262,13 +273,6 @@ M.builtin = {
             end
             if start_pos then
                 for _, extmark in ipairs(start_pos.extmarks) do
-                    if extmark.opts.hl_group == hl_group then
-                        return i
-                    end
-                end
-            end
-            if start_pos_scope then
-                for _, extmark in ipairs(start_pos_scope.extmarks) do
                     if extmark.opts.hl_group == hl_group then
                         return i
                     end
