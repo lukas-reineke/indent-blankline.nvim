@@ -246,9 +246,6 @@ M.builtin = {
             -- in order by what is most likely to work
             if end_pos_scope then
                 for _, extmark in ipairs(end_pos_scope.extmarks) do
-                    vim.print(extmark)
-                    vim.print(extmark.opts.hl_group)
-                    vim.print(hl_group)
                     if extmark.opts.hl_group == hl_group then
                         return i
                     end
