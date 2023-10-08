@@ -242,8 +242,8 @@ M.builtin = {
             return scope_index
         end
 
+        -- in order by what is most likely to work
         for i, hl_group in ipairs(highlight) do
-            -- in order by what is most likely to work
             if end_pos_scope then
                 for _, extmark in ipairs(end_pos_scope.extmarks) do
                     if extmark.opts.hl_group == hl_group then

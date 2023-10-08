@@ -396,7 +396,12 @@ M.refresh = function(bufnr)
             end
             if row <= cursor_row then
                 if prev_indent_stack_size > cur_indent_stack_size then
-                    current_indent_stack[#current_indent_stack] = nil
+                    -- we need to take into account that we might jump back more than
+                    -- only one indent level at once
+                    while prev_indent_stack_size > cur_indent_stack_size do
+                        current_indent_stack[#current_indent_stack] = nil
+                        prev_indent_stack_size = prev_indent_stack_size - 1
+                    end
                 elseif prev_indent_stack_size < cur_indent_stack_size then
                     current_indent_stack[#current_indent_stack + 1] = row
                 end
