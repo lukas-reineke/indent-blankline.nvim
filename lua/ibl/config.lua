@@ -29,6 +29,7 @@ M.default_config = {
         highlight = "IblIndent",
         smart_indent_cap = true,
         priority = 1,
+        current_block_only = false,
     },
     whitespace = {
         highlight = "IblWhitespace",
@@ -139,6 +140,7 @@ local validate_config = function(config)
             highlight = { config.indent.highlight, { "string", "table" }, true },
             smart_indent_cap = { config.indent.smart_indent_cap, "boolean", true },
             priority = { config.indent.priority, "number", true },
+            current_block_only = { config.indent.current_block_only, "boolean", true },
         }, config.indent, "ibl.config.indent")
         if config.indent.char then
             vim.validate {
