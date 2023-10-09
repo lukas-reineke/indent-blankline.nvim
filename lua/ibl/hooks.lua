@@ -242,7 +242,13 @@ M.builtin = {
             return scope_index
         end
 
-        -- in order by what is most likely to work
+        -- it is easiest to get correct colors from rainbow-delimiters via
+        -- the scope, since you can have something like:
+        -- function()
+        --   ...
+        -- end,
+        -- where the last symbol will give you rainbow-delimiters highlights
+        -- from the comma (nothing) and the last parenthesis (the wrong color)
         for i, hl_group in ipairs(highlight) do
             if end_pos_scope then
                 for _, extmark in ipairs(end_pos_scope.extmarks) do

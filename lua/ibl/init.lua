@@ -427,7 +427,8 @@ M.refresh = function(bufnr)
                 end
             else
                 -- row > cursor_row
-                -- if cur_indent_stack_size is 1, we should stop when we get to a line with no more whitespace in the whitespace_tbl
+                -- if cur_indent_stack_size >= 1, we should stop when we get to a line with no more whitespace in the whitespace_tbl
+                -- since that line won't have any indents to highlight
                 if
                     (cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size and (not blankline))
                     or (cursor_row_stack_size >= 0 and cur_indent_stack_size >= 1 and #whitespace_tbl == 0)
