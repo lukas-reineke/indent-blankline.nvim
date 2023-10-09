@@ -409,21 +409,6 @@ M.refresh = function(bufnr)
             end
         end
 
-        -- Fix horizontal scroll
-        local current_left_offset = left_offset
-        while #whitespace_tbl > 0 and current_left_offset > 0 do
-            table.remove(whitespace_tbl, 1)
-            current_left_offset = current_left_offset - 1
-        end
-
-        for _, fn in
-            pairs(hooks.get(bufnr, hooks.type.WHITESPACE) --[[ @as ibl.hooks.cb.whitespace[] ]])
-        do
-            whitespace_tbl = fn(buffer_state.tick, bufnr, row - 1, whitespace_tbl)
-        end
-
-        arr_whitespace_tbl[i] = whitespace_tbl
-
         if config.current_indent.enabled then
             local cur_indent_stack_size = 0
             if indent_state then
@@ -442,7 +427,11 @@ M.refresh = function(bufnr)
                 end
             else
                 -- row > cursor_row
-                if cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size then
+                -- if cur_indent_stack_size is 1, we should stop when we get to a line with no more whitespace in the whitespace_tbl
+                if
+                    (cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size and cur_indent_stack_size ~= 1)
+                    or (cursor_row_stack_size >= 0 and cur_indent_stack_size == 1 and #whitespace_tbl == 0)
+                then
                     current_indent_row_end = row - 1
                     cursor_row_stack_size = -1
                 end
@@ -451,6 +440,21 @@ M.refresh = function(bufnr)
                 cursor_row_stack_size = cur_indent_stack_size
             end
         end
+
+        -- Fix horizontal scroll
+        local current_left_offset = left_offset
+        while #whitespace_tbl > 0 and current_left_offset > 0 do
+            table.remove(whitespace_tbl, 1)
+            current_left_offset = current_left_offset - 1
+        end
+
+        for _, fn in
+            pairs(hooks.get(bufnr, hooks.type.WHITESPACE) --[[ @as ibl.hooks.cb.whitespace[] ]])
+        do
+            whitespace_tbl = fn(buffer_state.tick, bufnr, row - 1, whitespace_tbl)
+        end
+
+        arr_whitespace_tbl[i] = whitespace_tbl
 
         ::continue::
     end
