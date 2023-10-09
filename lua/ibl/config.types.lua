@@ -64,7 +64,9 @@
 ---@field show_start boolean?
 --- Shows an underline on the last line of the scope
 ---@field show_end boolean?
---- Shows an underline on the last line of the scope (default is to ignore some cases)
+--- Always shows an underline on the last line of the scope (default is to ignore some cases)
+--- and starts the scope underline at the actual beginning of the scope (even if it is to the
+--- right of the indent level)
 ---@field show_exact_scope boolean?
 --- Checks for the current scope in injected treesitter languages
 ---
@@ -82,11 +84,11 @@
 ---@class ibl.config.current_indent
 --- Enables or disables scope
 ---@field enabled boolean?
---- Character, or list of characters, that get used to display the scope indentation guide
+--- Character that gets used to display the current_indent indentation guide
 ---
---- Each character has to have a display width of 0 or 1
+--- The character has to have a display width of 0 or 1
 ---@field char string?
---- Highlight group, or list of highlight groups, that get applied to the scope
+--- Highlight group that get applied to the current_indent
 ---@field highlight string?
 
 ---@class ibl.config.scope.include
