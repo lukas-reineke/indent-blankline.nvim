@@ -1,4 +1,4 @@
-name: Nightly Neovim check
+name: Nightly Neovim Check
 # Checks LSP and unit tests against new Neovim nightly once a week
 
 on:
