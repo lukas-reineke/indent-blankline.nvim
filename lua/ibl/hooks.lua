@@ -242,7 +242,7 @@ M.builtin = {
             return scope_index
         end
 
-        -- it is easiest to get correct colors from rainbow-delimiters via
+        -- it is most accurate to get correct colors from rainbow-delimiters via
         -- the scope, since you can have something like:
         -- function()
         --   ...
@@ -265,7 +265,7 @@ M.builtin = {
                 end
             end
         end
-        -- if we can't get highlight correctly by scope, go back to parentheses
+        -- For some languages the scope extends before or after the delimiters. Make an attempt to capture them anyway by looking at the first character of the last line, and the last character of the first line.
         for i, hl_group in ipairs(highlight) do
             if end_pos then
                 for _, extmark in ipairs(end_pos.extmarks) do
