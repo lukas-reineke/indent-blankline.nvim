@@ -434,7 +434,7 @@ config.scope                                                *ibl.config.scope*
                            underline on the last line of the scope ending at
                            the exact end of the scope.
 
-                           Default: `true` ~
+                           Default: `false` ~
 
                                          *ibl.config.scope.injected_languages*
    • {injected_languages}  (boolean)
