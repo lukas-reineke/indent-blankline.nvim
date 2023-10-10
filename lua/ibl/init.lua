@@ -259,6 +259,45 @@ M.refresh = function(bufnr)
         end
     end
 
+    if config.indent.current_block_only then
+        if not scope then
+            scope = scp.get(bufnr, config)
+        end
+        if scope then
+            local current_block = scope:root()
+            local parent_block = scope
+            if current_block == parent_block then
+                -- if we are in the root, don't show indents
+                for i, _ in ipairs(lines) do
+                    line_skipped[i] = true
+                end
+            end
+            while parent_block do
+                -- go up the tree until we are one step below the root
+                if parent_block:parent() == current_block then
+                    current_block = parent_block
+                    break
+                else
+                    parent_block = parent_block:parent()
+                end
+            end
+            local block_start_row, _, block_end_row, _ = current_block:range()
+            block_start_row, block_end_row = block_start_row + 1, block_end_row + 1
+            for i, _ in ipairs(lines) do
+                local row = i + offset
+                if block_start_row > row or block_end_row < row then
+                    -- skip lines not in the current block
+                    line_skipped[i] = true
+                end
+            end
+        else
+            -- if we can't get scope, then don't show indents anywhere
+            for i, _ in ipairs(lines) do
+                line_skipped[i] = true
+            end
+        end
+    end
+
     for i, line in ipairs(lines) do
         local row = i + offset
         if line_skipped[i] then

@@ -25,7 +25,7 @@ CONTENTS                                              *ibl* *indent-blankline*
 
 ==============================================================================
  2. FUNCTIONS                                                  *ibl.functions*
- 
+
 setup({config})                                                  *ibl.setup()*
 
  Initializes and configures indent-blankline.
@@ -224,7 +224,7 @@ config.viewport_buffer                            *ibl.config.viewport_buffer*
             Minimum number of lines above and below of what is currently
             visible in the window for which indentation guides will
             be generated
-            
+
             Default: `30` ~
 
                                               *ibl.config.viewport_buffer.max*
@@ -322,6 +322,13 @@ config.indent                                              *ibl.config.indent*
 
                          Default: `1` ~
 
+                                                  *ibl.config.indent.current_block_only*
+   • {current_block_only}(number)
+                         Only hightlight the current block of code
+
+                         Default: `false` ~
+
+
  Example: ~
    >lua
    {
@@ -330,6 +337,7 @@ config.indent                                              *ibl.config.indent*
        highlight = { "Function", "Label" },
        smart_indent_cap = true,
        priority = 2,
+       current_block_only = true,
    }
 <
 
@@ -379,7 +387,7 @@ config.scope                                                *ibl.config.scope*
  def foo();
  ┋   if True:
  ┋       a = "foo █ar"
- ┋       #        ↳ cursor here 
+ ┋       #        ↳ cursor here
  ┋   print(a)
 <
  In Rust on the other hand, `if` blocks are a new scope. Variables defined
@@ -390,7 +398,7 @@ config.scope                                                *ibl.config.scope*
  fn foo() {
      if true {
      ┋   let a = "foo █ar";
-     ┋   //           ↳ cursor here 
+     ┋   //           ↳ cursor here
      }
      print(a);
  }
@@ -873,19 +881,19 @@ IblScope                                                         *hl-IblScope*
 
  The MIT Licence
  http://www.opensource.org/licenses/mit-license.php
- 
+
  Copyright (c) 2023 Lukas Reineke
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
