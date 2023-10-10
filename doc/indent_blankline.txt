@@ -25,7 +25,7 @@ CONTENTS                                              *ibl* *indent-blankline*
 
 ==============================================================================
  2. FUNCTIONS                                                  *ibl.functions*
- 
+
 setup({config})                                                  *ibl.setup()*
 
  Initializes and configures indent-blankline.
@@ -224,7 +224,7 @@ config.viewport_buffer                            *ibl.config.viewport_buffer*
             Minimum number of lines above and below of what is currently
             visible in the window for which indentation guides will
             be generated
-            
+
             Default: `30` ~
 
                                               *ibl.config.viewport_buffer.max*
@@ -379,7 +379,7 @@ config.scope                                                *ibl.config.scope*
  def foo();
  ┋   if True:
  ┋       a = "foo █ar"
- ┋       #        ↳ cursor here 
+ ┋       #        ↳ cursor here
  ┋   print(a)
 <
  In Rust on the other hand, `if` blocks are a new scope. Variables defined
@@ -390,7 +390,7 @@ config.scope                                                *ibl.config.scope*
  fn foo() {
      if true {
      ┋   let a = "foo █ar";
-     ┋   //           ↳ cursor here 
+     ┋   //           ↳ cursor here
      }
      print(a);
  }
@@ -422,6 +422,17 @@ config.scope                                                *ibl.config.scope*
                                                    *ibl.config.scope.show_end*
    • {show_end}            (boolean)
                            Shows an underline on the last line of the scope
+
+                           Default: `true` ~
+
+
+                                           *ibl.config.scope.show_exact_scope*
+   • {show_exact_scope}    (boolean)
+                           Shows an underline on the first line of the scope
+                           starting at the exact start of the scope (even if
+                           this is to the right of the indent guide) and an
+                           underline on the last line of the scope ending at
+                           the exact end of the scope.
 
                            Default: `true` ~
 
@@ -873,19 +884,19 @@ IblScope                                                         *hl-IblScope*
 
  The MIT Licence
  http://www.opensource.org/licenses/mit-license.php
- 
+
  Copyright (c) 2023 Lukas Reineke
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
