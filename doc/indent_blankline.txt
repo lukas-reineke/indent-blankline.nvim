@@ -240,93 +240,93 @@ config.viewport_buffer                            *ibl.config.viewport_buffer*
    { min = 100, max = 600 }
 <
 
-config.indent                                              *ibl.config.indent*
+config.indent                                               *ibl.config.indent*
 
  Configures the indentation
 
  Fields: ~
-                                                      *ibl.config.indent.char*
-   • {char}              (string|string[])
-                         Character, or list of characters, that get used to
-                         display the indentation guide
-                         Each character has to have a display width of 0 or 1
+                                                       *ibl.config.indent.char*
+   • {char}               (string|string[])
+                          Character, or list of characters, that get used to
+                          display the indentation guide
+                          Each character has to have a display width of 0 or 1
 
-                         Default: `▎` ~
+                          Default: `▎` ~
 
-                         Alternatives: ~
-                           • left aligned solid
-                             • `▏`
-                             • `▎` (default)
-                             • `▍`
-                             • `▌`
-                             • `▋`
-                             • `▊`
-                             • `▉`
-                             • `█`
-                           • center aligned solid
-                             • `│`
-                             • `┃`
-                           • right aligned solid
-                             • `▕`
-                             • `▐`
-                           • center aligned dashed
-                             • `╎`
-                             • `╏`
-                             • `┆`
-                             • `┇`
-                             • `┊`
-                             • `┋`
-                           • center aligned double
-                             • `║`
+                          Alternatives: ~
+                            • left aligned solid
+                              • `▏`
+                              • `▎` (default)
+                              • `▍`
+                              • `▌`
+                              • `▋`
+                              • `▊`
+                              • `▉`
+                              • `█`
+                            • center aligned solid
+                              • `│`
+                              • `┃`
+                            • right aligned solid
+                              • `▕`
+                              • `▐`
+                            • center aligned dashed
+                              • `╎`
+                              • `╏`
+                              • `┆`
+                              • `┇`
+                              • `┊`
+                              • `┋`
+                            • center aligned double
+                              • `║`
 
-                                                  *ibl.config.indent.tab_char*
-   • {tab_char}          (string|string[])
-                         Character, or list of characters, that get used to
-                         display the indentation guide for tabs
-                         Each character has to have a display width of 0 or 1
+                                                   *ibl.config.indent.tab_char*
+   • {tab_char}           (string|string[])
+                          Character, or list of characters, that get used to
+                          display the indentation guide for tabs
+                          Each character has to have a display width of 0 or 1
 
-                         Default: uses |lcs-tab| if |list| is set, ~
-                                  otherwise, uses |ibl.config.indent.char| ~
+                          Default: uses |lcs-tab| if |list| is set, ~
+                                   otherwise, uses |ibl.config.indent.char| ~
 
                                                  *ibl.config.indent.highlight*
-   • {highlight}         (string|string[])
-                         Highlight group, or list of highlight groups, that
-                         get applied to the indentation guide
+   • {highlight}          (string|string[])
+                          Highlight group, or list of highlight groups, that
+                          get applied to the indentation guide
 
-                         Default: |hl-IblIndent| ~
+                          Default: |hl-IblIndent| ~
 
-                                          *ibl.config.indent.smart_indent_cap*
-   • {smart_indent_cap}  (boolean)
-                         Caps the number of indentation levels by looking at
-                         the surrounding code
+                                           *ibl.config.indent.smart_indent_cap*
+   • {smart_indent_cap}   (boolean)
+                          Caps the number of indentation levels by looking at
+                          the surrounding code
 
-                         Default: `true` ~
+                          Default: `true` ~
 
-                         Example: ~
+                          Example: ~
                            >c
-                           # OFF
-                           {
-                           ▎ foo_bar(a, b,
-                           ▎ ▎ ▎ ▎ ▎ c, d);
-                           }
+                            # OFF
+                            {
+                            ▎ foo_bar(a, b,
+                            ▎ ▎ ▎ ▎ ▎ c, d);
+                            }
 
-                           # ON
-                           {
-                           ▎ foo_bar(a, b,
-                           ▎ ▎       c, d);
-                           }
+                            # ON
+                            {
+                            ▎ foo_bar(a, b,
+                            ▎ ▎       c, d);
+                            }
 <
-                                                  *ibl.config.indent.priority*
-   • {priority}          (number)
-                         Virtual text priority for the indentation guide
+                                                   *ibl.config.indent.priority*
+   • {priority}           (number)
+                          Virtual text priority for the indentation guide
 
-                         Default: `1` ~
+                          Default: `1` ~
 
                                                   *ibl.config.indent.current_block_only*
-   • {current_block_only}(number)
-                         Only hightlight the current block of code
+   • {current_block_only} (number)
+                          Only show indent guides in the current code block
 
-                         Default: `false` ~
+                          Default: `false` ~
 
 
  Example: ~
