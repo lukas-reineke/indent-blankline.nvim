@@ -393,7 +393,7 @@ M.refresh = function(bufnr)
 
         -- Show exact scope
         local scope_col_start_draw = #whitespace
-        local show_end_cond = #whitespace_tbl > scope_col_start_single
+        local scope_show_end_cond = #whitespace_tbl > scope_col_start_single
 
         if config.scope.show_exact_scope then
             scope_col_start_draw = exact_scope_col_start - 1
