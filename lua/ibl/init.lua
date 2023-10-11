@@ -260,12 +260,10 @@ M.refresh = function(bufnr)
     end
 
     if config.indent.current_block_only then
-        if not scope then
-            scope = scp.get(bufnr, config)
-        end
-        if scope then
-            local current_block = scope:root()
-            local parent_block = scope
+        local current_node = vim.treesitter.get_node()
+        if current_node then
+            local current_block = current_node:tree():root()
+            local parent_block = current_node --[[@as TSNode|nil]]
             if current_block == parent_block then
                 -- if we are in the root, don't show indents
                 for i, _ in ipairs(lines) do
