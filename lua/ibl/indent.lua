@@ -1,4 +1,7 @@
+local scope = require "ibl.scope"
+
 local M = {}
+
 
 ---@enum ibl.indent.whitespace
 M.whitespace = {
@@ -112,6 +115,57 @@ end
 ---@param whitespace ibl.indent.whitespace
 M.is_space_indent = function(whitespace)
     return vim.tbl_contains({ M.whitespace.INDENT, M.whitespace.SPACE }, whitespace)
+end
+
+---@param bufnr number
+---@param config ibl.config.full
+---@return TSNode?
+M.get_current_block = function(bufnr, config)
+    local lang_tree_ok, lang_tree = pcall(vim.treesitter.get_parser, bufnr)
+    if not lang_tree_ok or not lang_tree then
+        return nil
+    end
+
+    local win
+    if bufnr ~= vim.api.nvim_get_current_buf() then
+        local win_list = vim.fn.win_findbuf(bufnr)
+        win = win_list and win_list[1]
+        if not win then
+            return nil
+        end
+    else
+        win = 0
+    end
+
+    local range = scope.get_cursor_range(win)
+    lang_tree = scope.language_for_range(lang_tree, range, config)
+    if not lang_tree then
+        return nil
+    end
+
+    -- get the current_node at the mouse
+    local current_node = vim.treesitter.get_node()
+    if current_node then
+        local current_block = current_node:tree():root()
+        local parent_block = current_node --[[@as TSNode|nil]]
+        if current_block == parent_block then
+            -- if we are in the root, don't show indents
+            return nil
+        end
+        while parent_block do
+            -- go up the tree until we are one step below the root
+            if parent_block:parent() == current_block then
+                current_block = parent_block
+                break
+            else
+                parent_block = parent_block:parent()
+            end
+        end
+        return current_block
+    else
+        -- if we can't get current_node, then don't show indents anywhere
+        return nil
+    end
 end
 
 return M

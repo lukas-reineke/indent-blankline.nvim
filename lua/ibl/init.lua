@@ -260,25 +260,8 @@ M.refresh = function(bufnr)
     end
 
     if config.indent.current_block_only then
-        local current_node = vim.treesitter.get_node()
-        if current_node then
-            local current_block = current_node:tree():root()
-            local parent_block = current_node --[[@as TSNode|nil]]
-            if current_block == parent_block then
-                -- if we are in the root, don't show indents
-                for i, _ in ipairs(lines) do
-                    line_skipped[i] = true
-                end
-            end
-            while parent_block do
-                -- go up the tree until we are one step below the root
-                if parent_block:parent() == current_block then
-                    current_block = parent_block
-                    break
-                else
-                    parent_block = parent_block:parent()
-                end
-            end
+        local current_block = indent.get_current_block(bufnr, config)
+        if current_block then
             local block_start_row, _, block_end_row, _ = current_block:range()
             block_start_row, block_end_row = block_start_row + 1, block_end_row + 1
             for i, _ in ipairs(lines) do
@@ -289,7 +272,6 @@ M.refresh = function(bufnr)
                 end
             end
         else
-            -- if we can't get scope, then don't show indents anywhere
             for i, _ in ipairs(lines) do
                 line_skipped[i] = true
             end
