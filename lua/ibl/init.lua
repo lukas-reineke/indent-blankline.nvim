@@ -397,7 +397,7 @@ M.refresh = function(bufnr)
 
         if config.scope.show_exact_scope then
             scope_col_start_draw = exact_scope_col_start - 1
-            show_end_cond = #whitespace_tbl >= scope_col_start_single
+            scope_show_end_cond = #whitespace_tbl >= scope_col_start_single
         end
 
         -- Scope start
@@ -412,7 +412,7 @@ M.refresh = function(bufnr)
         end
 
         -- Scope end
-        if config.scope.show_end and scope_end and show_end_cond then
+        if config.scope.show_end and scope_end and scope_show_end_cond then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,
