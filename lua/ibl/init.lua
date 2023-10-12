@@ -242,6 +242,7 @@ M.refresh = function(bufnr)
         scope_row_start, scope_col_start, scope_row_end, scope_col_end = scope:range()
         scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
     end
+    local exact_scope_col_start = scope_col_start
 
     ---@type ibl.indent.whitespace[]
     local last_whitespace_tbl = {}
@@ -409,9 +410,18 @@ M.refresh = function(bufnr)
         -- #### set virtual text ####
         vt.clear_buffer(bufnr, row)
 
+        -- Show exact scope
+        local scope_col_start_draw = #whitespace
+        local scope_show_end_cond = #whitespace_tbl > scope_col_start_single
+
+        if config.scope.show_exact_scope then
+            scope_col_start_draw = exact_scope_col_start - 1
+            scope_show_end_cond = #whitespace_tbl >= scope_col_start_single
+        end
+
         -- Scope start
         if config.scope.show_start and scope_start then
-            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, #whitespace, {
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start_draw, {
                 end_col = #line,
                 hl_group = scope_hl.underline,
                 priority = config.scope.priority,
@@ -421,7 +431,7 @@ M.refresh = function(bufnr)
         end
 
         -- Scope end
-        if config.scope.show_end and scope_end and #whitespace_tbl > scope_col_start_single then
+        if config.scope.show_end and scope_end and scope_show_end_cond then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,

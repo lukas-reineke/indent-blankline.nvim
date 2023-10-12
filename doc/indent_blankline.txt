@@ -433,6 +433,17 @@ config.scope                                                *ibl.config.scope*
 
                            Default: `true` ~
 
+
+                                           *ibl.config.scope.show_exact_scope*
+   • {show_exact_scope}    (boolean)
+                           Shows an underline on the first line of the scope
+                           starting at the exact start of the scope (even if
+                           this is to the right of the indent guide) and an
+                           underline on the last line of the scope ending at
+                           the exact end of the scope.
+
+                           Default: `false` ~
+
                                          *ibl.config.scope.injected_languages*
    • {injected_languages}  (boolean)
                            Checks for the current scope in injected
