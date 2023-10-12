@@ -112,7 +112,7 @@
 ---@field node_type table<string, string[]>?
 
 ---@class ibl.config.current_indent
---- Enables or disables scope
+--- Enables or disables current_indent
 ---@field enabled boolean?
 --- Character that gets used to display the current_indent indentation guide
 ---

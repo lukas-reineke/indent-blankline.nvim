@@ -201,6 +201,9 @@ config                                                            *ibl.config*
    • {scope}            (|ibl.config.scope|)
                         Configures the scope
 
+   • {current_indent}   (|ibl.config.current_indent|)
+                        Configures the current_indent
+
    • {exclude}          (|ibl.config.exclude|)
                         Configures what is excluded from indent-blankline
 
@@ -211,6 +214,7 @@ config                                                            *ibl.config*
        indent = { char = "|" },
        whitespace = { highlight = { "Whitespace", "NonText" } },
        scope = { exclude = { language = { "lua" } } },
+       current_indent = { enabled = true },
    }
 <
 
@@ -540,6 +544,70 @@ config.scope.exclude                                *ibl.config.scope.exclude*
        node_type = { lua = { "block", "chunk" } },
    }
 <
+
+config.current_indent                                *ibl.config.current_indent*
+
+ Configures the current indent
+
+ The current indent *is* the current indentation level (unlike scope).
+
+ Example: ~
+
+ In Python, using the same example as above, current_indent will highlight the
+ current inner most indentation guide. With scope disabled, this will look like
+ this:
+ >python
+ def foo();
+     if True:
+     ┋   a = "foo █ar"
+     ┋   #        ↳ cursor here
+     print(a)
+<
+ If we have the same code with scope enabled, it will look like this:
+ >python
+ def foo();
+ ┋   if True:
+ ┋   ┋   a = "foo █ar"
+ ┋   ┋   #        ↳ cursor here
+ ┋   print(a)
+<
+ If you have both scope and current_indent enabled and the two overlap, the
+ scope will take prriority. So the Rust example from above will look identical
+ since the scope matches the current indent level.
+ (this code would not compile)
+ >rust
+ fn foo() {
+     if true {
+     ┋    let a = "foo █ar";
+     ┋   //           ↳ cursor here
+     }
+     print(a);
+ }
+<
+ Fields: ~
+                                           *ibl.config.current_indent.enabled*
+   • {enabled}             (boolean)
+                           Enables or disables current_indent
+
+                           Default: `false` ~
+
+                                              *ibl.config.current_indent.char*
+   • {char}                (string)
+                           Character that gets used to display the current
+                           indents indentation guide
+                           Each character has to have a display width
+                           of 0 or 1
+
+                           Default: |ibl.config.indent.char| ~
+
+
+                                        *ibl.config.current_indent.highlight*
+   • {highlight}           (string)
+                           Highlight group that gets applied to the current
+                           indent
+
+                           Default: |hl-IblCurrentIndent| ~
+
 
 config.exclude                                            *ibl.config.exclude*
 
