@@ -64,8 +64,17 @@ end
 ---@param current_indent_active boolean
 ---@param current_indent_col number
 ---@return ibl.virtual_text, ibl.highlight
-M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single,
-                current_indent_active, current_indent_col)
+M.get = function(
+    config,
+    char_map,
+    whitespace_tbl,
+    scope_active,
+    scope_index,
+    scope_end,
+    scope_col_start_single,
+    current_indent_active,
+    current_indent_col
+)
     local scope_hl = utils.tbl_get_index(highlights.scope, scope_index)
     local current_indent_hl = highlights.current_indent.char
     local indent_index = 1

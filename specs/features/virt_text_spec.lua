@@ -285,8 +285,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {})
     end)
@@ -310,8 +319,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "f", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
@@ -340,8 +358,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "a", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
@@ -372,8 +399,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "a", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
@@ -404,8 +440,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "e", { "@ibl.whitespace.char.1" } },
@@ -434,8 +479,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "f", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
@@ -464,8 +518,17 @@ describe("virt_text", function()
         local current_indent_active = true
         local current_indent_col = 2
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "f", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
@@ -494,8 +557,17 @@ describe("virt_text", function()
         local current_indent_active = true
         local current_indent_col = 2
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "f", { "@ibl.whitespace.char.1", "@ibl.scope.char.1" } },
@@ -524,8 +596,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "a", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
@@ -558,8 +639,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "f", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
@@ -594,8 +684,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "f", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
@@ -630,8 +729,17 @@ describe("virt_text", function()
         local current_indent_active = false
         local current_indent_col = -1
 
-        local virt_text =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single, current_indent_active, current_indent_col)
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         assert.are.same(virt_text, {
             { "f", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },

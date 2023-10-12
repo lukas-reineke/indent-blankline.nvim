@@ -239,7 +239,7 @@ local validate_config = function(config)
         utils.validate({
             enabled = { config.current_indent.enabled, "boolean", true },
             char = { config.current_indent.char, "string", true },
-            highlight = { config.current_indent.highlight, "string", true }
+            highlight = { config.current_indent.highlight, "string", true },
         }, config.current_indent, "ibl.config.current_indent")
         if config.current_indent.char then
             vim.validate {

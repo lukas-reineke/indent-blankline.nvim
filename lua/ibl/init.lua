@@ -393,7 +393,7 @@ M.refresh = function(bufnr)
                 -- if cur_indent_stack_size >= 1, we should stop when we get to a line with no more whitespace in the whitespace_tbl
                 -- since that line won't have any indents to highlight
                 if
-                    (cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size and (not blankline))
+                    (cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size and not blankline)
                     or (cursor_row_stack_size >= 0 and cur_indent_stack_size >= 1 and #whitespace_tbl == 0)
                 then
                     current_indent_row_end = row - 1
@@ -418,7 +418,10 @@ M.refresh = function(bufnr)
             whitespace_tbl = fn(buffer_state.tick, bufnr, row - 1, whitespace_tbl)
         end
 
-        arr_whitespace_tbl[i] = whitespace_tbl
+        -- this do block is purely to help stylua with the scope
+        do
+            arr_whitespace_tbl[i] = whitespace_tbl
+        end
 
         ::continue::
     end
@@ -481,8 +484,9 @@ M.refresh = function(bufnr)
         local scope_start = row == scope_row_start
         local scope_end = row == scope_row_end
 
-        local current_indent_active = row >= current_indent_row_start and row <= current_indent_row_end and
-            config.current_indent.enabled
+        local current_indent_active = row >= current_indent_row_start
+            and row <= current_indent_row_end
+            and config.current_indent.enabled
 
         if scope_start and scope then
             scope_col_start = whitespace_len
@@ -498,9 +502,17 @@ M.refresh = function(bufnr)
         end
 
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
-        local virt_text, scope_hl =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single,
-                current_indent_active, current_indent_col)
+        local virt_text, scope_hl = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_end,
+            scope_col_start_single,
+            current_indent_active,
+            current_indent_col
+        )
 
         -- #### set virtual text ####
         vt.clear_buffer(bufnr, row)
