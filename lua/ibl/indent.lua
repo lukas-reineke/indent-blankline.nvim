@@ -2,7 +2,6 @@ local scope = require "ibl.scope"
 
 local M = {}
 
-
 ---@enum ibl.indent.whitespace
 M.whitespace = {
     TAB_START = 1,
