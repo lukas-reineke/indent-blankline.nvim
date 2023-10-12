@@ -12,6 +12,8 @@ local M = {
     whitespace = {},
     ---@type ibl.highlight[]
     scope = {},
+    ---@type ibl.highlight[]
+    current_indent = {},
 }
 
 ---@param name string
@@ -36,6 +38,7 @@ local setup_builtin_hl_groups = function()
     local ibl_indent_hl_name = "IblIndent"
     local ibl_whitespace_hl_name = "IblWhitespace"
     local ibl_scope_hl_name = "IblScope"
+    local ibl_current_indent_hl_name = "IblCurrentIndent"
 
     if not_set(get(ibl_indent_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_indent_hl_name, whitespace_hl)
@@ -45,6 +48,9 @@ local setup_builtin_hl_groups = function()
     end
     if not_set(get(ibl_scope_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_scope_hl_name, line_nr_hl)
+    end
+    if not_set(get(ibl_current_indent_hl_name)) then
+        vim.api.nvim_set_hl(0, ibl_current_indent_hl_name, line_nr_hl)
     end
 end
 
@@ -106,6 +112,25 @@ M.setup = function()
         }
         vim.api.nvim_set_hl(0, M.scope[i].char, char_hl)
         vim.api.nvim_set_hl(0, M.scope[i].underline, { sp = char_hl.fg, underline = true })
+    end
+
+    local current_indent_highlights = config.current_indent.highlight
+    if type(current_indent_highlights) == "string" then
+        current_indent_highlights = { current_indent_highlights }
+    end
+    M.current_indent = {}
+    for i, current_indent_name in ipairs(current_indent_highlights) do
+        local char_hl = get(current_indent_name)
+        if not_set(char_hl) then
+            error(string.format("No highlight group '%s' found", current_indent_name))
+        end
+        char_hl.nocombine = true
+        M.current_indent[i] = {
+            char = string.format("@ibl.current_indent.char.%d", i),
+            underline = string.format("@ibl.current_indent.underline.%d", i),
+        }
+        vim.api.nvim_set_hl(0, M.current_indent[i].char, char_hl)
+        vim.api.nvim_set_hl(0, M.current_indent[i].underline, { sp = char_hl.fg, underline = true })
     end
 end
 

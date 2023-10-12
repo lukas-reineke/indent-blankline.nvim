@@ -62,6 +62,17 @@ M.default_config = {
             },
         },
     },
+    current_indent = {
+        enabled = false,
+        char = nil,
+        show_start = true,
+        show_end = true,
+        highlight = "IblCurrentIndent",
+        priority = 1023,
+        exclude = {
+            filetypes = {},
+        },
+    },
     exclude = {
         filetypes = {
             "lspinfo",
@@ -116,6 +127,7 @@ local validate_config = function(config)
         indent = { config.indent, "table", true },
         whitespace = { config.whitespace, "table", true },
         scope = { config.scope, "table", true },
+        current_indent = { config.current_indent, "table", true },
         exclude = { config.exclude, "table", true },
     }, config, "ibl.config")
 
@@ -226,6 +238,43 @@ local validate_config = function(config)
             utils.validate({
                 node_type = { config.scope.include.node_type, "table", true },
             }, config.scope.include, "ibl.config.scope.include")
+        end
+    end
+
+    if config.current_indent then
+        utils.validate({
+            enabled = { config.current_indent.enabled, "boolean", true },
+            char = { config.current_indent.char, { "string", "table" }, true },
+            show_start = { config.current_indent.show_start, "boolean", true },
+            show_end = { config.current_indent.show_end, "boolean", true },
+            highlight = { config.current_indent.highlight, { "string", "table" }, true },
+            priority = { config.current_indent.priority, "number", true },
+            exclude = { config.current_indent.exclude, "table", true },
+        }, config.current_indent, "ibl.config.current_indent")
+        if config.current_indent.char then
+            vim.validate {
+                char = {
+                    config.current_indent.char,
+                    validate_char,
+                    "current_indent.char to have a display width of 0 or 1",
+                },
+            }
+        end
+        if type(config.current_indent.highlight) == "table" then
+            vim.validate {
+                tab_char = {
+                    config.current_indent.highlight,
+                    function(highlight)
+                        return #highlight > 0
+                    end,
+                    "current_indent.highlight to be not empty",
+                },
+            }
+        end
+        if config.current_indent.exclude then
+            utils.validate({
+                filetypes = { config.current_indent.exclude.filetypes, "table", true },
+            }, config.current_indent.exclude, "ibl.config.current_indent.exclude")
         end
     end
 
