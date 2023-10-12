@@ -94,7 +94,7 @@ M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, sc
             underline_hl = scope_hl.underline
         end
 
-        if ca and i == current_indent_col then
+        if ca and i - 1 == current_indent_col then
             indent_hl = current_indent_hl
 
             if config.current_indent.char then

@@ -431,7 +431,7 @@ M.refresh = function(bufnr)
         local k = 0
         while k < #ws_tbl do
             if indent.is_indent(ws_tbl[#ws_tbl - k]) then
-                return #ws_tbl - k
+                return #ws_tbl - k - 1
             end
             k = k + 1
         end
