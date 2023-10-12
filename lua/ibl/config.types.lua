@@ -15,6 +15,8 @@
 ---@field whitespace ibl.config.whitespace?
 --- Configures the scope
 ---@field scope ibl.config.scope?
+--- Configures the current_indent
+---@field current_indent ibl.config.current_indent?
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.exclude?
 
@@ -109,6 +111,16 @@
 --- </code>
 ---@field node_type table<string, string[]>?
 
+---@class ibl.config.current_indent
+--- Enables or disables scope
+---@field enabled boolean?
+--- Character that gets used to display the current_indent indentation guide
+---
+--- The character has to have a display width of 0 or 1
+---@field char string?
+--- Highlight group that get applied to the current_indent
+---@field highlight string?
+
 ---@class ibl.config.exclude
 --- List of `filetypes` for which indent-blankline is disabled
 ---@field filetypes string[]?
@@ -130,7 +142,9 @@
 --- Configures the whitespace
 ---@field whitespace ibl.config.full.whitespace: ibl.config.whitespace
 --- Configures the scope
----@field scope ibl.config.full.scope: ig.config.scope
+---@field scope ibl.config.full.scope: ibl.config.scope
+--- Configures the current_indent
+---@field current_indent ibl.config.full.current_indent: ibl.config.current_indent
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.full.exclude: ibl.config.exclude
 
@@ -224,6 +238,16 @@
 --- }
 --- </code>
 ---@field node_type table<string, string[]>
+
+---@class ibl.config.full.current_indent: ibl.config.current_indent
+--- Enables or disables current_indent
+---@field enabled boolean
+--- Character that gets used to display the current_indent indentation guide
+---
+--- The character has to have a display width of 0 or 1
+---@field char string?
+--- Highlight group that get applied to the current_indent
+---@field highlight string
 
 ---@class ibl.config.full.exclude: ibl.config.exclude
 --- List of `filetypes` for which indent-blankline is disabled

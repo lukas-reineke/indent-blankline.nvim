@@ -61,9 +61,13 @@ end
 ---@param scope_index number
 ---@param scope_end boolean
 ---@param scope_col_start_single number
+---@param current_indent_active boolean
+---@param current_indent_col number
 ---@return ibl.virtual_text, ibl.highlight
-M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single)
+M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single,
+                current_indent_active, current_indent_col)
     local scope_hl = utils.tbl_get_index(highlights.scope, scope_index)
+    local current_indent_hl = highlights.current_indent.char
     local indent_index = 1
     local virt_text = {}
     for i, ws in ipairs(whitespace_tbl) do
@@ -71,6 +75,7 @@ M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, sc
         local indent_hl
         local underline_hl
         local sa = scope_active
+        local ca = current_indent_active
         local char = get_char(char_map[ws], indent_index)
 
         if indent.is_indent(ws) then
@@ -87,6 +92,23 @@ M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, sc
         if config.scope.show_end and sa and scope_end and i - 1 > scope_col_start_single then
             scope_hl = utils.tbl_get_index(highlights.scope, scope_index)
             underline_hl = scope_hl.underline
+        end
+
+        if ca and i == current_indent_col then
+            indent_hl = current_indent_hl
+
+            if config.current_indent.char then
+                local current_indent_char = config.current_indent.char
+                if vim.fn.strdisplaywidth(current_indent_char or "") == 1 then
+                    char = current_indent_char or ""
+                end
+            elseif not indent.is_indent(ws) then
+                if indent.is_space_indent(ws) then
+                    char = get_char(char_map[whitespace.INDENT], indent_index)
+                else
+                    char = get_char(char_map[whitespace.TAB_START], indent_index)
+                end
+            end
         end
 
         if sa and i - 1 == scope_col_start_single then
