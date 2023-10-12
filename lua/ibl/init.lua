@@ -247,7 +247,6 @@ M.refresh = function(bufnr)
     local current_indent_row_start = offset + 1
     local current_indent_row_end = range
 
-
     ---@type table<integer, boolean>
     local line_skipped = {}
 
@@ -543,12 +542,13 @@ M.refresh = function(bufnr)
         vt.clear_buffer(bufnr, row)
 
         -- Show exact scope
+
         local scope_col_start_draw = whitespace_len
-        local show_end_cond = #whitespace_tbl > scope_col_start_single
+        local scope_show_end_cond = #whitespace_tbl > scope_col_start_single
 
         if config.scope.show_exact_scope then
             scope_col_start_draw = exact_scope_col_start - 1
-            show_end_cond = #whitespace_tbl >= scope_col_start_single
+            scope_show_end_cond = #whitespace_tbl >= scope_col_start_single
         end
 
         -- Scope start
@@ -562,7 +562,9 @@ M.refresh = function(bufnr)
             inlay_hints.set(bufnr, row - 1, whitespace_len, scope_hl.underline, scope_hl.underline)
         end
 
-        if config.scope.show_end and scope_end and show_end_cond then
+
+        -- Scope end
+        if config.scope.show_end and scope_end and scope_show_end_cond then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,

@@ -197,6 +197,8 @@
 --- Shows an underline on the last line of the scope
 ---@field show_end boolean
 --- Always shows an underline on the last line of the scope (default is to ignore some cases)
+--- and starts the scope underline at the actual beginning of the scope (even if it is to the
+--- right of the indent level)
 ---@field show_exact_scope boolean
 --- Checks for the current scope in injected treesitter languages
 ---
