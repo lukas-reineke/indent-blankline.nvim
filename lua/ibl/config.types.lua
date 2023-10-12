@@ -44,8 +44,6 @@
 ---@field smart_indent_cap boolean?
 --- Virtual text priority for the indentation guide
 ---@field priority number?
---- Only show indentation guide for the current block
----@field current_block_only boolean?
 
 ---@class ibl.config.whitespace
 --- Highlight group, or list of highlight groups, that get applied to the whitespace
@@ -174,8 +172,6 @@
 ---@field smart_indent_cap boolean
 --- Virtual text priority for the indentation guide
 ---@field priority number
---- Only show indentation guide for the current block
----@field current_block_only boolean
 
 ---@class ibl.config.full.whitespace: ibl.config.whitespace
 --- Highlight group, or list of highlight groups, that get applied to the whitespace
