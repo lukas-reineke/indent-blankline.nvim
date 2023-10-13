@@ -476,6 +476,9 @@ M.refresh = function(bufnr)
         local scope_start = row == scope_row_start
         local scope_end = row == scope_row_end
 
+        local current_indent_start = row == current_indent_row_start - 1
+        local current_indent_end = row == current_indent_row_end + 1
+
         local current_indent_active = row >= current_indent_row_start
             and row <= current_indent_row_end
             and config.current_indent.enabled
@@ -494,7 +497,7 @@ M.refresh = function(bufnr)
         end
 
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
-        local virt_text, scope_hl = vt.get(
+        local virt_text, scope_hl, current_indent_hl = vt.get(
             config,
             char_map,
             whitespace_tbl,
@@ -538,6 +541,28 @@ M.refresh = function(bufnr)
                 strict = false,
             })
             inlay_hints.set(bufnr, row - 1, whitespace_len, scope_hl.underline, scope_hl.underline)
+        end
+
+        -- current_indent start
+        if config.current_indent.show_start and current_indent_start then
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, current_indent_col, {
+                end_col = #line,
+                hl_group = current_indent_hl.underline,
+                priority = config.current_indent.priority,
+                strict = false,
+            })
+            inlay_hints.set(bufnr, row - 1, whitespace_len, current_indent_hl.underline, current_indent_hl.underline)
+        end
+
+        -- current_indent end
+        if config.current_indent.show_end and current_indent_end and #whitespace_tbl >= current_indent_col then
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, current_indent_col, {
+                end_col = #line,
+                hl_group = current_indent_hl.underline,
+                priority = config.current_indent.priority,
+                strict = false,
+            })
+            inlay_hints.set(bufnr, row - 1, whitespace_len, current_indent_hl.underline, current_indent_hl.underline)
         end
 
         for _, fn in

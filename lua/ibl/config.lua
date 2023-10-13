@@ -66,6 +66,9 @@ M.default_config = {
         enabled = false,
         char = nil,
         highlight = "IblCurrentIndent",
+        show_start = false,
+        show_end = false,
+        priority = 64,
     },
     exclude = {
         filetypes = {
@@ -240,6 +243,9 @@ local validate_config = function(config)
             enabled = { config.current_indent.enabled, "boolean", true },
             char = { config.current_indent.char, "string", true },
             highlight = { config.current_indent.highlight, "string", true },
+            show_start = { config.current_indent.show_start, "boolean", true },
+            show_end = { config.current_indent.show_end, "boolean", true },
+            priority = { config.current_indent.priority, "number", true },
         }, config.current_indent, "ibl.config.current_indent")
         if config.current_indent.char then
             vim.validate {

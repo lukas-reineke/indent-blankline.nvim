@@ -572,8 +572,10 @@ config.current_indent                                *ibl.config.current_indent*
  ┋   print(a)
 <
  If you have both scope and current_indent enabled and the two overlap, the
- scope will take prriority. So the Rust example from above will look identical
- since the scope matches the current indent level.
+ scope will take priority by default. So the Rust example from above will look
+ identical since the scope matches the current indent level. To make
+ current_indent take priority, make sure that its priority is set to a higher
+ value than scope's priority.
  (this code would not compile)
  >rust
  fn foo() {
@@ -607,6 +609,26 @@ config.current_indent                                *ibl.config.current_indent*
                            indent
 
                            Default: |hl-IblCurrentIndent| ~
+
+                                        *ibl.config.current_indent.show_start*
+   • {show_start}          (boolean)
+                           Shows an underline on the line above the current
+                           indent level
+
+                           Default: `true` ~
+
+                                         *ibl.config.current_indent.show_end*
+   • {show_end}            (boolean)
+                           Shows an underline on the line below the current
+                           indent level
+
+                           Default: `true` ~
+
+                                         *ibl.config.current_indent.priority*
+   • {priority}            (number)
+                           Virtual text priority for the current_indent
+
+                           Default: `64` ~
 
 
 config.exclude                                            *ibl.config.exclude*

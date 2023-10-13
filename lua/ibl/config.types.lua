@@ -120,6 +120,12 @@
 ---@field char string?
 --- Highlight group that get applied to the current_indent
 ---@field highlight string?
+--- Shows an underline on the first line of the current_indent
+---@field show_start boolean?
+--- Shows an underline on the last line of the current_indent
+---@field show_end boolean?
+--- Virtual text priority for the current_indent
+---@field priority number?
 
 ---@class ibl.config.exclude
 --- List of `filetypes` for which indent-blankline is disabled
@@ -248,6 +254,12 @@
 ---@field char string?
 --- Highlight group that get applied to the current_indent
 ---@field highlight string
+--- Shows an underline on the first line of the current_indent
+---@field show_start boolean
+--- Shows an underline on the last line of the current_indent
+---@field show_end boolean
+--- Virtual text priority for the current_indent
+---@field priority number
 
 ---@class ibl.config.full.exclude: ibl.config.exclude
 --- List of `filetypes` for which indent-blankline is disabled

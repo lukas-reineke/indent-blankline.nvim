@@ -63,7 +63,7 @@ end
 ---@param scope_col_start_single number
 ---@param current_indent_active boolean
 ---@param current_indent_col number
----@return ibl.virtual_text, ibl.highlight
+---@return ibl.virtual_text, ibl.highlight, ibl.highlight
 M.get = function(
     config,
     char_map,
@@ -76,7 +76,7 @@ M.get = function(
     current_indent_col
 )
     local scope_hl = utils.tbl_get_index(highlights.scope, scope_index)
-    local current_indent_hl = highlights.current_indent.char
+    local current_indent_hl = highlights.current_indent
     local indent_index = 1
     local virt_text = {}
     for i, ws in ipairs(whitespace_tbl) do
@@ -103,35 +103,70 @@ M.get = function(
             underline_hl = scope_hl.underline
         end
 
-        if ca and i - 1 == current_indent_col then
-            indent_hl = current_indent_hl
+        if config.scope.priority >= config.current_indent.priority then
+            if ca and i - 1 == current_indent_col then
+                indent_hl = current_indent_hl.char
 
-            if config.current_indent.char then
-                local current_indent_char = config.current_indent.char
-                if vim.fn.strdisplaywidth(current_indent_char or "") == 1 then
-                    char = current_indent_char or ""
-                end
-            elseif not indent.is_indent(ws) then
-                if indent.is_space_indent(ws) then
-                    char = get_char(char_map[whitespace.INDENT], indent_index)
-                else
-                    char = get_char(char_map[whitespace.TAB_START], indent_index)
-                end
-            end
-        end
-
-        if sa and i - 1 == scope_col_start_single then
-            indent_hl = scope_hl.char
-
-            if config.scope.char then
-                local scope_char = get_char(config.scope.char, scope_index)
-                if vim.fn.strdisplaywidth(scope_char) == 1 then
-                    char = scope_char
+                if config.current_indent.char then
+                    local current_indent_char = config.current_indent.char
+                    if vim.fn.strdisplaywidth(current_indent_char or "") == 1 then
+                        char = current_indent_char or ""
+                    end
+                elseif not indent.is_indent(ws) then
+                    if indent.is_space_indent(ws) then
+                        char = get_char(char_map[whitespace.INDENT], indent_index)
+                    else
+                        char = get_char(char_map[whitespace.TAB_START], indent_index)
+                    end
                 end
             end
 
-            if config.scope.show_end and scope_end then
-                underline_hl = scope_hl.underline
+            if sa and i - 1 == scope_col_start_single then
+                indent_hl = scope_hl.char
+
+                if config.scope.char then
+                    local scope_char = get_char(config.scope.char, scope_index)
+                    if vim.fn.strdisplaywidth(scope_char) == 1 then
+                        char = scope_char
+                    end
+                end
+
+                if config.scope.show_end and scope_end then
+                    underline_hl = scope_hl.underline
+                end
+            end
+        else
+            -- config.scope.priority < config.current_indent.priority
+            if sa and i - 1 == scope_col_start_single then
+                indent_hl = scope_hl.char
+
+                if config.scope.char then
+                    local scope_char = get_char(config.scope.char, scope_index)
+                    if vim.fn.strdisplaywidth(scope_char) == 1 then
+                        char = scope_char
+                    end
+                end
+
+                if config.scope.show_end and scope_end then
+                    underline_hl = scope_hl.underline
+                end
+            end
+
+            if ca and i - 1 == current_indent_col then
+                indent_hl = current_indent_hl.char
+
+                if config.current_indent.char then
+                    local current_indent_char = config.current_indent.char
+                    if vim.fn.strdisplaywidth(current_indent_char or "") == 1 then
+                        char = current_indent_char or ""
+                    end
+                elseif not indent.is_indent(ws) then
+                    if indent.is_space_indent(ws) then
+                        char = get_char(char_map[whitespace.INDENT], indent_index)
+                    else
+                        char = get_char(char_map[whitespace.TAB_START], indent_index)
+                    end
+                end
             end
         end
 
@@ -143,7 +178,7 @@ M.get = function(
         })
     end
 
-    return virt_text, scope_hl
+    return virt_text, scope_hl, current_indent_hl
 end
 
 return M
