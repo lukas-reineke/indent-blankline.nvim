@@ -616,7 +616,6 @@ describe("virt_text", function()
         })
     end)
 
-
     it("handles tabs", function()
         local config = conf.set_config()
         highlights.setup()
