@@ -263,7 +263,15 @@ M.refresh = function(bufnr)
         end
     end
 
-    -- a table
+    ---@type number[]
+    local next_drawn_indents
+
+    ---@type number
+    local cur_indent_stack_size = 0
+
+    ---@type number
+    local current_indent_col = -1
+
     ---@type ibl.indent.whitespace[]
     local next_whitespace_tbl = {}
 
@@ -314,10 +322,8 @@ M.refresh = function(bufnr)
         ---@type ibl.indent.whitespace[]
         local whitespace_tbl
 
-        local prev_indent_stack_size = 0
-        if config.current_indent.enabled and indent_state then
-            prev_indent_stack_size = #indent_state.stack or 0
-        end
+        ---@type number[]
+        local drawn_indents
 
         local blankline = line:len() == 0
         arr_blankline[i] = blankline
@@ -327,10 +333,11 @@ M.refresh = function(bufnr)
 
         -- #### calculate indent ####
         if not blankline then
-            whitespace_tbl, indent_state = indent.get(whitespace, indent_opts, indent_state)
+            whitespace_tbl, indent_state, drawn_indents = indent.get(whitespace, indent_opts, indent_state)
         elseif empty_line_counter > 0 then
             empty_line_counter = empty_line_counter - 1
             whitespace_tbl = next_whitespace_tbl
+            drawn_indents = next_drawn_indents
         else
             if i == #lines then
                 whitespace_tbl = {}
@@ -342,7 +349,7 @@ M.refresh = function(bufnr)
                 end
 
                 local j_whitespace = utils.get_whitespace(lines[j])
-                whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state)
+                whitespace_tbl, indent_state, drawn_indents = indent.get(j_whitespace, indent_opts, indent_state)
 
                 if utils.has_end(lines[j]) then
                     local last_whitespace_tbl = arr_whitespace_tbl[i - 1] or {}
@@ -350,9 +357,11 @@ M.refresh = function(bufnr)
                     local trail_whitespace = last_whitespace_tbl[indent_state.stack[#indent_state.stack]]
                     if trail then
                         table.insert(whitespace_tbl, trail)
+                        table.insert(drawn_indents, indent_state.stack[#indent_state.stack])
                     elseif trail_whitespace then
                         if indent.is_space_indent(trail_whitespace) then
                             table.insert(whitespace_tbl, indent.whitespace.INDENT)
+                            table.insert(drawn_indents, indent_state.stack[#indent_state.stack])
                         else
                             table.insert(whitespace_tbl, indent.whitespace.TAB_START)
                         end
@@ -360,6 +369,7 @@ M.refresh = function(bufnr)
                 end
             end
             next_whitespace_tbl = whitespace_tbl
+            next_drawn_indents = drawn_indents
         end
 
         -- remove blankline trail
@@ -373,9 +383,10 @@ M.refresh = function(bufnr)
         end
 
         if config.current_indent.enabled then
-            local cur_indent_stack_size = 0
-            if indent_state then
-                cur_indent_stack_size = #indent_state.stack
+            local prev_indent_stack_size = cur_indent_stack_size
+            cur_indent_stack_size = 0
+            if drawn_indents then
+               cur_indent_stack_size = #drawn_indents
             end
             if row <= cursor_row then
                 if prev_indent_stack_size > cur_indent_stack_size then
@@ -390,11 +401,8 @@ M.refresh = function(bufnr)
                 end
             else
                 -- row > cursor_row
-                -- if cur_indent_stack_size >= 1, we should stop when we get to a line with no more whitespace in the whitespace_tbl
-                -- since that line won't have any indents to highlight
                 if
-                    (cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size and not blankline)
-                    or (cursor_row_stack_size >= 0 and cur_indent_stack_size >= 1 and #whitespace_tbl == 0)
+                    cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size
                 then
                     current_indent_row_end = row - 1
                     cursor_row_stack_size = -1
@@ -402,6 +410,12 @@ M.refresh = function(bufnr)
             end
             if row == cursor_row then
                 cursor_row_stack_size = cur_indent_stack_size
+                if drawn_indents[#drawn_indents] then
+                    current_indent_col = drawn_indents[#drawn_indents]
+                end
+                if current_indent_stack[#current_indent_stack] then
+                    current_indent_row_start = current_indent_stack[#current_indent_stack]
+                end
             end
         end
 
@@ -424,28 +438,6 @@ M.refresh = function(bufnr)
         end
 
         ::continue::
-    end
-
-    -- between the two loops we find the current indent column and current indent start quickly
-    local find_last_indent = function(ws_tbl)
-        if not ws_tbl then
-            return 0
-        end
-        local k = 0
-        while k < #ws_tbl do
-            if indent.is_indent(ws_tbl[#ws_tbl - k]) then
-                return #ws_tbl - k - 1
-            end
-            k = k + 1
-        end
-    end
-
-    local current_indent_col = -1
-    if config.current_indent.enabled then
-        current_indent_col = find_last_indent(arr_whitespace_tbl[cursor_row - offset])
-        if current_indent_stack[#current_indent_stack] then
-            current_indent_row_start = current_indent_stack[#current_indent_stack]
-        end
     end
 
     -- set up the virtual text via extmarks
