@@ -594,7 +594,7 @@ describe("virt_text", function()
         local scope_end = false
         local scope_col_start_single = 0
         local current_indent_active = true
-        local current_indent_col = 2
+        local current_indent_col = 0
 
         local virt_text = vt.get(
             config,

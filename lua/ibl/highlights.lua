@@ -124,7 +124,7 @@ M.setup = function()
     char_hl.nocombine = true
     M.current_indent = {
         char = "@ibl.current_indent.char",
-        underline = "@ibl.current_indent.underline"
+        underline = "@ibl.current_indent.underline",
     }
     vim.api.nvim_set_hl(0, M.current_indent.char, char_hl)
     vim.api.nvim_set_hl(0, M.current_indent.underline, { sp = char_hl.fg, underline = true })

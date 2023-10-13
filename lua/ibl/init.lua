@@ -388,6 +388,7 @@ M.refresh = function(bufnr)
             if drawn_indents then
                cur_indent_stack_size = #drawn_indents
             end
+
             if row <= cursor_row then
                 if prev_indent_stack_size > cur_indent_stack_size then
                     -- we need to take into account that we might jump back more than
@@ -401,9 +402,7 @@ M.refresh = function(bufnr)
                 end
             else
                 -- row > cursor_row
-                if
-                    cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size
-                then
+                if cursor_row_stack_size >= 0 and cursor_row_stack_size > cur_indent_stack_size then
                     current_indent_row_end = row - 1
                     cursor_row_stack_size = -1
                 end
