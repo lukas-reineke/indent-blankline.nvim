@@ -364,6 +364,7 @@ M.refresh = function(bufnr)
                             table.insert(drawn_indents, indent_state.stack[#indent_state.stack])
                         else
                             table.insert(whitespace_tbl, indent.whitespace.TAB_START)
+                            table.insert(drawn_indents, #whitespace_tbl - 1)
                         end
                     end
                 end

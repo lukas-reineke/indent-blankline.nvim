@@ -63,8 +63,10 @@ M.get = function(whitespace, opts, indent_state)
 
             if tab_width == 1 then
                 table.insert(whitespace_tbl, M.whitespace.TAB_START_SINGLE)
+                table.insert(drawn_indents, #whitespace_tbl - 1)
             else
                 table.insert(whitespace_tbl, M.whitespace.TAB_START)
+                table.insert(drawn_indents, #whitespace_tbl - 1)
             end
 
             for i = 2, tab_width do
