@@ -385,9 +385,7 @@ M.refresh = function(bufnr)
         if config.current_indent.enabled then
             local prev_indent_stack_size = cur_indent_stack_size
             cur_indent_stack_size = 0
-            if drawn_indents then
-               cur_indent_stack_size = #drawn_indents
-            end
+            if drawn_indents then cur_indent_stack_size = #drawn_indents end
 
             if row <= cursor_row then
                 if prev_indent_stack_size > cur_indent_stack_size then
