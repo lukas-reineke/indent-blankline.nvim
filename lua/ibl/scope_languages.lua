@@ -650,14 +650,14 @@ local M = {
         parenthesized_expression = true,
     },
     zig = {
-		Block = true,
-		InitList = true,
-		FnCallArguments = true,
-		IfStatement = true,
-		ContainerDecl = true,
-		SwitchExpr = true,
-		IfExpr = true,
-		ParamDeclList = true,
+        Block = true,
+        InitList = true,
+        FnCallArguments = true,
+        IfStatement = true,
+        ContainerDecl = true,
+        SwitchExpr = true,
+        IfExpr = true,
+        ParamDeclList = true,
     },
 }
 
