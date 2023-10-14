@@ -649,6 +649,16 @@ local M = {
         json_object = true,
         parenthesized_expression = true,
     },
+    zig = {
+		Block = true,
+		InitList = true,
+		FnCallArguments = true,
+		IfStatement = true,
+		ContainerDecl = true,
+		SwitchExpr = true,
+		IfExpr = true,
+		ParamDeclList = true,
+    },
 }
 
 M.cpp = vim.tbl_extend("keep", M.c, {
