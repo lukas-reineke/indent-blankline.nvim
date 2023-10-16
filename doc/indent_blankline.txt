@@ -285,7 +285,7 @@ config.indent                                              *ibl.config.indent*
                          display the indentation guide for tabs
                          Each character has to have a display width of 0 or 1
 
-                         Default: uses |lcs-tab| if |list| is set, ~
+                         Default: uses |lcs-tab| if |'list'| is set, ~
                                   otherwise, uses |ibl.config.indent.char| ~
 
                                                  *ibl.config.indent.highlight*
