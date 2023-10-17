@@ -88,8 +88,6 @@ local M = {
         array = true,
     },
     cpon = {
-        document = true,
-
         meta_map = true,
         map = true,
         array = true,
@@ -435,7 +433,6 @@ local M = {
         tuple = true,
     },
     rst = {
-        document = true,
         directive = true,
     },
     ruby = {
@@ -563,7 +560,6 @@ local M = {
         do_statement = true,
     },
     thrift = {
-        document = true,
         definition = true,
     },
     tiger = {
@@ -637,7 +633,6 @@ local M = {
     },
     yaml = {
         stream = true,
-        document = true,
         block_node = true,
     },
     yuck = {
