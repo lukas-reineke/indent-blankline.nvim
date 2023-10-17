@@ -50,7 +50,6 @@ local M = {
         block = true,
     },
     cairo = {
-        program = true,
         block = true,
         function_definition = true,
         loop_expression = true,
@@ -93,7 +92,6 @@ local M = {
         array = true,
     },
     cue = {
-        source_file = true,
         field = true,
         for_clause = true,
     },
@@ -126,11 +124,9 @@ local M = {
         stab_clause = true,
     },
     elsa = {
-        source_file = true,
         reduction = true,
     },
     fennel = {
-        program = true,
         fn = true,
         lambda = true,
         let = true,
@@ -139,7 +135,6 @@ local M = {
         match = true,
     },
     firrtl = {
-        source_file = true,
         circuit = true,
         module = true,
 
@@ -188,7 +183,6 @@ local M = {
     },
     go = {
         func_literal = true,
-        source_file = true,
         function_declaration = true,
         if_statement = true,
         block = true,
@@ -216,7 +210,6 @@ local M = {
         element = true,
     },
     java = {
-        program = true,
         body = true,
         lambda_expression = true,
         enhanced_for_statement = true,
@@ -263,7 +256,6 @@ local M = {
         ["if"] = true,
     },
     kdl = {
-        document = true,
         node = true,
         node_children = true,
     },
@@ -411,7 +403,6 @@ local M = {
         conjunction = true,
     },
     query = {
-        program = true,
         named_node = true,
         anonymous_node = true,
         grouping = true,
@@ -426,7 +417,6 @@ local M = {
         body = true,
     },
     ron = {
-        source_file = true,
         array = true,
         map = true,
         struct = true,
@@ -552,7 +542,6 @@ local M = {
     teal = {
         anon_function = true,
         function_statement = true,
-        program = true,
         if_statement = true,
         for_body = true,
         repeat_statement = true,
@@ -603,13 +592,11 @@ local M = {
         metadata = true,
     },
     uxntal = {
-        program = true,
         macro = true,
         memory_execution = true,
         subroutine = true,
     },
     v = {
-        source_file = true,
         function_declaration = true,
         if_expression = true,
         block = true,
@@ -625,7 +612,6 @@ local M = {
         module_declaration = true,
     },
     vim = {
-        script_file = true,
         function_definition = true,
     },
     wing = {
