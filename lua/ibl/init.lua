@@ -265,9 +265,9 @@ M.refresh = function(bufnr)
 
     local get_indent_details = function(ws_tbl)
         local number_of_indents = 0
-        local last_indent = -1
+        local last_indent_col = -1
         if not ws_tbl then
-            return number_of_indents, last_indent
+            return number_of_indents, last_indent_col
         end
         local k = 0
         local has_seen_indent = false
@@ -275,13 +275,13 @@ M.refresh = function(bufnr)
             if indent.is_indent(ws_tbl[#ws_tbl - k]) then
                 if not has_seen_indent then
                     has_seen_indent = true
-                    last_indent = #ws_tbl - k - 1
+                    last_indent_col = #ws_tbl - k - 1
                 end
                 number_of_indents = number_of_indents + 1
             end
             k = k + 1
         end
-        return number_of_indents, last_indent
+        return number_of_indents, last_indent_col
     end
 
     ---@type number
@@ -394,7 +394,7 @@ M.refresh = function(bufnr)
         end
 
         if config.current_indent.enabled then
-            local number_of_indents, last_indent = get_indent_details(whitespace_tbl)
+            local number_of_indents, last_indent_col = get_indent_details(whitespace_tbl)
 
             local prev_indent_stack_size = cur_indent_stack_size
 
@@ -420,7 +420,7 @@ M.refresh = function(bufnr)
             end
             if row == cursor_row then
                 cursor_row_stack_size = cur_indent_stack_size
-                current_indent_col = last_indent
+                current_indent_col = last_indent_col
                 if current_indent_stack[#current_indent_stack] then
                     current_indent_row_start = current_indent_stack[#current_indent_stack]
                 end
