@@ -25,7 +25,7 @@ M.whitespace = {
 ---@param whitespace string
 ---@param opts ibl.indent_options
 ---@param indent_state ibl.indent_state?
----@return ibl.indent.whitespace[], ibl.indent_state, number[]
+---@return ibl.indent.whitespace[], ibl.indent_state
 M.get = function(whitespace, opts, indent_state)
     if not indent_state then
         indent_state = { cap = false, stack = {} }
@@ -47,7 +47,6 @@ M.get = function(whitespace, opts, indent_state)
     end
 
     local whitespace_tbl = {}
-    local drawn_indents = {}
 
     for ch in whitespace:gmatch "." do
         if ch == "\t" then
@@ -63,10 +62,8 @@ M.get = function(whitespace, opts, indent_state)
 
             if tab_width == 1 then
                 table.insert(whitespace_tbl, M.whitespace.TAB_START_SINGLE)
-                table.insert(drawn_indents, #whitespace_tbl - 1)
             else
                 table.insert(whitespace_tbl, M.whitespace.TAB_START)
-                table.insert(drawn_indents, #whitespace_tbl - 1)
             end
 
             for i = 2, tab_width do
@@ -80,12 +77,10 @@ M.get = function(whitespace, opts, indent_state)
             local mod = (spaces + tabs + extra) % shiftwidth
             if vim.tbl_contains(indent_state.stack, spaces + tabs) then
                 table.insert(whitespace_tbl, M.whitespace.INDENT)
-                table.insert(drawn_indents, #whitespace_tbl - 1)
                 extra = extra + mod
             elseif mod == 0 then
                 if #whitespace_tbl < indent_cap or not opts.smart_indent_cap then
                     table.insert(whitespace_tbl, M.whitespace.INDENT)
-                    table.insert(drawn_indents, #whitespace_tbl - 1)
                     extra = extra + mod
                 else
                     indent_state.cap = true
@@ -103,7 +98,7 @@ M.get = function(whitespace, opts, indent_state)
     end, indent_state.stack)
     table.insert(indent_state.stack, spaces + tabs)
 
-    return whitespace_tbl, indent_state, drawn_indents
+    return whitespace_tbl, indent_state
 end
 
 --- Returns true if the passed whitespace is an indent

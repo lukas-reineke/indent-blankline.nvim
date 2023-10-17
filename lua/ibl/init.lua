@@ -263,8 +263,26 @@ M.refresh = function(bufnr)
         end
     end
 
-    ---@type number[]
-    local next_drawn_indents
+    local get_indent_details = function(ws_tbl)
+        local number_of_indents = 0
+        local last_indent = -1
+        if not ws_tbl then
+            return number_of_indents, last_indent
+        end
+        local k = 0
+        local has_seen_indent = false
+        while k < #ws_tbl do
+            if indent.is_indent(ws_tbl[#ws_tbl - k]) then
+                if not has_seen_indent then
+                    has_seen_indent = true
+                    last_indent = #ws_tbl - k - 1
+                end
+                number_of_indents = number_of_indents + 1
+            end
+            k = k + 1
+        end
+        return number_of_indents, last_indent
+    end
 
     ---@type number
     local cur_indent_stack_size = 0
@@ -322,9 +340,6 @@ M.refresh = function(bufnr)
         ---@type ibl.indent.whitespace[]
         local whitespace_tbl
 
-        ---@type number[]
-        local drawn_indents
-
         local blankline = line:len() == 0
         arr_blankline[i] = blankline
 
@@ -333,11 +348,10 @@ M.refresh = function(bufnr)
 
         -- #### calculate indent ####
         if not blankline then
-            whitespace_tbl, indent_state, drawn_indents = indent.get(whitespace, indent_opts, indent_state)
+            whitespace_tbl, indent_state = indent.get(whitespace, indent_opts, indent_state)
         elseif empty_line_counter > 0 then
             empty_line_counter = empty_line_counter - 1
             whitespace_tbl = next_whitespace_tbl
-            drawn_indents = next_drawn_indents
         else
             if i == #lines then
                 whitespace_tbl = {}
@@ -349,7 +363,7 @@ M.refresh = function(bufnr)
                 end
 
                 local j_whitespace = utils.get_whitespace(lines[j])
-                whitespace_tbl, indent_state, drawn_indents = indent.get(j_whitespace, indent_opts, indent_state)
+                whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state)
 
                 if utils.has_end(lines[j]) then
                     local last_whitespace_tbl = arr_whitespace_tbl[i - 1] or {}
@@ -357,20 +371,16 @@ M.refresh = function(bufnr)
                     local trail_whitespace = last_whitespace_tbl[indent_state.stack[#indent_state.stack]]
                     if trail then
                         table.insert(whitespace_tbl, trail)
-                        table.insert(drawn_indents, indent_state.stack[#indent_state.stack])
                     elseif trail_whitespace then
                         if indent.is_space_indent(trail_whitespace) then
                             table.insert(whitespace_tbl, indent.whitespace.INDENT)
-                            table.insert(drawn_indents, indent_state.stack[#indent_state.stack])
                         else
                             table.insert(whitespace_tbl, indent.whitespace.TAB_START)
-                            table.insert(drawn_indents, #whitespace_tbl - 1)
                         end
                     end
                 end
             end
             next_whitespace_tbl = whitespace_tbl
-            next_drawn_indents = drawn_indents
         end
 
         -- remove blankline trail
@@ -384,12 +394,11 @@ M.refresh = function(bufnr)
         end
 
         if config.current_indent.enabled then
-            local prev_indent_stack_size = cur_indent_stack_size
-            cur_indent_stack_size = 0
+            local number_of_indents, last_indent = get_indent_details(whitespace_tbl)
 
-            if drawn_indents then
-                cur_indent_stack_size = #drawn_indents
-            end
+            local prev_indent_stack_size = cur_indent_stack_size
+
+            cur_indent_stack_size = number_of_indents
 
             if row <= cursor_row then
                 if prev_indent_stack_size > cur_indent_stack_size then
@@ -411,9 +420,7 @@ M.refresh = function(bufnr)
             end
             if row == cursor_row then
                 cursor_row_stack_size = cur_indent_stack_size
-                if drawn_indents[#drawn_indents] then
-                    current_indent_col = drawn_indents[#drawn_indents]
-                end
+                current_indent_col = last_indent
                 if current_indent_stack[#current_indent_stack] then
                     current_indent_row_start = current_indent_stack[#current_indent_stack]
                 end
@@ -545,7 +552,7 @@ M.refresh = function(bufnr)
         end
 
         -- current_indent start
-        if config.current_indent.show_start and current_indent_start then
+        if config.current_indent.show_start and current_indent_start and current_indent_col >= 0 then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, current_indent_col, {
                 end_col = #line,
                 hl_group = current_indent_hl.underline,
@@ -556,7 +563,12 @@ M.refresh = function(bufnr)
         end
 
         -- current_indent end
-        if config.current_indent.show_end and current_indent_end and #whitespace_tbl >= current_indent_col then
+        if
+            config.current_indent.show_end
+            and current_indent_end
+            and #whitespace_tbl >= current_indent_col
+            and current_indent_col >= 0
+        then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, current_indent_col, {
                 end_col = #line,
                 hl_group = current_indent_hl.underline,
