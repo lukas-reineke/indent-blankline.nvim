@@ -358,8 +358,10 @@ M.refresh = function(bufnr)
             else
                 local j = i + 1
                 while j < #lines and (lines[j]:len() == 0 or line_skipped[j]) do
+                    if not line_skipped[j] then
+                        empty_line_counter = empty_line_counter + 1
+                    end
                     j = j + 1
-                    empty_line_counter = empty_line_counter + 1
                 end
 
                 local j_whitespace = utils.get_whitespace(lines[j])
