@@ -15,6 +15,8 @@
 ---@field whitespace ibl.config.whitespace?
 --- Configures the scope
 ---@field scope ibl.config.scope?
+--- Configures the current_indent
+---@field current_indent ibl.config.current_indent?
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.exclude?
 
@@ -109,6 +111,28 @@
 --- </code>
 ---@field node_type table<string, string[]>?
 
+---@class ibl.config.current_indent
+--- Enables or disables current indent
+---@field enabled boolean?
+--- Character, or list of characters, that get used to display the current indent indentation guide
+---
+--- Each character has to have a display width of 0 or 1
+---@field char string|string[]?
+--- Shows an underline on the first line of the current indent
+---@field show_start boolean?
+--- Shows an underline on the last line of the current indent
+---@field show_end boolean?
+--- Highlight group, or list of highlight groups, that get applied to the current indent
+---@field highlight string|string[]?
+--- Virtual text priority for the current indent
+---@field priority number?
+--- Configures filetypes to be excluded from current indent
+---@field exclude ibl.config.current_indent.exclude?
+
+---@class ibl.config.current_indent.exclude
+--- List of filetypes for which current indent is disabled
+---@field filetypes string[]?
+
 ---@class ibl.config.exclude
 --- List of `filetypes` for which indent-blankline is disabled
 ---@field filetypes string[]?
@@ -131,6 +155,8 @@
 ---@field whitespace ibl.config.full.whitespace: ibl.config.whitespace
 --- Configures the scope
 ---@field scope ibl.config.full.scope: ig.config.scope
+--- Configures the current_indent
+---@field current_indent ibl.config.full.current_indent
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.full.exclude: ibl.config.exclude
 
@@ -224,6 +250,28 @@
 --- }
 --- </code>
 ---@field node_type table<string, string[]>
+
+---@class ibl.config.full.current_indent
+--- Enables or disables current indent
+---@field enabled boolean
+--- Character, or list of characters, that get used to display the current indent indentation guide
+---
+--- Each character has to have a display width of 0 or 1
+---@field char string|string[]?
+--- Shows an underline on the first line of the current indent
+---@field show_start boolean
+--- Shows an underline on the last line of the current indent
+---@field show_end boolean
+--- Highlight group, or list of highlight groups, that get applied to the current indent
+---@field highlight string|string[]
+--- Virtual text priority for the current indent
+---@field priority number
+--- Configures filetypes to be excluded from current indent
+---@field exclude ibl.config.full.current_indent.exclude
+
+---@class ibl.config.full.current_indent.exclude
+--- List of filetypes for which current indent is disabled
+---@field filetypes string[]
 
 ---@class ibl.config.full.exclude: ibl.config.exclude
 --- List of `filetypes` for which indent-blankline is disabled

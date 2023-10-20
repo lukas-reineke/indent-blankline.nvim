@@ -7,10 +7,12 @@ local M = {}
 M.type = {
     ACTIVE = "ACTIVE",
     SCOPE_ACTIVE = "SCOPE_ACTIVE",
+    CURRENT_INDENT_ACTIVE = "CURRENT_INDENT_ACTIVE",
     SKIP_LINE = "SKIP_LINE",
     WHITESPACE = "WHITESPACE",
     VIRTUAL_TEXT = "VIRTUAL_TEXT",
     SCOPE_HIGHLIGHT = "SCOPE_HIGHLIGHT",
+    CURRENT_INDENT_HIGHLIGHT = "CURRENT_INDENT_HIGHLIGHT",
     CLEAR = "CLEAR",
     HIGHLIGHT_SETUP = "HIGHLIGHT_SETUP",
 }
@@ -24,10 +26,12 @@ local default_opts = {
 local hooks = {
     [M.type.ACTIVE] = {},
     [M.type.SCOPE_ACTIVE] = {},
+    [M.type.CURRENT_INDENT_ACTIVE] = {},
     [M.type.SKIP_LINE] = {},
     [M.type.WHITESPACE] = {},
     [M.type.VIRTUAL_TEXT] = {},
     [M.type.SCOPE_HIGHLIGHT] = {},
+    [M.type.CURRENT_INDENT_HIGHLIGHT] = {},
     [M.type.CLEAR] = {},
     [M.type.HIGHLIGHT_SETUP] = {},
     buffer_scoped = {},
@@ -36,10 +40,12 @@ local count = 0
 
 ---@alias ibl.hooks.cb.active fun(bufnr: number): boolean
 ---@alias ibl.hooks.cb.scope_active fun(bufnr: number): boolean
+---@alias ibl.hooks.cb.current_indent_active fun(bufnr: number): boolean
 ---@alias ibl.hooks.cb.skip_line fun(tick: number, bufnr: number, row: number, line: string): boolean
 ---@alias ibl.hooks.cb.whitespace fun(tick: number, bufnr: number, row: number, whitespace: ibl.indent.whitespace[]): ibl.indent.whitespace[]
 ---@alias ibl.hooks.cb.virtual_text fun(tick: number, bufnr: number, row: number, virt_text: ibl.virtual_text): ibl.virtual_text
 ---@alias ibl.hooks.cb.scope_highlight fun(tick: number, bufnr: number, scope: TSNode, scope_index: number): number
+---@alias ibl.hooks.cb.current_indent_highlight fun(tick: number, bufnr: number, current_indent: ibl.current_indent, current_indent_index: number): number
 ---@alias ibl.hooks.cb.clear fun(bufnr: number)
 ---@alias ibl.hooks.cb.highlight_setup fun()
 
@@ -51,10 +57,12 @@ local count = 0
 ---@param opts ibl.hooks.options
 ---@overload fun(type: 'ACTIVE', cb: ibl.hooks.cb.active, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'SCOPE_ACTIVE', cb: ibl.hooks.cb.scope_active, opts: ibl.hooks.options?): string
+---@overload fun(type: 'CURRENT_INDENT_ACTIVE', cb: ibl.hooks.cb.current_indent_active, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'SKIP_LINE', cb: ibl.hooks.cb.skip_line, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'WHITESPACE', cb: ibl.hooks.cb.whitespace, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'VIRTUAL_TEXT', cb: ibl.hooks.cb.virtual_text, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'SCOPE_HIGHLIGHT', cb: ibl.hooks.cb.scope_highlight, opts: ibl.hooks.options?): string
+---@overload fun(type: 'CURRENT_INDENT_HIGHLIGHT', cb: ibl.hooks.cb.current_indent_highlight, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'CLEAR', cb: ibl.hooks.cb.clear, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'HIGHLIGHT_SETUP', cb: ibl.hooks.cb.highlight_setup, opts: ibl.hooks.options?): string
 M.register = function(type, cb, opts)
@@ -85,10 +93,12 @@ M.register = function(type, cb, opts)
             hooks.buffer_scoped[bufnr] = {
                 [M.type.ACTIVE] = {},
                 [M.type.SCOPE_ACTIVE] = {},
+                [M.type.CURRENT_INDENT_ACTIVE] = {},
                 [M.type.SKIP_LINE] = {},
                 [M.type.WHITESPACE] = {},
                 [M.type.VIRTUAL_TEXT] = {},
                 [M.type.SCOPE_HIGHLIGHT] = {},
+                [M.type.CURRENT_INDENT_HIGHLIGHT] = {},
                 [M.type.CLEAR] = {},
                 [M.type.HIGHLIGHT_SETUP] = {},
             }
@@ -119,10 +129,12 @@ M.clear_all = function()
     hooks = {
         [M.type.ACTIVE] = {},
         [M.type.SCOPE_ACTIVE] = {},
+        [M.type.CURRENT_INDENT_ACTIVE] = {},
         [M.type.SKIP_LINE] = {},
         [M.type.WHITESPACE] = {},
         [M.type.VIRTUAL_TEXT] = {},
         [M.type.SCOPE_HIGHLIGHT] = {},
+        [M.type.CURRENT_INDENT_HIGHLIGHT] = {},
         [M.type.CLEAR] = {},
         [M.type.HIGHLIGHT_SETUP] = {},
         buffer_scoped = {},
@@ -135,10 +147,12 @@ end
 ---@param type ibl.hooks.type
 ---@overload fun(bufnr: number, type: 'ACTIVE'): ibl.hooks.cb.active[]
 ---@overload fun(bufnr: number, type: 'SCOPE_ACTIVE'): ibl.hooks.cb.scope_active[]
+---@overload fun(bufnr: number, type: 'CURRENT_INDENT_ACTIVE'): ibl.hooks.cb.current_indent_active[]
 ---@overload fun(bufnr: number, type: 'SKIP_LINE'): ibl.hooks.cb.skip_line[]
 ---@overload fun(bufnr: number, type: 'WHITESPACE'): ibl.hooks.cb.whitespace[]
 ---@overload fun(bufnr: number, type: 'VIRTUAL_TEXT'): ibl.hooks.cb.virtual_text[]
 ---@overload fun(bufnr: number, type: 'SCOPE_HIGHLIGHT'): ibl.hooks.cb.scope_highlight[]
+---@overload fun(bufnr: number, type: 'CURRENT_INDENT_HIGHLIGHT'): ibl.hooks.cb.current_indent_highlight[]
 ---@overload fun(bufnr: number, type: 'CLEAR'): ibl.hooks.cb.clear[]
 ---@overload fun(bufnr: number, type: 'HIGHLIGHT_SETUP'): ibl.hooks.cb.highlight_setup[]
 M.get = function(bufnr, type)
@@ -194,95 +208,33 @@ M.builtin = {
     ---@type ibl.hooks.cb.scope_highlight
     scope_highlight_from_extmark = function(_, bufnr, scope, scope_index)
         local config = conf.get_config(bufnr)
-        local highlight = config.scope.highlight
-
-        if type(highlight) ~= "table" then
-            return scope_index
-        end
-
         local start_row, start_col = scope:start()
         local end_row, end_col = scope:end_()
-        local start_line = vim.api.nvim_buf_get_lines(bufnr, start_row, start_row + 1, false)
-        local end_line = vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, false)
-        local end_pos
-        local start_pos
-        local start_pos_scope
-        local end_pos_scope
 
-        if end_line[1] then
-            end_pos = vim.inspect_pos(bufnr, end_row, #end_line[1] - 1, {
-                extmarks = true,
-                syntax = false,
-                treesitter = false,
-                semantic_tokens = false,
-            })
-            end_pos_scope = vim.inspect_pos(bufnr, end_row, end_col - 1, {
-                extmarks = true,
-                syntax = false,
-                treesitter = false,
-                semantic_tokens = false,
-            })
-        end
-        if start_line[1] then
-            start_pos = vim.inspect_pos(bufnr, start_row, #start_line[1] - 1, {
-                extmarks = true,
-                syntax = false,
-                treesitter = false,
-                semantic_tokens = false,
-            })
-            start_pos_scope = vim.inspect_pos(bufnr, start_row, start_col, {
-                extmarks = true,
-                syntax = false,
-                treesitter = false,
-                semantic_tokens = false,
-            })
-        end
+        return utils.highlight_from_extmark(
+            bufnr,
+            config.scope.highlight,
+            start_row,
+            start_col,
+            end_row,
+            end_col,
+            scope_index
+        )
+    end,
 
-        if not end_pos and not start_pos then
-            return scope_index
-        end
+    ---@type ibl.hooks.cb.current_indent_highlight
+    current_indent_highlight_from_extmark = function(_, bufnr, current_indent, current_indent_index)
+        local config = conf.get_config(bufnr)
 
-        -- it is most accurate to get correct colors from rainbow-delimiters via
-        -- the scope, since you can have something like:
-        -- function()
-        --   ...
-        -- end,
-        -- where the last symbol will give you rainbow-delimiters highlights
-        -- from the comma (nothing) and the last parenthesis (the wrong color)
-        for i, hl_group in ipairs(highlight) do
-            if end_pos_scope then
-                for _, extmark in ipairs(end_pos_scope.extmarks) do
-                    if extmark.opts.hl_group == hl_group then
-                        return i
-                    end
-                end
-            end
-            if start_pos_scope then
-                for _, extmark in ipairs(start_pos_scope.extmarks) do
-                    if extmark.opts.hl_group == hl_group then
-                        return i
-                    end
-                end
-            end
-        end
-        -- For some languages the scope extends before or after the delimiters. Make an attempt to capture them anyway by looking at the first character of the last line, and the last character of the first line.
-        for i, hl_group in ipairs(highlight) do
-            if end_pos then
-                for _, extmark in ipairs(end_pos.extmarks) do
-                    if extmark.opts.hl_group == hl_group then
-                        return i
-                    end
-                end
-            end
-            if start_pos then
-                for _, extmark in ipairs(start_pos.extmarks) do
-                    if extmark.opts.hl_group == hl_group then
-                        return i
-                    end
-                end
-            end
-        end
-        return scope_index
+        return utils.highlight_from_extmark(
+            bufnr,
+            config.current_indent.highlight,
+            current_indent.start_row - 1,
+            -1,
+            current_indent.end_row - 1,
+            -1,
+            current_indent_index
+        )
     end,
 
     ---@type ibl.hooks.cb.whitespace

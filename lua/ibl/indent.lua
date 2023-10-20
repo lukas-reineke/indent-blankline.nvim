@@ -1,3 +1,4 @@
+local utils = require "ibl.utils"
 local M = {}
 
 ---@enum ibl.indent.whitespace
@@ -10,9 +11,13 @@ M.whitespace = {
     INDENT = 6,
 }
 
+---@class ibl.indent_state.stack
+---@field indent number
+---@field row number
+
 ---@class ibl.indent_state
 ---@field cap boolean
----@field stack table<number, number>?
+---@field stack ibl.indent_state.stack[]?
 
 ---@class ibl.indent_options
 ---@field smart_indent_cap boolean
@@ -25,8 +30,9 @@ M.whitespace = {
 ---@param whitespace string
 ---@param opts ibl.indent_options
 ---@param indent_state ibl.indent_state?
+---@param row number
 ---@return ibl.indent.whitespace[], ibl.indent_state
-M.get = function(whitespace, opts, indent_state)
+M.get = function(whitespace, opts, indent_state, row)
     if not indent_state then
         indent_state = { cap = false, stack = {} }
     end
@@ -36,9 +42,9 @@ M.get = function(whitespace, opts, indent_state)
     local spaces = 0
     local tabs = 0
     local extra = 0
-    local indent_cap = indent_state.stack[#indent_state.stack] or 0
+    local indent_cap = indent_state.stack[#indent_state.stack] and indent_state.stack[#indent_state.stack].indent or 0
     if indent_state.cap then
-        indent_cap = indent_state.stack[1] or 0
+        indent_cap = indent_state.stack[1] and indent_state.stack[1].indent or 0
         indent_state.cap = false
     end
     local varts = vim.tbl_map(tonumber, vim.split(vartabstop, ",", { trimempty = true }))
@@ -74,13 +80,18 @@ M.get = function(whitespace, opts, indent_state)
             end
         else
             local mod = (spaces + tabs + extra) % shiftwidth
-            if vim.tbl_contains(indent_state.stack, spaces + tabs) then
+            if
+                utils.tbl_contains(indent_state.stack, function(a)
+                    return a.indent == spaces + tabs
+                end, { predicate = true })
+            then
                 table.insert(whitespace_tbl, M.whitespace.INDENT)
                 extra = extra + mod
             elseif mod == 0 then
                 if #whitespace_tbl < indent_cap or not opts.smart_indent_cap then
                     table.insert(whitespace_tbl, M.whitespace.INDENT)
                     extra = extra + mod
+                    table.insert(indent_state.stack, { indent = spaces + tabs, row = row })
                 else
                     indent_state.cap = true
                     table.insert(whitespace_tbl, M.whitespace.SPACE)
@@ -92,10 +103,11 @@ M.get = function(whitespace, opts, indent_state)
         end
     end
 
+    local indent = spaces + tabs
     indent_state.stack = vim.tbl_filter(function(a)
-        return a < spaces + tabs
+        return a.indent < indent
     end, indent_state.stack)
-    table.insert(indent_state.stack, spaces + tabs)
+    table.insert(indent_state.stack, { indent = indent, row = row })
 
     return whitespace_tbl, indent_state
 end

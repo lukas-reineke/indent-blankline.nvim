@@ -201,6 +201,9 @@ config                                                            *ibl.config*
    • {scope}            (|ibl.config.scope|)
                         Configures the scope
 
+   • {current_indent}   (|ibl.config.current_indent|)
+                        Configures the current_indent
+
    • {exclude}          (|ibl.config.exclude|)
                         Configures what is excluded from indent-blankline
 
@@ -366,9 +369,11 @@ config.scope                                                *ibl.config.scope*
 
  Configures the scope
 
- The scope is *not* the current indentation level! Instead, it is the
- indentation level where variables or functions are accessible. This depends
- on the language you are writing.
+ The scope is *not* the current indentation level!
+ See |ibl.config.current_indent| if you want to highlight the current
+ indentation.
+ Instead, scope it is the indentation level where variables or functions
+ are accessible. This depends on the language you are writing.
 
  Example: ~
 
@@ -541,6 +546,78 @@ config.scope.exclude                                *ibl.config.scope.exclude*
    }
 <
 
+config.current_indent                                *ibl.config.current_indent*
+
+ Configures the current indent
+
+ The current indent *is* just the current indentation level (unlike scope).
+
+ Example: ~
+
+ In Python, using the same example as for scope, current indent will
+ highlight the current inner most indentation guide. With scope disabled,
+ this will look like this:
+ >python
+ def foo();
+     if True:
+     ┋   a = "foo █ar"
+     ┋   #        ↳ cursor here
+     print(a)
+<
+ If we have the same code with scope enabled, it will look like this:
+ >python
+ def foo();
+ ┋   if True:
+ ┋   ┋   a = "foo █ar"
+ ┋   ┋   #        ↳ cursor here
+ ┋   print(a)
+<
+ If you have both scope and current indent enabled, and the two overlap,
+ |ibl.config.scope.priority| and |ibl.config.current_indent.priority| will
+ determine which is displayed.
+
+ Fields: ~
+                                           *ibl.config.current_indent.enabled*
+   • {enabled}     (boolean)
+                   Enables or disables current indent
+
+                   Default: `false` ~
+
+                                              *ibl.config.current_indent.char*
+   • {char}        (string|string[])
+                   Character, or list of characters, that get used to
+                   display the current indentation guide
+                   Each character has to have a display width
+                   of 0 or 1
+
+                   Default: |ibl.config.indent.char| ~
+
+                                         *ibl.config.current_indent.highlight*
+   • {highlight}   (string|string[])
+                   Highlight group, or list of highlight groups, that get
+                   applied to the current scope
+
+                   Default: |hl-IblCurrentIndent| ~
+
+                                        *ibl.config.current_indent.show_start*
+   • {show_start}  (boolean)
+                   Shows an underline on the line above the current indent
+
+                   Default: `true` ~
+
+                                          *ibl.config.current_indent.show_end*
+   • {show_end}    (boolean)
+                   Shows an underline on the line of the current indent
+
+                   Default: `true` ~
+
+                                          *ibl.config.current_indent.priority*
+   • {priority}    (number)
+                   Virtual text priority for the current indent
+
+                   Default: `1023` ~
+
+
 config.exclude                                            *ibl.config.exclude*
 
  Configures what is excluded from indent-blankline
@@ -591,7 +668,6 @@ indent.whitespace                                      *ibl.indent.whitespace*
    • {SPACE}
    • {INDENT}
 
-
 hooks                                                              *ibl.hooks*
 
  Hooks provide a way to extend the functionality of indent-blankline. Either
@@ -611,10 +687,12 @@ hooks.type                                                    *ibl.hooks.type*
  Variants: ~
    • {ACTIVE}
    • {SCOPE_ACTIVE}
+   • {CURRENT_INDENT_ACTIVE}
    • {SKIP_LINE}
    • {WHITESPACE}
    • {VIRTUAL_TEXT}
    • {SCOPE_HIGHLIGHT}
+   • {CURRENT_INDENT_HIGHLIGHT}
    • {CLEAR}
    • {HIGHLIGHT_SETUP}
 
@@ -645,6 +723,20 @@ hooks.cb.scope_active({bufnr})                    *ibl.hooks.cb.scope_active()*
 
  Gets called before refreshing indent-blankline for a buffer.
  If the callback returns false, |ibl.config.scope| will be disabled.
+
+ Parameters: ~
+   • {bufnr}  (number) Buffer number
+
+ Return: ~
+   (boolean)
+
+
+hooks.cb.current_indent_active({bufnr}) *ibl.hooks.cb.current_indent_active()*
+
+ Callback function for the |ibl.hooks.type|.CURRENT_INDENT_ACTIVE hook.
+
+ Gets called before refreshing indent-blankline for a buffer.
+ If the callback returns false, |ibl.config.current_indent| will be disabled.
 
  Parameters: ~
    • {bufnr}  (number) Buffer number
@@ -727,6 +819,26 @@ hooks.cb.scope_highlight({tick}, {bufnr}, {scope}, {scope_index})
    (number)
 
 
+                                     *ibl.hooks.cb.current_indent_highlight()*
+hooks.cb.current_indent_highlight({tick}, {bufnr}, {current_indent}, {current_indent_index})
+
+ Callback function for the |ibl.hooks.type|.CURRENT_INDENT_HIGHLIGHT hook.
+
+ Gets called for once per refresh after the current indent is determined.
+ The return value overwrites the index of the highlight group
+ defined in |ibl.config.current_indent.highlight|
+
+ Parameters: ~
+   • {tick}                  (number) auto-incrementing id of the
+                                      current refresh
+   • {bufnr}                 (number) Buffer number
+   • {current_indent}        (ibl.current_indent) The current indent
+   • {current_indent_index}  (number) Index of the highlight group
+
+ Return: ~
+   (number)
+
+
 hooks.cb.clear({bufnr})                                 *ibl.hooks.cb.clear()*
 
  Callback function for the |ibl.hooks.type|.CLEAR hook.
@@ -801,6 +913,35 @@ hooks.builtin.scope_highlight_from_extmark
      hooks.builtin.scope_highlight_from_extmark
    )
 <
+                         *hooks.builtin.current_indent_highlight_from_extmark*
+hooks.builtin.current_indent_highlight_from_extmark
+
+ Gets the highlight group from existing extmark highlights at the end or
+ beginning of the current indent.
+ This can be used to get a somewhat reliable sync between
+ "rainbow parentheses" plugins like
+ https://gitlab.com/HiPhish/rainbow-delimiters.nvim and indent-blankline.
+
+ Example: ~
+   >lua
+   local highlight = {
+     "RainbowDelimiterRed",
+     "RainbowDelimiterYellow",
+     "RainbowDelimiterBlue",
+     "RainbowDelimiterOrange",
+     "RainbowDelimiterGreen",
+     "RainbowDelimiterViolet",
+     "RainbowDelimiterCyan",
+   }
+   vim.g.rainbow_delimiters = { highlight = highlight }
+   require "ibl".setup { current_indent = { highlight = highlight } }
+
+   local hooks = require "ibl.hooks"
+   hooks.register(
+     hooks.type.CURRENT_INDENT_HIGHLIGHT,
+     hooks.builtin.current_indent_highlight_from_extmark
+   )
+<
                              *ibl.hooks.builtin.hide_first_space_indent_level*
 hooks.builtin.hide_first_space_indent_level
 
@@ -849,6 +990,12 @@ IblWhitespace                                               *hl-IblWhitespace*
 IblScope                                                         *hl-IblScope*
 
  The default highlight group for |ibl.config.scope| characters.
+
+ Default: takes the values from |hl-LineNr| when not defined ~
+
+IblCurrentIndent                                         *hl-IblCurrentIndent*
+
+ The default highlight group for |ibl.config.current_indent| characters.
 
  Default: takes the values from |hl-LineNr| when not defined ~
 

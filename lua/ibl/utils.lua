@@ -168,7 +168,7 @@ M.get_offset = function(bufnr)
     else
         local win_list = vim.fn.win_findbuf(bufnr)
         if not win_list or not win_list[1] then
-            return 0, 0, 0, 0
+            return 0, 0, 0, 0, 0
         end
         win = win_list[1]
         win_view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
@@ -183,7 +183,7 @@ M.get_offset = function(bufnr)
         win_end = win_view.lnum + win_height
     end
 
-    return win_view.leftcol or 0, win_view.topline or 0, win_end, win_height
+    return win_view.leftcol or 0, win_view.topline or 0, win_end, win_height, win_view.lnum or 0
 end
 
 ---@param bufnr number
@@ -198,6 +198,21 @@ M.is_buffer_active = function(bufnr, config)
     local buftype = vim.api.nvim_get_option_value("buftype", { buf = bufnr })
     if vim.tbl_contains(config.exclude.buftypes, buftype) then
         return false
+    end
+
+    return true
+end
+
+---@param bufnr number
+---@param config ibl.config
+M.is_current_indent_active = function(bufnr, config)
+    if not config.current_indent.enabled then
+        return false
+    end
+    for _, filetype in ipairs(M.get_filetypes(bufnr)) do
+        if vim.tbl_contains(config.current_indent.exclude.filetypes, filetype) then
+            return false
+        end
     end
 
     return true
@@ -229,6 +244,141 @@ end
 ---@return T
 M.tbl_get_index = function(list, i)
     return list[((i - 1) % #list) + 1]
+end
+
+---@param bufnr number
+---@param highlight string|string[]
+---@param start_row number
+---@param start_col number
+---@param end_row number
+---@param end_col number
+---@param fallback_index number
+---@return number
+M.highlight_from_extmark = function(bufnr, highlight, start_row, start_col, end_row, end_col, fallback_index)
+    if type(highlight) ~= "table" or start_row == math.huge then
+        return fallback_index
+    end
+
+    local start_line = vim.api.nvim_buf_get_lines(bufnr, start_row, start_row + 1, false)
+    local end_line = vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, false)
+    local end_pos
+    local start_pos
+    local start_pos_col
+    local end_pos_col
+
+    if end_line[1] then
+        end_pos = vim.inspect_pos(bufnr, end_row, end_line[1]:find "%S" - 1, {
+            extmarks = true,
+            syntax = false,
+            treesitter = false,
+            semantic_tokens = false,
+        })
+        end_pos_col = vim.inspect_pos(bufnr, end_row, end_col - 1, {
+            extmarks = true,
+            syntax = false,
+            treesitter = false,
+            semantic_tokens = false,
+        })
+    end
+    if start_line[1] then
+        start_pos = vim.inspect_pos(bufnr, start_row, #start_line[1] - 1, {
+            extmarks = true,
+            syntax = false,
+            treesitter = false,
+            semantic_tokens = false,
+        })
+        start_pos_col = vim.inspect_pos(bufnr, start_row, start_col, {
+            extmarks = true,
+            syntax = false,
+            treesitter = false,
+            semantic_tokens = false,
+        })
+    end
+
+    if not end_pos and not start_pos then
+        return fallback_index
+    end
+
+    -- it is most accurate to get correct colors from rainbow-delimiters via
+    -- the scope, since you can have something like:
+    -- function()
+    --   ...
+    -- end,
+    -- where the last symbol will give you rainbow-delimiters highlights
+    -- from the comma (nothing) and the last parenthesis (the wrong color)
+    for i, hl_group in ipairs(highlight) do
+        if end_pos_col then
+            for _, extmark in ipairs(end_pos_col.extmarks) do
+                if extmark.opts.hl_group == hl_group then
+                    return i
+                end
+            end
+        end
+        if start_pos_col then
+            for _, extmark in ipairs(start_pos_col.extmarks) do
+                if extmark.opts.hl_group == hl_group then
+                    return i
+                end
+            end
+        end
+    end
+    -- For some languages the scope extends before or after the delimiters. Make an attempt to capture them anyway by looking at the first character of the last line, and the last character of the first line.
+    for i, hl_group in ipairs(highlight) do
+        if end_pos then
+            for _, extmark in ipairs(end_pos.extmarks) do
+                if extmark.opts.hl_group == hl_group then
+                    return i
+                end
+            end
+        end
+        if start_pos then
+            for _, extmark in ipairs(start_pos.extmarks) do
+                if extmark.opts.hl_group == hl_group then
+                    return i
+                end
+            end
+        end
+    end
+    return fallback_index
+end
+
+-- TODO [Lukas]: remove once vim.tbl_contains is in stable
+
+--- Checks if a table contains a given value, specified either directly or via
+--- a predicate that is checked for each value.
+---
+--- Example:
+--- <pre>lua
+---  vim.tbl_contains({ 'a', { 'b', 'c' } }, function(v)
+---    return vim.deep_equal(v, { 'b', 'c' })
+---  end, { predicate = true })
+---  -- true
+--- </pre>
+---
+---@param t table Table to check
+---@param value any Value to compare or predicate function reference
+---@param opts (table|nil) Keyword arguments |kwargs|:
+---       - predicate: (boolean) `value` is a function reference to be checked (default false)
+---@return boolean `true` if `t` contains `value`
+M.tbl_contains = function(t, value, opts)
+    vim.validate { t = { t, "t" }, opts = { opts, "t", true } }
+
+    local pred
+    if opts and opts.predicate then
+        vim.validate { value = { value, "c" } }
+        pred = value
+    else
+        pred = function(v)
+            return v == value
+        end
+    end
+
+    for _, v in pairs(t) do
+        if pred(v) then
+            return true
+        end
+    end
+    return false
 end
 
 return M

@@ -169,7 +169,7 @@ M.refresh = function(bufnr)
         end
     end
 
-    local left_offset, top_offset, win_end, win_height = utils.get_offset(bufnr)
+    local left_offset, top_offset, win_end, win_height, lnum = utils.get_offset(bufnr)
     if top_offset > win_end then
         return
     end
@@ -223,8 +223,18 @@ M.refresh = function(bufnr)
         }
 
     local same_scope = (scope and scope:id()) == (buffer_state.scope and buffer_state.scope:id())
+    local current_indent_enabled = utils.is_current_indent_active(bufnr, config)
 
-    if not same_scope then
+    for _, fn in
+        pairs(hooks.get(bufnr, hooks.type.CURRENT_INDENT_ACTIVE) --[[ @as ibl.hooks.cb.current_indent_active[] ]])
+    do
+        if not fn(bufnr) then
+            current_indent_enabled = false
+            break
+        end
+    end
+
+    if not same_scope or current_indent_enabled then
         inlay_hints.clear_buffer(bufnr)
     end
 
@@ -244,6 +254,19 @@ M.refresh = function(bufnr)
     end
     local exact_scope_col_start = scope_col_start
 
+    local current_indent_index = -1
+    local current_indent_col_start_single = -1
+
+    ---@class ibl.current_indent
+    ---@field start_row number
+    ---@field end_row number
+
+    ---@type ibl.current_indent
+    local current_indent = {
+        start_row = -1,
+        end_row = #lines + offset,
+    }
+
     ---@type ibl.indent.whitespace[]
     local last_whitespace_tbl = {}
     ---@type table<integer, boolean>
@@ -260,11 +283,12 @@ M.refresh = function(bufnr)
         end
     end
 
+    --- Calc loop ---
+    local calc_data = {}
     for i, line in ipairs(lines) do
         local row = i + offset
         if line_skipped[i] then
-            vt.clear_buffer(bufnr, row)
-            goto continue
+            goto continue_calc
         end
 
         local whitespace = utils.get_whitespace(line)
@@ -273,23 +297,29 @@ M.refresh = function(bufnr)
             local foldtext = vim.fn.foldtextresult(row)
             local foldtext_whitespace = utils.get_whitespace(foldtext)
             if vim.fn.strdisplaywidth(foldtext_whitespace, 0) < vim.fn.strdisplaywidth(whitespace, 0) then
-                vt.clear_buffer(bufnr, row)
-                goto continue
+                line_skipped[i] = true
+                goto continue_calc
             end
         end
 
         if is_current_buffer and foldclosed > -1 and foldclosed + win_height < row then
-            vt.clear_buffer(bufnr, row)
-            goto continue
+            line_skipped[i] = true
+            goto continue_calc
         end
 
         ---@type ibl.indent.whitespace[]
         local whitespace_tbl
         local blankline = line:len() == 0
 
-        -- #### calculate indent ####
         if not blankline then
-            whitespace_tbl, indent_state = indent.get(whitespace, indent_opts, indent_state)
+            whitespace_tbl, indent_state = indent.get(whitespace, indent_opts, indent_state, row)
+            if current_indent_enabled and row > lnum and current_indent.end_row > row then
+                if current_indent_col_start_single == #whitespace_tbl then
+                    current_indent.end_row = row
+                elseif current_indent_col_start_single > #whitespace_tbl then
+                    current_indent.end_row = row - 1
+                end
+            end
         elseif empty_line_counter > 0 then
             empty_line_counter = empty_line_counter - 1
             whitespace_tbl = next_whitespace_tbl
@@ -306,11 +336,17 @@ M.refresh = function(bufnr)
                 end
 
                 local j_whitespace = utils.get_whitespace(lines[j])
-                whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state)
+                whitespace_tbl, indent_state = indent.get(j_whitespace, indent_opts, indent_state, row)
+
+                if current_indent_enabled and row > lnum and current_indent.end_row > row then
+                    if current_indent_col_start_single >= #whitespace_tbl then
+                        current_indent.end_row = row - 1
+                    end
+                end
 
                 if utils.has_end(lines[j]) then
-                    local trail = last_whitespace_tbl[indent_state.stack[#indent_state.stack] + 1]
-                    local trail_whitespace = last_whitespace_tbl[indent_state.stack[#indent_state.stack]]
+                    local trail = last_whitespace_tbl[indent_state.stack[#indent_state.stack].indent + 1]
+                    local trail_whitespace = last_whitespace_tbl[indent_state.stack[#indent_state.stack].indent]
                     if trail then
                         table.insert(whitespace_tbl, trail)
                     elseif trail_whitespace then
@@ -320,28 +356,12 @@ M.refresh = function(bufnr)
                             table.insert(whitespace_tbl, indent.whitespace.TAB_START)
                         end
                     end
+                    if current_indent.end_row == row - 1 then
+                        current_indent.end_row = j + offset
+                    end
                 end
             end
             next_whitespace_tbl = whitespace_tbl
-        end
-
-        local scope_active = row >= scope_row_start and row <= scope_row_end
-        if
-            scope_active
-            and scope_col_start_single > -1
-            and (whitespace_tbl[scope_col_start_single + 1] or blankline)
-            and not indent.is_indent(whitespace_tbl[scope_col_start_single + 1])
-        then
-            if indent.is_space_indent(whitespace_tbl[scope_col_start_single + 1]) then
-                whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.INDENT
-            else
-                whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.TAB_START
-            end
-            local k = scope_col_start_single
-            while not whitespace_tbl[k] and k >= 0 do
-                whitespace_tbl[k] = indent.whitespace.SPACE
-                k = k - 1
-            end
         end
 
         -- remove blankline trail
@@ -354,7 +374,7 @@ M.refresh = function(bufnr)
             end
         end
 
-        -- Fix horizontal scroll
+        -- fix horizontal scroll
         local current_left_offset = left_offset
         while #whitespace_tbl > 0 and current_left_offset > 0 do
             table.remove(whitespace_tbl, 1)
@@ -369,10 +389,67 @@ M.refresh = function(bufnr)
 
         last_whitespace_tbl = whitespace_tbl
 
-        -- #### make virtual text ####
-        local scope_start = row == scope_row_start
-        local scope_end = row == scope_row_end
-        if scope_start and scope then
+        --- current indent
+        if current_indent_enabled and row == lnum then
+            local current_indent_whitespace_tbl = vim.tbl_extend("keep", {}, whitespace_tbl)
+
+            while #current_indent_whitespace_tbl > 0 do
+                if indent.is_indent(current_indent_whitespace_tbl[#current_indent_whitespace_tbl]) then
+                    table.remove(current_indent_whitespace_tbl, #current_indent_whitespace_tbl)
+                    break
+                end
+                table.remove(current_indent_whitespace_tbl, #current_indent_whitespace_tbl)
+            end
+
+            current_indent_col_start_single = #current_indent_whitespace_tbl
+
+            for j = indent_state and #indent_state.stack or 0, 1, -1 do
+                if indent_state.stack[j].indent < current_indent_col_start_single then
+                    break
+                end
+                current_indent.start_row = indent_state.stack[j].row + 1
+            end
+            if current_indent.start_row > row then
+                current_indent.start_row = math.huge
+            end
+
+            current_indent_index = #vim.tbl_filter(function(w)
+                return indent.is_indent(w)
+            end, current_indent_whitespace_tbl) + 1
+        end
+
+        do
+            calc_data[i] = { whitespace, whitespace_tbl }
+        end
+
+        ::continue_calc::
+    end
+
+    for _, fn in
+        pairs(hooks.get(bufnr, hooks.type.CURRENT_INDENT_HIGHLIGHT) --[[ @as ibl.hooks.cb.current_indent_highlight[] ]])
+    do
+        current_indent_index = fn(buffer_state.tick, bufnr, current_indent, current_indent_index)
+    end
+
+    --- Draw loop ---
+    for i, line in ipairs(lines) do
+        local row = i + offset
+        if line_skipped[i] then
+            vt.clear_buffer(bufnr, row)
+            goto continue_draw
+        end
+        local whitespace, whitespace_tbl = unpack(calc_data[i])
+
+        local is_current_indent_active = row >= current_indent.start_row
+            and row <= (current_indent.end_row or #lines + offset)
+        local is_current_indent_start = row + 1 == current_indent.start_row
+        local is_current_indent_end = row == current_indent.end_row
+
+        local is_scope_active = row >= scope_row_start and row <= scope_row_end
+        local is_scope_start = row == scope_row_start
+        local is_scope_end = row == scope_row_end
+
+        if is_scope_start and scope then
             scope_col_start = #whitespace
             scope_col_start_single = #whitespace_tbl
             scope_index = #vim.tbl_filter(function(w)
@@ -385,10 +462,22 @@ M.refresh = function(bufnr)
             end
         end
 
+        local blankline = line:len() == 0
         local whitespace_only = not blankline and line == whitespace
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
-        local virt_text, scope_hl =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single)
+        local virt_text, scope_hl, current_indent_hl = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            is_current_indent_active,
+            current_indent_index,
+            is_current_indent_end,
+            current_indent_col_start_single,
+            is_scope_active,
+            scope_index,
+            is_scope_end,
+            scope_col_start_single
+        )
 
         -- #### set virtual text ####
         vt.clear_buffer(bufnr, row)
@@ -402,8 +491,18 @@ M.refresh = function(bufnr)
             scope_show_end_cond = #whitespace_tbl >= scope_col_start_single
         end
 
-        -- Scope start
-        if config.scope.show_start and scope_start then
+        -- scope start
+        if
+            config.scope.enabled
+            and config.scope.show_start
+            and is_scope_start
+            and not (
+                current_indent_enabled
+                and config.current_indent.show_start
+                and is_current_indent_start
+                and config.current_indent.priority > config.scope.priority
+            )
+        then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start_draw, {
                 end_col = #line,
                 hl_group = scope_hl.underline,
@@ -413,8 +512,20 @@ M.refresh = function(bufnr)
             inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
         end
 
-        -- Scope end
-        if config.scope.show_end and scope_end and scope_show_end_cond then
+        -- scope end
+        if
+            config.scope.enabled
+            and config.scope.show_end
+            and is_scope_end
+            and scope_show_end_cond
+            and not (
+                current_indent_enabled
+                and config.current_indent.show_end
+                and is_current_indent_end
+                and #whitespace_tbl > current_indent_col_start_single
+                and config.current_indent.priority > config.scope.priority
+            )
+        then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,
@@ -422,6 +533,50 @@ M.refresh = function(bufnr)
                 strict = false,
             })
             inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
+        end
+
+        -- current indent start
+        if
+            current_indent_enabled
+            and config.current_indent.show_start
+            and is_current_indent_start
+            and not (
+                config.scope.enabled
+                and config.scope.show_start
+                and is_scope_start
+                and config.scope.priority >= config.current_indent.priority
+            )
+        then
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, #whitespace, {
+                end_col = #line,
+                hl_group = current_indent_hl.underline,
+                priority = config.current_indent.priority,
+                strict = false,
+            })
+            inlay_hints.set(bufnr, row - 1, #whitespace, current_indent_hl.underline, current_indent_hl.underline)
+        end
+
+        -- current indent end
+        if
+            current_indent_enabled
+            and config.current_indent.show_end
+            and is_current_indent_end
+            and #whitespace_tbl > current_indent_col_start_single
+            and not (
+                config.scope.enabled
+                and config.scope.show_end
+                and is_scope_end
+                and scope_show_end_cond
+                and config.scope.priority >= config.current_indent.priority
+            )
+        then
+            vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, current_indent_col_start_single, {
+                end_col = #line,
+                hl_group = current_indent_hl.underline,
+                priority = config.current_indent.priority,
+                strict = false,
+            })
+            inlay_hints.set(bufnr, row - 1, #whitespace, current_indent_hl.underline, current_indent_hl.underline)
         end
 
         for _, fn in
@@ -441,7 +596,7 @@ M.refresh = function(bufnr)
             })
         end
 
-        ::continue::
+        ::continue_draw::
     end
 end
 
