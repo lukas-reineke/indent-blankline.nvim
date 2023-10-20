@@ -584,18 +584,18 @@ config.current_indent                                *ibl.config.current_indent*
                    Default: `false` ~
 
                                               *ibl.config.current_indent.char*
-   • {char}        (string)
-                   Character that gets used to display the current
-                   indentation guide
+   • {char}        (string|string[])
+                   Character, or list of characters, that get used to
+                   display the current indentation guide
                    Each character has to have a display width
                    of 0 or 1
 
                    Default: |ibl.config.indent.char| ~
 
                                          *ibl.config.current_indent.highlight*
-   • {highlight}   (string)
-                   Highlight group that gets applied to the current
-                   indent
+   • {highlight}   (string|string[])
+                   Highlight group, or list of highlight groups, that get
+                   applied to the current scope
 
                    Default: |hl-IblCurrentIndent| ~
 
@@ -832,7 +832,7 @@ hooks.cb.current_indent_highlight({tick}, {bufnr}, {current_indent}, {current_in
    • {tick}                  (number) auto-incrementing id of the
                                       current refresh
    • {bufnr}                 (number) Buffer number
-   • {current_indent}        (ibl.current_indent) The current scope
+   • {current_indent}        (ibl.current_indent) The current indent
    • {current_indent_index}  (number) Index of the highlight group
 
  Return: ~
@@ -934,7 +934,7 @@ hooks.builtin.current_indent_highlight_from_extmark
      "RainbowDelimiterCyan",
    }
    vim.g.rainbow_delimiters = { highlight = highlight }
-   require "ibl".setup { scope = { highlight = highlight } }
+   require "ibl".setup { current_indent = { highlight = highlight } }
 
    local hooks = require "ibl.hooks"
    hooks.register(

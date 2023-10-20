@@ -211,21 +211,29 @@ M.builtin = {
         local start_row, start_col = scope:start()
         local end_row, end_col = scope:end_()
 
-        return utils.highlight_from_extmark(bufnr, config, start_row, start_col, end_row, end_col, scope_index)
+        return utils.highlight_from_extmark(
+            bufnr,
+            config.scope.highlight,
+            start_row,
+            start_col,
+            end_row,
+            end_col,
+            scope_index
+        )
     end,
 
     ---@type ibl.hooks.cb.current_indent_highlight
-    current_indent_highlight_from_extmark = function(_, bufnr, current_indent, scope_index)
+    current_indent_highlight_from_extmark = function(_, bufnr, current_indent, current_indent_index)
         local config = conf.get_config(bufnr)
 
         return utils.highlight_from_extmark(
             bufnr,
-            config,
+            config.current_indent.highlight,
             current_indent.start_row - 1,
             -1,
             current_indent.end_row - 1,
             -1,
-            scope_index
+            current_indent_index
         )
     end,
 

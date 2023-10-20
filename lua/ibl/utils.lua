@@ -246,9 +246,15 @@ M.tbl_get_index = function(list, i)
     return list[((i - 1) % #list) + 1]
 end
 
-M.highlight_from_extmark = function(bufnr, config, start_row, start_col, end_row, end_col, fallback_index)
-    local highlight = config.scope.highlight
-
+---@param bufnr number
+---@param highlight string|string[]
+---@param start_row number
+---@param start_col number
+---@param end_row number
+---@param end_col number
+---@param fallback_index number
+---@return number
+M.highlight_from_extmark = function(bufnr, highlight, start_row, start_col, end_row, end_col, fallback_index)
     if type(highlight) ~= "table" or start_row == math.huge then
         return fallback_index
     end

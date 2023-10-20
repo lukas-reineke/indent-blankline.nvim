@@ -442,8 +442,8 @@ M.refresh = function(bufnr)
 
         local is_current_indent_active = row >= current_indent.start_row
             and row <= (current_indent.end_row or #lines + offset)
-        local is_current_indent_start = row + 1 == (current_indent.start_row or -1)
-        local is_current_indent_end = row == (current_indent.end_row or -1)
+        local is_current_indent_start = row + 1 == current_indent.start_row
+        local is_current_indent_end = row == current_indent.end_row
 
         local is_scope_active = row >= scope_row_start and row <= scope_row_end
         local is_scope_start = row == scope_row_start
