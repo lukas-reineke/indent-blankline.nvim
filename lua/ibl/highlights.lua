@@ -19,7 +19,7 @@ local get = function(name)
     -- TODO [Lukas]: remove this when AstroNvim drops support for 0.8
     if not vim.api.nvim_get_hl then
         ---@diagnostic disable-next-line
-        return (vim.fn.hlexists(name) == 1 and vim.api.nvim_get_hl_by_name(name, true)) or vim.empty_dict() --[[ @as table ]]
+        return (vim.fn.hlexists(name) == 1 and vim.api.nvim_get_hl_by_name(name, true)) or vim.empty_dict() --[[@as table]]
     end
 
     return vim.api.nvim_get_hl(0, { name = name })
@@ -52,7 +52,7 @@ M.setup = function()
     local config = conf.get_config(-1)
 
     for _, fn in
-        pairs(hooks.get(-1, hooks.type.HIGHLIGHT_SETUP) --[[ @as ibl.hooks.cb.highlight_setup[] ]])
+        pairs(hooks.get(-1, hooks.type.HIGHLIGHT_SETUP) --[=[@as ibl.hooks.cb.highlight_setup[]]=])
     do
         fn()
     end
