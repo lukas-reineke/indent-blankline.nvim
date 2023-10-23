@@ -60,6 +60,19 @@ M.encode = function(input)
     )
 end
 
+---@param bufnr number
+---@return number?
+M.get_win = function(bufnr)
+    local win_list = vim.fn.win_findbuf(bufnr)
+    local current_tab = vim.api.nvim_get_current_tabpage()
+    for _, win in ipairs(win_list or {}) do
+        if current_tab == vim.api.nvim_win_get_tabpage(win) then
+            return win
+        end
+    end
+    return win_list and win_list[1]
+end
+
 ---@class ibl.listchars
 ---@field tabstop_overwrite boolean
 ---@field space_char string
@@ -81,8 +94,7 @@ M.get_listchars = function(bufnr)
     end
 
     if bufnr ~= vim.api.nvim_get_current_buf() then
-        local win_list = vim.fn.win_findbuf(bufnr)
-        local win = win_list and win_list[1]
+        local win = M.get_win(bufnr)
         if win then
             list = vim.api.nvim_get_option_value("list", { win = win })
             if list then
@@ -159,18 +171,18 @@ end
 
 ---@param bufnr number
 M.get_offset = function(bufnr)
-    local win = 0
+    local win
     local win_view
     local win_end
     if bufnr == vim.api.nvim_get_current_buf() then
+        win = 0
         win_view = vim.fn.winsaveview()
         win_end = vim.fn.line "w$"
     else
-        local win_list = vim.fn.win_findbuf(bufnr)
-        if not win_list or not win_list[1] then
+        win = M.get_win(bufnr)
+        if not win then
             return 0, 0, 0, 0
         end
-        win = win_list[1]
         win_view = vim.api.nvim_win_call(win, vim.fn.winsaveview)
     end
 

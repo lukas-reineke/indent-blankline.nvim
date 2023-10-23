@@ -43,8 +43,7 @@ M.get = function(bufnr, config)
 
     local win
     if bufnr ~= vim.api.nvim_get_current_buf() then
-        local win_list = vim.fn.win_findbuf(bufnr)
-        win = win_list and win_list[1]
+        win = utils.get_win(bufnr)
         if not win then
             return nil
         end
