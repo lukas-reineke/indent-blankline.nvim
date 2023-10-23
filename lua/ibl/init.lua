@@ -25,24 +25,23 @@ local clear_buffer = function(bufnr)
     for _, fn in pairs(hooks.get(bufnr, hooks.type.CLEAR)) do
         fn(bufnr)
     end
+    global_buffer_state[bufnr] = nil
 end
 
 ---@param config ibl.config.full
 local setup = function(config)
-    M.initialized = true
-
     if not config.enabled then
         for bufnr, _ in pairs(global_buffer_state) do
-            clear_buffer(bufnr)
+            if not conf.get_config(bufnr).enabled then
+                clear_buffer(bufnr)
+            end
         end
-        global_buffer_state = {}
-        inlay_hints.clear()
-        return
     end
 
     inlay_hints.setup()
     highlights.setup()
     autocmds.setup()
+    M.initialized = true
     M.refresh_all()
 end
 
