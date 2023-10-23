@@ -160,7 +160,7 @@ M.refresh = function(bufnr)
     end
 
     for _, fn in
-        pairs(hooks.get(bufnr, hooks.type.ACTIVE) --[[ @as ibl.hooks.cb.active[] ]])
+        pairs(hooks.get(bufnr, hooks.type.ACTIVE) --[=[@as ibl.hooks.cb.active[]]=])
     do
         if not fn(bufnr) then
             clear_buffer(bufnr)
@@ -177,7 +177,7 @@ M.refresh = function(bufnr)
 
     local scope_disabled = false
     for _, fn in
-        pairs(hooks.get(bufnr, hooks.type.SCOPE_ACTIVE) --[[ @as ibl.hooks.cb.scope_active[] ]])
+        pairs(hooks.get(bufnr, hooks.type.SCOPE_ACTIVE) --[=[@as ibl.hooks.cb.scope_active[]]=])
     do
         if not fn(bufnr) then
             scope_disabled = true
@@ -361,7 +361,7 @@ M.refresh = function(bufnr)
         end
 
         for _, fn in
-            pairs(hooks.get(bufnr, hooks.type.WHITESPACE) --[[ @as ibl.hooks.cb.whitespace[] ]])
+            pairs(hooks.get(bufnr, hooks.type.WHITESPACE) --[=[@as ibl.hooks.cb.whitespace[]]=])
         do
             whitespace_tbl = fn(buffer_state.tick, bufnr, row - 1, whitespace_tbl)
         end
@@ -378,7 +378,7 @@ M.refresh = function(bufnr)
                 return indent.is_indent(w)
             end, whitespace_tbl) + 1
             for _, fn in
-                pairs(hooks.get(bufnr, hooks.type.SCOPE_HIGHLIGHT) --[[ @as ibl.hooks.cb.scope_highlight[] ]])
+                pairs(hooks.get(bufnr, hooks.type.SCOPE_HIGHLIGHT) --[=[@as ibl.hooks.cb.scope_highlight[]]=])
             do
                 scope_index = fn(buffer_state.tick, bufnr, scope, scope_index)
             end
@@ -424,7 +424,7 @@ M.refresh = function(bufnr)
         end
 
         for _, fn in
-            pairs(hooks.get(bufnr, hooks.type.VIRTUAL_TEXT) --[[ @as ibl.hooks.cb.virtual_text[] ]])
+            pairs(hooks.get(bufnr, hooks.type.VIRTUAL_TEXT) --[=[@as ibl.hooks.cb.virtual_text[]]=])
         do
             virt_text = fn(buffer_state.tick, bufnr, row - 1, virt_text)
         end
