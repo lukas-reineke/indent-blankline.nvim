@@ -1,4 +1,4 @@
-name: Run Lua Language Server check
+name: Lua Language Server Check
 
 on:
   workflow_call:
