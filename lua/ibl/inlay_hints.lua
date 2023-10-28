@@ -14,6 +14,9 @@ local buffer_state = {}
 ---@param hl string|string[]
 ---@param hl_empty string
 local set_extmark = function(bufnr, row, col, hl, hl_empty)
+    if not vim.api.nvim_buf_is_loaded(bufnr) then
+        return
+    end
     local inlayhint_extmarks = vim.api.nvim_buf_get_extmarks(
         bufnr,
         inlayhint_namespace,
@@ -63,7 +66,7 @@ end
 ---@param bufnr number
 M.clear_buffer = function(bufnr)
     for _, row in ipairs(buffer_state[bufnr] or {}) do
-        set_extmark(bufnr, row, 0, "LspInlayHint", "")
+        pcall(set_extmark, bufnr, row, 0, "LspInlayHint", "")
     end
 
     buffer_state[bufnr] = nil
