@@ -331,15 +331,18 @@ M.refresh = function(bufnr)
             and (whitespace_tbl[scope_col_start_single + 1] or blankline)
             and not indent.is_indent(whitespace_tbl[scope_col_start_single + 1])
         then
-            if indent.is_space_indent(whitespace_tbl[scope_col_start_single + 1]) then
-                whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.INDENT
-            else
-                whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.TAB_START
-            end
-            local k = scope_col_start_single
-            while not whitespace_tbl[k] and k >= 0 do
-                whitespace_tbl[k] = indent.whitespace.SPACE
-                k = k - 1
+            local ref = whitespace_tbl[scope_col_start_single + 1] or last_whitespace_tbl[scope_col_start_single + 1]
+            if ref then
+                if indent.is_space_indent(ref) then
+                    whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.INDENT
+                else
+                    whitespace_tbl[scope_col_start_single + 1] = indent.whitespace.TAB_START
+                end
+                local k = scope_col_start_single
+                while not whitespace_tbl[k] and k >= 0 do
+                    whitespace_tbl[k] = indent.whitespace.SPACE
+                    k = k - 1
+                end
             end
         end
 
