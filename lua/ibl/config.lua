@@ -271,7 +271,7 @@ end
 ---@return ibl.config.full
 M.set_config = function(config)
     validate_config(config)
-    M.config = merge_configs("merge", M.default_config, config)
+    M.config = merge_configs("merge", M.config or M.default_config, config)
 
     return M.config
 end
