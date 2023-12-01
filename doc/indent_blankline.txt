@@ -36,7 +36,7 @@ setup({config})                                                  *ibl.setup()*
 
  `setup` is idempotent, meaning you can call it multiple times, and each call
  will reset indent-blankline. If you want to only update the current
- configuration, use |ibl.update()|.
+ configuration, use |ibl.update()| or |ibl.overwrite()|.
 
  Parameters: ~
    • {config}  (|ibl.config|?) Configuration table
@@ -69,6 +69,9 @@ overwrite({config})                                          *ibl.overwrite()*
  The first parameter is a configuration table.
  All values that are not passed in the table are kept as they are.
  All values that are passed overwrite existing and default values.
+
+ In case you use both |ibl.setup()| and |ibl.overwrite()|, make sure to
+ call setup first.
 
  Parameters: ~
    • {config}  (|ibl.config|) Configuration table
