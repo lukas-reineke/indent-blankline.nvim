@@ -170,6 +170,7 @@ M.has_end = function(line)
 end
 
 ---@param bufnr number
+---@return number, number, number, number
 M.get_offset = function(bufnr)
     local win
     local win_view
@@ -196,6 +197,24 @@ M.get_offset = function(bufnr)
     end
 
     return win_view.leftcol or 0, win_view.topline or 0, win_end, win_height
+end
+
+---@param bufnr number
+---@param row number
+---@return number
+M.get_foldclosed = function(bufnr, row)
+    if bufnr == vim.api.nvim_get_current_buf() then
+        return vim.fn.foldclosed(row) or -1
+    else
+        local win = M.get_win(bufnr)
+        if not win then
+            return -1
+        end
+        return vim.api.nvim_win_call(win, function()
+            ---@diagnostic disable-next-line: redundant-return-value
+            return vim.fn.foldclosed(row) or -1
+        end)
+    end
 end
 
 ---@param bufnr number
