@@ -218,6 +218,24 @@ M.get_foldclosed = function(bufnr, row)
 end
 
 ---@param bufnr number
+---@param row number
+---@return string
+M.get_foldtextresult = function(bufnr, row)
+    if bufnr == vim.api.nvim_get_current_buf() then
+        return vim.fn.foldtextresult(row) or ""
+    else
+        local win = M.get_win(bufnr)
+        if not win then
+            return ""
+        end
+        return vim.api.nvim_win_call(win, function()
+            ---@diagnostic disable-next-line: redundant-return-value
+            return vim.fn.foldtextresult(row) or ""
+        end)
+    end
+end
+
+---@param bufnr number
 ---@param config ibl.config
 M.is_buffer_active = function(bufnr, config)
     for _, filetype in ipairs(M.get_filetypes(bufnr)) do

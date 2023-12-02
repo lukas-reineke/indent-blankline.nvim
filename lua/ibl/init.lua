@@ -269,7 +269,7 @@ M.refresh = function(bufnr)
         local whitespace = utils.get_whitespace(line)
         local foldclosed = utils.get_foldclosed(bufnr, row)
         if is_current_buffer and foldclosed == row then
-            local foldtext = vim.fn.foldtextresult(row)
+            local foldtext = utils.get_foldtextresult(bufnr, row)
             local foldtext_whitespace = utils.get_whitespace(foldtext)
             if vim.fn.strdisplaywidth(foldtext_whitespace, 0) < vim.fn.strdisplaywidth(whitespace, 0) then
                 vt.clear_buffer(bufnr, row)
