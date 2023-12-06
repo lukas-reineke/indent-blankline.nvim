@@ -152,6 +152,14 @@ M.refresh = function(bufnr)
     assert(M.initialized, "Tried to refresh without doing setup")
     bufnr = utils.get_bufnr(bufnr)
     local is_current_buffer = vim.api.nvim_get_current_buf() == bufnr
+
+    -- Ensure that function isn't called twice for the same buffer by different autocmds
+    -- Cleared at the end of M.refresh
+    if M._refreshing == bufnr then
+        return
+    end
+    M._refreshing = is_current_buffer
+
     local config = conf.get_config(bufnr)
 
     if not config.enabled or not vim.api.nvim_buf_is_loaded(bufnr) or not utils.is_buffer_active(bufnr, config) then
@@ -445,6 +453,7 @@ M.refresh = function(bufnr)
 
         ::continue::
     end
+    M._refreshing = nil
 end
 
 return M
