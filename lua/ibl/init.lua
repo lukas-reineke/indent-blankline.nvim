@@ -377,7 +377,7 @@ M.refresh = function(bufnr)
         if scope_start and scope then
             scope_col_start = #whitespace
             scope_col_start_single = #whitespace_tbl
-            scope_index = #vim.tbl_filter(function(w)
+            scope_index = #utils.tbl_filter(function(w)
                 return indent.is_indent(w)
             end, whitespace_tbl) + 1
             for _, fn in

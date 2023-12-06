@@ -1,5 +1,6 @@
 local conf = require "ibl.config"
 local hooks = require "ibl.hooks"
+local utils = require "ibl.utils"
 
 ---@class ibl.highlight
 ---@field char string
@@ -27,7 +28,7 @@ end
 
 ---@param hl table
 local not_set = function(hl)
-    return not hl or vim.tbl_count(hl) == 0
+    return not hl or utils.tbl_count(hl) == 0
 end
 
 local setup_builtin_hl_groups = function()

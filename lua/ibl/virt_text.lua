@@ -106,7 +106,7 @@ M.get = function(config, char_map, whitespace_tbl, scope_active, scope_index, sc
 
         table.insert(virt_text, {
             char,
-            vim.tbl_filter(function(v)
+            utils.tbl_filter(function(v)
                 return v ~= nil
             end, { whitespace_hl, indent_hl, underline_hl }),
         })
