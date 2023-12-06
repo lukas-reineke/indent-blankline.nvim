@@ -1,3 +1,4 @@
+local utils = require "ibl.utils"
 local M = {}
 
 ---@enum ibl.indent.whitespace
@@ -41,7 +42,7 @@ M.get = function(whitespace, opts, indent_state)
         indent_cap = indent_state.stack[1] or 0
         indent_state.cap = false
     end
-    local varts = vim.tbl_map(tonumber, vim.split(vartabstop, ",", { trimempty = true }))
+    local varts = utils.tbl_map(tonumber, vim.split(vartabstop, ",", { trimempty = true }))
     if shiftwidth == 0 then
         shiftwidth = tabstop
     end
@@ -74,7 +75,7 @@ M.get = function(whitespace, opts, indent_state)
             end
         else
             local mod = (spaces + tabs + extra) % shiftwidth
-            if vim.tbl_contains(indent_state.stack, spaces + tabs) then
+            if utils.tbl_contains(indent_state.stack, spaces + tabs) then
                 table.insert(whitespace_tbl, M.whitespace.INDENT)
                 extra = extra + mod
             elseif mod == 0 then
@@ -92,7 +93,7 @@ M.get = function(whitespace, opts, indent_state)
         end
     end
 
-    indent_state.stack = vim.tbl_filter(function(a)
+    indent_state.stack = utils.tbl_filter(function(a)
         return a < spaces + tabs
     end, indent_state.stack)
     table.insert(indent_state.stack, spaces + tabs)
@@ -104,14 +105,17 @@ end
 ---
 ---@param whitespace ibl.indent.whitespace
 M.is_indent = function(whitespace)
-    return vim.tbl_contains({ M.whitespace.INDENT, M.whitespace.TAB_START, M.whitespace.TAB_START_SINGLE }, whitespace)
+    return utils.tbl_contains(
+        { M.whitespace.INDENT, M.whitespace.TAB_START, M.whitespace.TAB_START_SINGLE },
+        whitespace
+    )
 end
 
 --- Returns true if the passed whitespace belongs to space indent
 ---
 ---@param whitespace ibl.indent.whitespace
 M.is_space_indent = function(whitespace)
-    return vim.tbl_contains({ M.whitespace.INDENT, M.whitespace.SPACE }, whitespace)
+    return utils.tbl_contains({ M.whitespace.INDENT, M.whitespace.SPACE }, whitespace)
 end
 
 return M

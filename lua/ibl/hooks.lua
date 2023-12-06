@@ -107,7 +107,7 @@ end
 M.clear = function(id)
     vim.validate { id = { id, "string" } }
     local type, hook_id = unpack(vim.split(id, "_"))
-    if not type or not hook_id or not vim.tbl_contains(M.type, type) then
+    if not type or not hook_id or not utils.tbl_contains(M.type, type) then
         return
     end
     hooks[type][hook_id] = nil

@@ -20,6 +20,74 @@ M.validate = function(opt, input, path)
     end
 end
 
+--- copy of vim.tbl_contains without vim.validate
+---
+---@param t table Table to check
+---@param value any Value to compare or predicate function reference
+---@param opts table? Keyword arguments |kwargs|:
+---       - predicate: (boolean) `value` is a function reference to be checked (default false)
+---@return boolean `true` if `t` contains `value`
+M.tbl_contains = function(t, value, opts)
+    local pred
+    if opts and opts.predicate then
+        vim.validate { value = { value, "c" } }
+        pred = value
+    else
+        pred = function(v)
+            return v == value
+        end
+    end
+
+    for _, v in pairs(t) do
+        if pred(v) then
+            return true
+        end
+    end
+    return false
+end
+
+--- copy of vim.tbl_count without vim.validate
+---
+---@param t table Table
+---@return integer Number of non-nil values in table
+M.tbl_count = function(t)
+    local count = 0
+    for _ in pairs(t) do
+        count = count + 1
+    end
+    return count
+end
+
+--- copy of vim.tbl_map without vim.validate
+---
+---@generic T
+---@param func fun(value: T): any (function) Function
+---@param t table<any, T> (table) Table
+---@return table Table of transformed values
+M.tbl_map = function(func, t)
+    local rettab = {}
+    for k, v in pairs(t) do
+        rettab[k] = func(v)
+    end
+    return rettab
+end
+
+--- copy of vim.tbl_filter without vim.validate
+---
+---@generic T
+---@param func fun(value: T): boolean (function) Function
+---@param t table<any, T> (table) Table
+---@return T[] (table) Table of filtered values
+M.tbl_filter = function(func, t)
+    local rettab = {}
+    for _, entry in pairs(t) do
+        if func(entry) then
+            table.insert(rettab, entry)
+        end
+    end
+    return rettab
+end
+
 ---@param codepoint integer
 M.utf8_encode = function(codepoint)
     if codepoint <= 0x7F then
@@ -239,13 +307,13 @@ end
 ---@param config ibl.config
 M.is_buffer_active = function(bufnr, config)
     for _, filetype in ipairs(M.get_filetypes(bufnr)) do
-        if vim.tbl_contains(config.exclude.filetypes, filetype) then
+        if M.tbl_contains(config.exclude.filetypes, filetype) then
             return false
         end
     end
 
     local buftype = vim.api.nvim_get_option_value("buftype", { buf = bufnr })
-    if vim.tbl_contains(config.exclude.buftypes, buftype) then
+    if M.tbl_contains(config.exclude.buftypes, buftype) then
         return false
     end
 

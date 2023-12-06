@@ -27,7 +27,7 @@ M.language_for_range = function(language_tree, range, config)
         end
     end
 
-    if not vim.tbl_contains(config.scope.exclude.language, language_tree:lang()) then
+    if not utils.tbl_contains(config.scope.exclude.language, language_tree:lang()) then
         return language_tree
     end
 end
@@ -76,9 +76,9 @@ M.get = function(bufnr, config)
         local type = node:type()
 
         if
-            (scope_lang[lang][type] and not vim.tbl_contains(excluded_node_types, type))
-            or vim.tbl_contains(include_node_types, type)
-            or vim.tbl_contains(include_node_types, "*")
+            (scope_lang[lang][type] and not utils.tbl_contains(excluded_node_types, type))
+            or utils.tbl_contains(include_node_types, type)
+            or utils.tbl_contains(include_node_types, "*")
         then
             return node
         else
