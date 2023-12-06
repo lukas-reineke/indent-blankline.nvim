@@ -116,8 +116,7 @@ local debounced_refresh = setmetatable({
             self.timers[bufnr] = uv.new_timer()
         end
         if uv.timer_get_due_in(self.timers[bufnr]) <= 50 then
-            M.refresh(bufnr)
-
+            self.queued_buffers[bufnr] = nil
             local config = conf.get_config(bufnr)
             self.timers[bufnr]:start(config.debounce, 0, function()
                 if self.queued_buffers[bufnr] then
@@ -125,6 +124,8 @@ local debounced_refresh = setmetatable({
                     vim.schedule_wrap(M.refresh)(bufnr)
                 end
             end)
+
+            M.refresh(bufnr)
         else
             self.queued_buffers[bufnr] = true
         end
