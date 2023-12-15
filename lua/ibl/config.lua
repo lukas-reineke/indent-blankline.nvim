@@ -21,7 +21,7 @@ M.default_config = {
     debounce = 200,
     viewport_buffer = {
         min = 30,
-        max = 500,
+        max = 60,
     },
     indent = {
         char = "▎",
