@@ -13,6 +13,7 @@ M.setup = function()
     })
     vim.api.nvim_create_autocmd({
         "CursorMoved",
+        "CursorMovedI",
         "BufWinEnter",
         "CompleteChanged",
         "FileChangedShellPost",
