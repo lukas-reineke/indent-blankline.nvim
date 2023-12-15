@@ -643,7 +643,7 @@ M.cpp = vim.tbl_extend("keep", M.c, {
     catch_clause = true,
     requires_expression = true,
 })
-M.arduion = M.cpp
+M.arduino = M.cpp
 M.cuda = M.cpp
 M.astro = M.html
 M.glsl = M.c
