@@ -416,6 +416,13 @@ local M = {
     re2c = {
         body = true,
     },
+    risor = {
+        function_declaration = true,
+        if_statement = true,
+        block = true,
+        switch_statement = true,
+        for_statement = true,
+    },
     ron = {
         array = true,
         map = true,
