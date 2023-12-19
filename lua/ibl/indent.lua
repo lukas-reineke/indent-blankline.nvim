@@ -105,17 +105,16 @@ end
 ---
 ---@param whitespace ibl.indent.whitespace
 M.is_indent = function(whitespace)
-    return utils.tbl_contains(
-        { M.whitespace.INDENT, M.whitespace.TAB_START, M.whitespace.TAB_START_SINGLE },
-        whitespace
-    )
+    return whitespace == M.whitespace.INDENT
+        or whitespace == M.whitespace.TAB_START
+        or whitespace == M.whitespace.TAB_START_SINGLE
 end
 
 --- Returns true if the passed whitespace belongs to space indent
 ---
 ---@param whitespace ibl.indent.whitespace
 M.is_space_indent = function(whitespace)
-    return utils.tbl_contains({ M.whitespace.INDENT, M.whitespace.SPACE }, whitespace)
+    return whitespace == M.whitespace.INDENT or whitespace == M.whitespace.SPACE
 end
 
 return M
