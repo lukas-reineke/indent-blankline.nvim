@@ -88,7 +88,7 @@ M.default_config = {
 local validate_char = function(char)
     if type(char) == "string" then
         local length = vim.fn.strdisplaywidth(char)
-        return length <= 1, string.format("'%s' has a dispaly width of %d", char, length)
+        return length <= 1, string.format("'%s' has a display width of %d", char, length)
     else
         if #char == 0 then
             return false, "table is empty"
