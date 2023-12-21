@@ -189,7 +189,7 @@ M.refresh = function(bufnr)
     local scope
     local scope_start_line, scope_end_line
     if not scope_disabled and config.scope.enabled then
-        scope = scp.get(bufnr, config)
+        scope = scp.get(bufnr, config, global_buffer_state[bufnr] or {})
         if scope and scope:start() >= 0 then
             local scope_start = scope:start()
             local scope_end = scope:end_()
