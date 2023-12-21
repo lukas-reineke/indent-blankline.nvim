@@ -348,4 +348,16 @@ M.tbl_get_index = function(list, i)
     return list[((i - 1) % #list) + 1]
 end
 
+---@param whitespace_tbl ibl.indent.whitespace[]
+---@param left_offset number
+---@return ibl.indent.whitespace[]
+M.fix_horizontal_scroll = function(whitespace_tbl, left_offset)
+    local current_left_offset = left_offset
+    while #whitespace_tbl > 0 and current_left_offset > 0 do
+        table.remove(whitespace_tbl, 1)
+        current_left_offset = current_left_offset - 1
+    end
+    return whitespace_tbl
+end
+
 return M

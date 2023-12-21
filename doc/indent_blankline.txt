@@ -231,10 +231,13 @@ config.viewport_buffer                            *ibl.config.viewport_buffer*
             Default: `30` ~
 
                                               *ibl.config.viewport_buffer.max*
-   • {max}  (number)
+   • {max}  (number) [deprecated]
             Maximum number of lines above and below of what is currently
             visible in the window for which indentation guides will
             be generated
+
+            (This functionality has been deprecated, and the exact offset
+            can be chosen with `min` instead)
 
             Default: `500` ~
 

@@ -187,10 +187,14 @@ M.refresh = function(bufnr)
     end
 
     local scope
+    local scope_start_line, scope_end_line
     if not scope_disabled and config.scope.enabled then
         scope = scp.get(bufnr, config)
         if scope and scope:start() >= 0 then
-            offset = top_offset - math.min(top_offset - math.min(offset, scope:start()), config.viewport_buffer.max)
+            local scope_start = scope:start()
+            local scope_end = scope:end_()
+            scope_start_line = vim.api.nvim_buf_get_lines(bufnr, scope_start, scope_start + 1, false)[1]
+            scope_end_line = vim.api.nvim_buf_get_lines(bufnr, scope_end, scope_end + 1, false)[1]
         end
     end
 
@@ -257,6 +261,47 @@ M.refresh = function(bufnr)
                 line_skipped[i] = true
                 break
             end
+        end
+    end
+
+    if scope and scope_start_line then
+        -- find whitespace tables for the start and end lines of scope
+        local whitespace_start = utils.get_whitespace(scope_start_line)
+        local whitespace_end = utils.get_whitespace(scope_end_line)
+        local whitespace_tbl_start = indent.get(whitespace_start, indent_opts, nil)
+        local whitespace_tbl_end = indent.get(whitespace_end, indent_opts, nil)
+        local whitespace, whitespace_tbl, scope_row
+        -- use the smallest whitespace table of the two to determine the scope index
+        if #whitespace_tbl_end < #whitespace_tbl_start then
+            whitespace = whitespace_end
+            whitespace_tbl = whitespace_tbl_end
+            scope_row = scope_row_end
+        else
+            whitespace = whitespace_start
+            whitespace_tbl = whitespace_tbl_start
+            scope_row = scope_row_start
+        end
+
+        -- do the same calculations as in the main loop below, but note that the scope
+        -- start and end will never be on a blankline, so these cases simplify a lot
+        whitespace_tbl = utils.fix_horizontal_scroll(whitespace_tbl, left_offset)
+
+        for _, fn in
+            pairs(hooks.get(bufnr, hooks.type.WHITESPACE) --[=[@as ibl.hooks.cb.whitespace[]]=])
+        do
+            whitespace_tbl = fn(buffer_state.tick, bufnr, scope_row - 1, whitespace_tbl)
+        end
+
+        -- calculate the scope index
+        scope_col_start = #whitespace
+        scope_col_start_single = #whitespace_tbl
+        scope_index = #utils.tbl_filter(function(w)
+            return indent.is_indent(w)
+        end, whitespace_tbl) + 1
+        for _, fn in
+            pairs(hooks.get(bufnr, hooks.type.SCOPE_HIGHLIGHT) --[=[@as ibl.hooks.cb.scope_highlight[]]=])
+        do
+            scope_index = fn(buffer_state.tick, bufnr, scope, scope_index)
         end
     end
 
@@ -358,11 +403,7 @@ M.refresh = function(bufnr)
         end
 
         -- Fix horizontal scroll
-        local current_left_offset = left_offset
-        while #whitespace_tbl > 0 and current_left_offset > 0 do
-            table.remove(whitespace_tbl, 1)
-            current_left_offset = current_left_offset - 1
-        end
+        whitespace_tbl = utils.fix_horizontal_scroll(whitespace_tbl, left_offset)
 
         for _, fn in
             pairs(hooks.get(bufnr, hooks.type.WHITESPACE) --[=[@as ibl.hooks.cb.whitespace[]]=])
@@ -375,18 +416,6 @@ M.refresh = function(bufnr)
         -- #### make virtual text ####
         local scope_start = row == scope_row_start
         local scope_end = row == scope_row_end
-        if scope_start and scope then
-            scope_col_start = #whitespace
-            scope_col_start_single = #whitespace_tbl
-            scope_index = #utils.tbl_filter(function(w)
-                return indent.is_indent(w)
-            end, whitespace_tbl) + 1
-            for _, fn in
-                pairs(hooks.get(bufnr, hooks.type.SCOPE_HIGHLIGHT) --[=[@as ibl.hooks.cb.scope_highlight[]]=])
-            do
-                scope_index = fn(buffer_state.tick, bufnr, scope, scope_index)
-            end
-        end
 
         local whitespace_only = not blankline and line == whitespace
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
