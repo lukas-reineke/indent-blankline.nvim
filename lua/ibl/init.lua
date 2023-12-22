@@ -419,8 +419,16 @@ M.refresh = function(bufnr)
 
         local whitespace_only = not blankline and line == whitespace
         local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
-        local virt_text, scope_hl =
-            vt.get(config, char_map, whitespace_tbl, scope_active, scope_index, scope_end, scope_col_start_single)
+        local virt_text, scope_hl = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_start,
+            scope_end,
+            scope_col_start_single
+        )
 
         -- #### set virtual text ####
         vt.clear_buffer(bufnr, row)
