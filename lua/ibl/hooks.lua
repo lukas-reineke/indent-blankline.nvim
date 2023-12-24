@@ -207,12 +207,12 @@ M.builtin = {
 
         local start_row, start_col = scope:start()
         local end_row, end_col = scope:end_()
-        local start_line = vim.api.nvim_buf_get_lines(bufnr, start_row, start_row + 1, false)
-        local end_line = vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, false)
-        local end_pos
-        local start_pos
-        local start_pos_scope
-        local end_pos_scope
+        local start_line = vim.api.nvim_buf_get_lines(bufnr, start_row, start_row + 1, false)[1]
+        local end_line = vim.api.nvim_buf_get_lines(bufnr, end_row, end_row + 1, false)[1]
+        local end_pos = {}
+        local start_pos = {}
+        local start_pos_scope = {}
+        local end_pos_scope = {}
 
         local function inspect_pos(pos)
             return vim.api.nvim_buf_get_extmarks(bufnr, -1, pos, pos, {
@@ -221,12 +221,12 @@ M.builtin = {
             })
         end
 
-        if end_line[1] then
-            end_pos = inspect_pos { end_row, end_line[1]:find "%S" - 1 }
+        if end_line then
+            end_pos = inspect_pos { end_row, end_line:find "%S" - 1 }
             end_pos_scope = inspect_pos { end_row, end_col - 1 }
         end
-        if start_line[1] then
-            start_pos = inspect_pos { start_row, #start_line[1] - 1 }
+        if start_line then
+            start_pos = inspect_pos { start_row, #start_line - 1 }
             start_pos_scope = inspect_pos { start_row, start_col }
         end
 
