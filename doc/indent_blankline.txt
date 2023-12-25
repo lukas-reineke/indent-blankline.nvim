@@ -328,6 +328,12 @@ config.indent                                              *ibl.config.indent*
 
                          Default: `1` ~
 
+   • {repeat_linebreak}  (boolean)
+                         Repeat indentation guide virtual text on wrapped lines
+                         if |'breakindent'| is set
+
+                         Default: `true` ~
+
  Example: ~
    >lua
    {
@@ -336,6 +342,7 @@ config.indent                                              *ibl.config.indent*
        highlight = { "Function", "Label" },
        smart_indent_cap = true,
        priority = 2,
+       repeat_linebreak = false,
    }
 <
 

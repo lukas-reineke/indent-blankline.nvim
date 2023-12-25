@@ -29,7 +29,7 @@ M.setup = function()
     })
     vim.api.nvim_create_autocmd("OptionSet", {
         group = group,
-        pattern = "list,listchars,shiftwidth,tabstop,vartabstop",
+        pattern = "breakindent,list,listchars,shiftwidth,tabstop,vartabstop",
         callback = function(opts)
             ibl.debounced_refresh(opts.buf)
         end,

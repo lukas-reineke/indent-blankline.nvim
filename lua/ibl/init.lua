@@ -9,6 +9,7 @@ local conf = require "ibl.config"
 local utils = require "ibl.utils"
 
 local namespace = vim.api.nvim_create_namespace "indent_blankline"
+local has_repeat = vim.fn.has "nvim-0.10" == 1
 
 local M = {}
 
@@ -305,6 +306,11 @@ M.refresh = function(bufnr)
         end
     end
 
+    -- Repeat indent virtual text on wrapped lines when 'breakindent' is set.
+    local repeat_indent = has_repeat
+        and config.indent.repeat_linebreak
+        and vim.api.nvim_get_option_value("breakindent", { win = utils.get_win(bufnr) })
+
     for i, line in ipairs(lines) do
         local row = i + offset
         if line_skipped[i] then
@@ -475,6 +481,7 @@ M.refresh = function(bufnr)
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, 0, {
                 virt_text = virt_text,
                 virt_text_pos = "overlay",
+                virt_text_repeat_linebreak = repeat_indent or nil,
                 hl_mode = "combine",
                 priority = config.indent.priority,
                 strict = false,
