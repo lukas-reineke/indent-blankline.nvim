@@ -1,4 +1,5 @@
 local M = {}
+local has_repeat = vim.fn.has "nvim-0.10" == 1
 
 ---@param line string?
 M.get_whitespace = function(line)
@@ -358,6 +359,41 @@ M.fix_horizontal_scroll = function(whitespace_tbl, left_offset)
         current_left_offset = current_left_offset - 1
     end
     return whitespace_tbl
+end
+
+---@param bufnr number
+---@param config ibl.config
+---@return boolean
+M.has_repeat_indent = function(bufnr, config)
+    if not config.indent.repeat_linebreak then
+        return false
+    end
+    if not has_repeat then
+        return false
+    end
+
+    local win = M.get_win(bufnr)
+    if not vim.api.nvim_get_option_value("breakindent", { win = win }) then
+        return false
+    end
+
+    local raw_value = vim.api.nvim_get_option_value("breakindentopt", { win = win })
+    for _, key_value_str in ipairs(vim.split(raw_value, ",")) do
+        local key, value = unpack(vim.split(key_value_str, ":"))
+        key = vim.trim(key)
+
+        if key == "column" then
+            return false
+        end
+        if key == "sbr" then
+            return false
+        end
+        if key == "shift" and (tonumber(value) or 0) < 0 then
+            return false
+        end
+    end
+
+    return true
 end
 
 return M
