@@ -328,11 +328,18 @@ config.indent                                              *ibl.config.indent*
 
                          Default: `1` ~
 
+                                          *ibl.config.indent.repeat_linebreak*
    • {repeat_linebreak}  (boolean)
-                         Repeat indentation guide virtual text on wrapped lines
-                         if |'breakindent'| is set
+                         Repeat indentation guide virtual text on wrapped
+                         lines if |'breakindent'| is set, and |'breakindentopt'|
+                         does not contain any of the following:
+                           • `column`
+                           • `sbr`
+                           • `shift` with a negative value
 
                          Default: `true` ~
+
+                         Note: requires Neovim version 0.10 or higher ~
 
  Example: ~
    >lua
