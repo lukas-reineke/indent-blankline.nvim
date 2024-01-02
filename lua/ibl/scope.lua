@@ -68,6 +68,9 @@ M.get = function(bufnr, config, buffer_state)
     if not node then
         return nil
     end
+    if node:start() == node:end_() and not config.scope.show_exact_scope then
+        node = lang_tree:named_node_for_range(range, { bufnr = bufnr }) or node
+    end
 
     -- if the scope didn't change, return node immediately
     if buffer_state.scope and buffer_state.scope:equal(node) then
