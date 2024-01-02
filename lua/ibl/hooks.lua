@@ -222,7 +222,7 @@ M.builtin = {
         end
 
         if end_line then
-            end_pos = inspect_pos { end_row, end_line:find "%S" - 1 }
+            end_pos = inspect_pos { end_row, (end_line:find "%S" or 0) - 1 }
             end_pos_scope = inspect_pos { end_row, end_col - 1 }
         end
         if start_line then
