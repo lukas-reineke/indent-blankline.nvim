@@ -173,6 +173,9 @@ local M = {
         get_body = true,
         set_body = true,
     },
+    git_config = {
+        section = true,
+    },
     gleam = {
         function_body = true,
         case_clause = true,
