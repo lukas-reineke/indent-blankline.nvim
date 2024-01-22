@@ -117,6 +117,10 @@ local M = {
         list_literal = true,
         set_or_map_literal = true,
         conditional_expression = true,
+        switch_block = true,
+        switch_statement_case = true,
+        switch_statement_default = true,
+        switch_expression = true,
     },
     devicetree = {
         node = true,
