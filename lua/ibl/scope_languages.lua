@@ -99,6 +99,7 @@ local M = {
         constructor_signature = true,
         factory_constructor_signature = true,
         constant_constructor_signature = true,
+        function_signature = true,
         initializers = true,
         arguments = true,
         assertion_arguments = true,
