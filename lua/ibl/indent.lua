@@ -42,7 +42,7 @@ M.get = function(whitespace, opts, indent_state)
         indent_cap = indent_state.stack[1] or 0
         indent_state.cap = false
     end
-    local varts = utils.tbl_map(tonumber, vim.split(vartabstop, ",", { trimempty = true }))
+    local varts = utils.tbl_map(tonumber, utils.split(vartabstop, ",", { trimempty = true }))
     if shiftwidth == 0 then
         shiftwidth = tabstop
     end
