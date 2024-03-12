@@ -670,6 +670,7 @@ M.luau = M.lua
 M.nqc = M.c
 M.objc = M.c
 M.ocaml_interface = M.ocaml
+M.svelte = M.html
 M.tsx = vim.tbl_extend("keep", M.ecma, { jsx_element = true })
 M.typescript = M.ecma
 
