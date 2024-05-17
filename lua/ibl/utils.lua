@@ -247,6 +247,7 @@ end
 ---@return ibl.listchars
 M.get_listchars = function(bufnr)
     local listchars
+    ---@diagnostic disable-next-line
     local list = vim.opt.list:get()
     if list then
         listchars = vim.opt.listchars:get()
@@ -424,11 +425,7 @@ end
 ---@vararg T
 ---@return T
 M.tbl_join = function(...)
-    local result = {}
-    for i, v in ipairs(vim.tbl_flatten { ... }) do
-        result[i] = v
-    end
-    return result
+    return vim.iter({ ... }):flatten():totable()
 end
 
 ---@generic T

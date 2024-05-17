@@ -12,14 +12,14 @@ jobs:
     uses: ./.github/workflows/tests.yml
     with:
       neovim_versions: |
-        [ "nightly", "v0.9.4" ]
+        [ "nightly", "v0.10.0" ]
 
   lua-language-server:
     uses: ./.github/workflows/lua_language_server.yml
     with:
-      lua_ls_version: 3.7.0
+      lua_ls_version: 3.9.1
       neovim_versions: |
-        [ "nightly", "v0.9.4" ]
+        [ "nightly", "v0.10.0" ]
 
   stylua:
     name: stylua
