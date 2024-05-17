@@ -425,7 +425,7 @@ end
 ---@vararg T
 ---@return T
 M.tbl_join = function(...)
-    return vim.iter({ ... }):flatten():totable()
+    return vim.tbl_flatten({...})
 end
 
 ---@generic T
