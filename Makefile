@@ -19,7 +19,10 @@ stylua:
 lua-language-server: dependencies
 	rm -rf .ci/lua-language-server-log
 	lua-language-server --configpath .luarc.$(version).json --logpath .ci/lua-language-server-log --check .
-	[ -f .ci/lua-language-server-log/check.json ] && { cat .ci/lua-language-server-log/check.json 2>/dev/null; exit 1; } || true
+	@if jq -e 'if . | length > 0 then true else false end' .ci/lua-language-server-log/check.json > /dev/null; then \
+		cat .ci/lua-language-server-log/check.json; \
+		exit 1; \
+	fi
 
 dependencies:
 	if [ ! -d .ci/vendor ]; then \

@@ -12,7 +12,7 @@ end
 
 --- Takes a language tree and a range, and returns the child language tree for that range
 ---
----@param language_tree LanguageTree
+---@param language_tree vim.treesitter.LanguageTree
 ---@param range table<number, number>
 ---@param config ibl.config.full
 M.language_for_range = function(language_tree, range, config)

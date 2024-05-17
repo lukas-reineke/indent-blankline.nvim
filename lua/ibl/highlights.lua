@@ -17,13 +17,7 @@ local M = {
 
 ---@param name string
 local get = function(name)
-    -- TODO [Lukas]: remove this when AstroNvim drops support for 0.8
-    if not vim.api.nvim_get_hl then
-        ---@diagnostic disable-next-line
-        return (vim.fn.hlexists(name) == 1 and vim.api.nvim_get_hl_by_name(name, true)) or vim.empty_dict() --[[@as table]]
-    end
-
-    return vim.api.nvim_get_hl(0, { name = name })
+    return vim.api.nvim_get_hl(0, { name = name }) --[[@as vim.api.keyset.highlight]]
 end
 
 ---@param hl table

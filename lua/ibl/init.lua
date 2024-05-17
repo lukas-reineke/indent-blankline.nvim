@@ -12,7 +12,6 @@ local namespace = vim.api.nvim_create_namespace "indent_blankline"
 
 local M = {}
 
----@package
 M.initialized = false
 
 ---@type table<number, { scope: TSNode?, left_offset: number, top_offset: number, tick: number }>
