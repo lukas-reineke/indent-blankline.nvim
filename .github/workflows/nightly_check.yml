@@ -20,6 +20,6 @@ jobs:
   lua-language-server:
     uses: ./.github/workflows/lua_language_server.yml
     with:
-      lua_ls_version: 3.7.0
+      lua_ls_version: 3.9.1
       neovim_versions: |
         [ "nightly" ]
