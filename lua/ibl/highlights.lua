@@ -28,9 +28,12 @@ end
 local setup_builtin_hl_groups = function()
     local whitespace_hl = get "Whitespace"
     local line_nr_hl = get "LineNr"
+    local normal_hl = get "Normal"
     local ibl_indent_hl_name = "IblIndent"
     local ibl_whitespace_hl_name = "IblWhitespace"
     local ibl_scope_hl_name = "IblScope"
+    local ibl_scope_char_hl_name = "IblScopeChar"
+    local ibl_char_hl_name = "IblChar"
 
     if not_set(get(ibl_indent_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_indent_hl_name, whitespace_hl)
@@ -40,6 +43,12 @@ local setup_builtin_hl_groups = function()
     end
     if not_set(get(ibl_scope_hl_name)) then
         vim.api.nvim_set_hl(0, ibl_scope_hl_name, line_nr_hl)
+    end
+    if not_set(get(ibl_scope_char_hl_name)) then
+        vim.api.nvim_set_hl(0, ibl_scope_char_hl_name, normal_hl)
+    end
+    if not_set(get(ibl_char_hl_name)) then
+        vim.api.nvim_set_hl(0, ibl_char_hl_name, normal_hl)
     end
 end
 
