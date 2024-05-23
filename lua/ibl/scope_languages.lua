@@ -284,7 +284,6 @@ local M = {
         interpolated_expression = true,
     },
     lua = {
-        chunk = true,
         do_statement = true,
         while_statement = true,
         repeat_statement = true,
