@@ -63,7 +63,7 @@ describe("indent", function()
     it("mix of tabs and spaces", function()
         local whitespace_tbl, _ = indent.get("  	 	", opts, { cap = false, stack = { 0 } })
 
-        assert.are.same(whitespace_tbl, { INDENT, SPACE, TAB_START, TAB_END, SPACE, TAB_START_SINGLE })
+        assert.are.same(whitespace_tbl, { INDENT, SPACE, TAB_START, TAB_END, SPACE, TAB_START, TAB_FILL, TAB_END })
     end)
 
     it("mix of tabs and spaces with vartabstop", function()

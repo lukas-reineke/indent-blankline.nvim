@@ -73,6 +73,7 @@ M.get = function(whitespace, opts, indent_state)
                     table.insert(whitespace_tbl, M.whitespace.TAB_FILL)
                 end
             end
+            spaces = 0
         else
             local mod = (spaces + tabs + extra) % shiftwidth
             if utils.tbl_contains(indent_state.stack, spaces + tabs) then
