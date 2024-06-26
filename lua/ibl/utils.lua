@@ -396,6 +396,19 @@ M.get_foldtextresult = function(bufnr, row)
 end
 
 ---@param bufnr number
+---@return boolean
+M.has_empty_foldtext = function(bufnr)
+    if vim.fn.has "nvim-0.10" == 0 then
+        return false
+    end
+    local win = M.get_win(bufnr)
+    if not win then
+        return false
+    end
+    return vim.api.nvim_get_option_value("foldtext", { win = win }) == ""
+end
+
+---@param bufnr number
 ---@param config ibl.config
 M.is_buffer_active = function(bufnr, config)
     for _, filetype in ipairs(M.get_filetypes(bufnr)) do
