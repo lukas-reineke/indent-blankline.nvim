@@ -88,14 +88,14 @@ M.default_config = {
 ---@return boolean, string?
 local validate_char = function(char)
     if type(char) == "string" then
-        local length = vim.fn.strdisplaywidth(char)
+        local length = vim.fn.strwidth(char)
         return length <= 1, string.format("'%s' has a display width of %d", char, length)
     else
         if #char == 0 then
             return false, "table is empty"
         end
         for i, c in ipairs(char) do
-            local length = vim.fn.strdisplaywidth(c)
+            local length = vim.fn.strwidth(c)
             if length > 1 then
                 return false, string.format("index %d '%s' has a display width of %d", i, c, length)
             end
