@@ -336,6 +336,10 @@ local M = {
 
         exceptionHandler = true,
     },
+    perl = {
+        block = true,
+        block_statement = true,
+    },
     php = {
         class_declaration = true,
         method_declaration = true,
