@@ -76,7 +76,7 @@ M.get = function(bufnr, config)
         local type = node:type()
 
         if
-            (scope_lang[lang][type] and not utils.tbl_contains(excluded_node_types, type))
+            ((scope_lang[lang] and scope_lang[lang][type]) and not utils.tbl_contains(excluded_node_types, type))
             or utils.tbl_contains(include_node_types, type)
             or utils.tbl_contains(include_node_types, "*")
         then
