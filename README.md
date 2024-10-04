@@ -9,7 +9,7 @@ This plugin requires the latest stable version of Neovim.
 
 ## Install
 
-Use your favourite plugin manager to install.
+Use your favorite plugin manager to install.
 
 For [lazy.nvim](https://github.com/folke/lazy.nvim):
 

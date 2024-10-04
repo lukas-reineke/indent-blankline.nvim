@@ -58,7 +58,7 @@ M.get = function(bufnr, config)
     end
 
     local lang = lang_tree:lang()
-    if not scope_lang[lang] then
+    if not scope_lang[lang] and not config.scope.include.node_type[lang] then
         return nil
     end
 

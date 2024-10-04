@@ -48,7 +48,7 @@ local count = 0
 --- Each hook type takes a callback a different function, and a configuration table
 ---@param type ibl.hooks.type
 ---@param cb function
----@param opts ibl.hooks.options
+---@param opts ibl.hooks.options?
 ---@overload fun(type: 'ACTIVE', cb: ibl.hooks.cb.active, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'SCOPE_ACTIVE', cb: ibl.hooks.cb.scope_active, opts: ibl.hooks.options?): string
 ---@overload fun(type: 'SKIP_LINE', cb: ibl.hooks.cb.skip_line, opts: ibl.hooks.options?): string
