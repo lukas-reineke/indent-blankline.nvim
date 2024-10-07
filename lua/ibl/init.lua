@@ -244,6 +244,7 @@ M.refresh = function(bufnr)
     local scope_row_start, scope_col_start, scope_row_end, scope_col_end = -1, -1, -1, -1
     local scope_index = -1
     if scope then
+        ---@diagnostic disable-next-line: cast-local-type
         scope_row_start, scope_col_start, scope_row_end, scope_col_end = scope:range()
         scope_row_start, scope_col_start, scope_row_end = scope_row_start + 1, scope_col_start + 1, scope_row_end + 1
     end
