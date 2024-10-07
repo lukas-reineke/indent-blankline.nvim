@@ -72,7 +72,7 @@ M.get = function(bufnr, config)
     local include_node_types =
         utils.tbl_join(config.scope.include.node_type["*"] or {}, config.scope.include.node_type[lang] or {})
 
-    while node do
+    while node and node:byte_length() > 0 do
         local type = node:type()
 
         if
