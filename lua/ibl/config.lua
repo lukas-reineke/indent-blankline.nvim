@@ -137,7 +137,7 @@ local validate_config = function(config)
             repeat_linebreak = { config.indent.repeat_linebreak, "boolean", true },
         }, config.indent, "ibl.config.indent")
         if config.indent.char then
-            vim.validate {
+            utils.validate {
                 char = {
                     config.indent.char,
                     validate_char,
@@ -146,7 +146,7 @@ local validate_config = function(config)
             }
         end
         if config.indent.tab_char then
-            vim.validate {
+            utils.validate {
                 tab_char = {
                     config.indent.tab_char,
                     validate_char,
@@ -155,7 +155,7 @@ local validate_config = function(config)
             }
         end
         if type(config.indent.highlight) == "table" then
-            vim.validate {
+            utils.validate {
                 tab_char = {
                     config.indent.highlight,
                     function(highlight)
@@ -173,7 +173,7 @@ local validate_config = function(config)
             remove_blankline_trail = { config.whitespace.remove_blankline_trail, "boolean", true },
         }, config.whitespace, "ibl.config.whitespace")
         if type(config.whitespace.highlight) == "table" then
-            vim.validate {
+            utils.validate {
                 tab_char = {
                     config.whitespace.highlight,
                     function(highlight)
@@ -199,7 +199,7 @@ local validate_config = function(config)
             exclude = { config.scope.exclude, "table", true },
         }, config.scope, "ibl.config.scope")
         if config.scope.char then
-            vim.validate {
+            utils.validate {
                 char = {
                     config.scope.char,
                     validate_char,
@@ -208,7 +208,7 @@ local validate_config = function(config)
             }
         end
         if type(config.scope.highlight) == "table" then
-            vim.validate {
+            utils.validate {
                 tab_char = {
                     config.scope.highlight,
                     function(highlight)
