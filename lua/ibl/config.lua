@@ -110,7 +110,7 @@ local validate_config = function(config)
         return
     end
 
-    utils.validate({
+    utils.validate_config({
         enabled = { config.enabled, "boolean", true },
         debounce = { config.debounce, "number", true },
         viewport_buffer = { config.viewport_buffer, "table", true },
@@ -121,14 +121,14 @@ local validate_config = function(config)
     }, config, "ibl.config")
 
     if config.viewport_buffer then
-        utils.validate({
+        utils.validate_config({
             min = { config.viewport_buffer.min, "number", true },
             max = { config.viewport_buffer.max, "number", true },
         }, config.viewport_buffer, "ibl.config.viewport_buffer")
     end
 
     if config.indent then
-        utils.validate({
+        utils.validate_config({
             char = { config.indent.char, { "string", "table" }, true },
             tab_char = { config.indent.char, { "string", "table" }, true },
             highlight = { config.indent.highlight, { "string", "table" }, true },
@@ -168,7 +168,7 @@ local validate_config = function(config)
     end
 
     if config.whitespace then
-        utils.validate({
+        utils.validate_config({
             highlight = { config.whitespace.highlight, { "string", "table" }, true },
             remove_blankline_trail = { config.whitespace.remove_blankline_trail, "boolean", true },
         }, config.whitespace, "ibl.config.whitespace")
@@ -186,7 +186,7 @@ local validate_config = function(config)
     end
 
     if config.scope then
-        utils.validate({
+        utils.validate_config({
             enabled = { config.scope.enabled, "boolean", true },
             char = { config.scope.char, { "string", "table" }, true },
             show_start = { config.scope.show_start, "boolean", true },
@@ -219,13 +219,13 @@ local validate_config = function(config)
             }
         end
         if config.scope.exclude then
-            utils.validate({
+            utils.validate_config({
                 language = { config.scope.exclude.language, "table", true },
                 node_type = { config.scope.exclude.node_type, "table", true },
             }, config.scope.exclude, "ibl.config.scope.exclude")
         end
         if config.scope.include then
-            utils.validate({
+            utils.validate_config({
                 node_type = { config.scope.include.node_type, "table", true },
             }, config.scope.include, "ibl.config.scope.include")
         end
@@ -233,7 +233,7 @@ local validate_config = function(config)
 
     if config.exclude then
         if config.exclude then
-            utils.validate({
+            utils.validate_config({
                 filetypes = { config.exclude.filetypes, "table", true },
                 buftypes = { config.exclude.buftypes, "table", true },
             }, config.exclude, "ibl.config.exclude")

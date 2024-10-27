@@ -12,7 +12,7 @@ end
 ---@param opt table
 ---@param input table
 ---@param path string
-M.validate = function(opt, input, path)
+M.validate_config = function(opt, input, path)
     vim.validate(opt)
     for key, _ in pairs(input) do
         if not opt[key] then
