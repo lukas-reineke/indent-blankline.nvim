@@ -695,4 +695,45 @@ describe("virt_text", function()
             { "e", { "@ibl.whitespace.char.3", "@ibl.scope.underline.2" } },
         })
     end)
+
+    it("renders lead and multi lead spaces correctly", function()
+        local config = conf.set_config()
+        highlights.setup()
+        local char_map = {
+            [TAB_START] = "a",
+            [TAB_START_SINGLE] = "b",
+            [TAB_FILL] = "c",
+            [TAB_END] = "d",
+            [SPACE] = { "e", "f", "g" },
+            [INDENT] = "h",
+        }
+        local whitespace_tbl = { INDENT, SPACE, SPACE, SPACE, INDENT, SPACE, SPACE, SPACE }
+        local scope_active = false
+        local scope_index = -1
+        local scope_start = false
+        local scope_end = false
+        local scope_col_start_single = 0
+
+        local virt_text = vt.get(
+            config,
+            char_map,
+            whitespace_tbl,
+            scope_active,
+            scope_index,
+            scope_start,
+            scope_end,
+            scope_col_start_single
+        )
+
+        assert.are.same(virt_text, {
+            { "h", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
+            { "f", { "@ibl.whitespace.char.1" } },
+            { "g", { "@ibl.whitespace.char.1" } },
+            { "e", { "@ibl.whitespace.char.1" } },
+            { "h", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
+            { "g", { "@ibl.whitespace.char.1" } },
+            { "e", { "@ibl.whitespace.char.1" } },
+            { "f", { "@ibl.whitespace.char.1" } },
+        })
+    end)
 end)
