@@ -84,7 +84,7 @@ M.get = function(
         local indent_hl
         local underline_hl
         local sa = scope_active
-        local char = get_char(char_map[ws], indent_index)
+        local char = get_char(char_map[ws], (ws == whitespace.SPACE and i) or indent_index)
 
         if indent.is_indent(ws) then
             whitespace_hl = utils.tbl_get_index(highlights.whitespace, indent_index).char
