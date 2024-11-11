@@ -231,7 +231,6 @@ local validate_config = function(config)
         end
     end
 
-    
     if config.exclude then
         utils.validate_config({
             filetypes = { config.exclude.filetypes, "table", true },
