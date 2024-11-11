@@ -231,13 +231,12 @@ local validate_config = function(config)
         end
     end
 
+    
     if config.exclude then
-        if config.exclude then
-            utils.validate_config({
-                filetypes = { config.exclude.filetypes, "table", true },
-                buftypes = { config.exclude.buftypes, "table", true },
-            }, config.exclude, "ibl.config.exclude")
-        end
+        utils.validate_config({
+            filetypes = { config.exclude.filetypes, "table", true },
+            buftypes = { config.exclude.buftypes, "table", true },
+        }, config.exclude, "ibl.config.exclude")
     end
 end
 
