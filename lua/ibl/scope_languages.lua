@@ -298,6 +298,23 @@ local M = {
     mlir = {
         region = true,
     },
+    nim = {
+        ["for"] = true,
+        ["while"] = true,
+        ["block"] = true,
+        static_statement = true,
+        proc_declaration = true,
+        func_declaration = true,
+        method_declaration = true,
+        iterator_declaration = true,
+        converter_declaration = true,
+        template_declaration = true,
+        macro_declaration = true,
+        proc_expression = true,
+        func_expression = true,
+        iterator_expression = true,
+        concept_declaration = true,
+    },
     nix = {
         let_expression = true,
         rec_attrset_expression = true,
