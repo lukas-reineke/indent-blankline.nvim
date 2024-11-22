@@ -299,9 +299,13 @@ local M = {
         region = true,
     },
     nim = {
+        ["if"] = true,
+        case = true,
+        try =  true,
+
         ["for"] = true,
         ["while"] = true,
-        ["block"] = true,
+        block = true,
         static_statement = true,
         proc_declaration = true,
         func_declaration = true,
