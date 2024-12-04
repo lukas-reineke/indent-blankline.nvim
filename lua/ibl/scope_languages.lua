@@ -301,7 +301,7 @@ local M = {
     nim = {
         ["if"] = true,
         case = true,
-        try =  true,
+        try = true,
 
         ["for"] = true,
         ["while"] = true,
