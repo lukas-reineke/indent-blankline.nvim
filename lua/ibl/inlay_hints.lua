@@ -8,6 +8,8 @@ local handler = nil
 ---@type table<number, number[]>
 local buffer_state = {}
 
+local inlay_hint_timer = vim.uv.new_timer()
+
 ---@param bufnr number
 ---@param row number
 ---@param col number
@@ -44,11 +46,22 @@ M.setup = function()
     if not handler then
         handler = vim.lsp.handlers["textDocument/inlayHint"]
 
-        vim.lsp.handlers["textDocument/inlayHint"] = function(err, result, ctx, conf)
+        vim.lsp.handlers["textDocument/inlayHint"] = function(err, result, ctx)
+            local response
             if handler then
-                handler(err, result, ctx, conf)
+                response = handler(err, result, ctx)
             end
-            require("ibl").debounced_refresh(ctx.bufnr)
+
+            if inlay_hint_timer then
+                inlay_hint_timer:start(
+                    0, -- refresh after the next nvim__redraw
+                    0,
+                    vim.schedule_wrap(function()
+                        require("ibl").debounced_refresh(ctx.bufnr)
+                    end)
+                )
+            end
+            return response
         end
     end
 end
