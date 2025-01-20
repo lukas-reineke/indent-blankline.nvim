@@ -714,7 +714,7 @@ hooks.cb.virtual_text({tick}, {bufnr}, {row}, {virtual_text})
 
  Callback function for the |ibl.hooks.type|.VIRTUAL_TEXT hook.
 
- Gets called for every line after the virtual text is determened.
+ Gets called for every line after the virtual text is determined.
  The return value overwrites the virtual text for that line.
 
  See |nvim_buf_set_extmark()| for more information about virtual text.
@@ -733,7 +733,7 @@ hooks.cb.scope_highlight({tick}, {bufnr}, {scope}, {scope_index})
 
  Callback function for the |ibl.hooks.type|.SCOPE_HIGHLIGHT hook.
 
- Gets called for once per refresh after the scope is determined.
+ Gets called once per refresh after the scope is determined.
  The return value overwrites the index of the highlight group
  defined in |ibl.config.scope.highlight|
 
