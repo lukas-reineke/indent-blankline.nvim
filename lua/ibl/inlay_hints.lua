@@ -1,4 +1,9 @@
-local inlayhint_namespace = vim.api.nvim_create_namespace "vim_lsp_inlayhint"
+local namespace = "vim_lsp_inlayhint"
+if vim.fn.has "nvim-0.11" == 1 then
+    namespace = "nvim.lsp.inlayhint"
+end
+
+local inlayhint_namespace = vim.api.nvim_create_namespace(namespace)
 
 local M = {}
 
