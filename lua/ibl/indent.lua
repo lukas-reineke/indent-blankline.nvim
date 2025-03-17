@@ -25,9 +25,10 @@ M.whitespace = {
 ---
 ---@param whitespace string
 ---@param opts ibl.indent_options
+---@param whitespace_only boolean
 ---@param indent_state ibl.indent_state?
 ---@return ibl.indent.whitespace[], ibl.indent_state
-M.get = function(whitespace, opts, indent_state)
+M.get = function(whitespace, opts, whitespace_only, indent_state)
     if not indent_state then
         indent_state = { cap = false, stack = {} }
     end
@@ -102,7 +103,9 @@ M.get = function(whitespace, opts, indent_state)
     indent_state.stack = utils.tbl_filter(function(a)
         return a < spaces + tabs
     end, indent_state.stack)
-    table.insert(indent_state.stack, spaces + tabs)
+    if not whitespace_only then
+        table.insert(indent_state.stack, spaces + tabs)
+    end
 
     return whitespace_tbl, indent_state
 end
