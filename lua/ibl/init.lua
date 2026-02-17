@@ -20,7 +20,9 @@ local global_buffer_state = {}
 ---@param bufnr number
 local clear_buffer = function(bufnr)
     vt.clear_buffer(bufnr)
-    inlay_hints.clear_buffer(bufnr)
+    if conf.get_config(bufnr).scope.highlight_inlay_hints then
+        inlay_hints.clear_buffer(bufnr)
+    end
     for _, fn in pairs(hooks.get(bufnr, hooks.type.CLEAR)) do
         fn(bufnr)
     end
@@ -229,7 +231,7 @@ M.refresh = function(bufnr)
 
     local same_scope = (scope and scope:id()) == (buffer_state.scope and buffer_state.scope:id())
 
-    if not same_scope then
+    if not same_scope and conf.get_config(bufnr).scope.highlight_inlay_hints then
         inlay_hints.clear_buffer(bufnr)
     end
 
@@ -455,7 +457,9 @@ M.refresh = function(bufnr)
                 priority = config.scope.priority,
                 strict = false,
             })
-            inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
+            if conf.get_config(bufnr).scope.highlight_inlay_hints then
+                inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
+            end
         end
 
         -- Scope end
@@ -466,7 +470,9 @@ M.refresh = function(bufnr)
                 priority = config.scope.priority,
                 strict = false,
             })
-            inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
+            if conf.get_config(bufnr).scope.highlight_inlay_hints then
+                inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
+            end
         end
 
         for _, fn in
