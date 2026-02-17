@@ -13,7 +13,8 @@ local handler = nil
 ---@type table<number, number[]>
 local buffer_state = {}
 
-local inlay_hint_timer = vim.uv.new_timer()
+local uv = vim.uv or vim.loop
+local inlay_hint_timer = uv.new_timer()
 
 ---@param bufnr number
 ---@param row number
