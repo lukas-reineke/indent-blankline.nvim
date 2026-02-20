@@ -188,7 +188,7 @@ M.refresh = function(bufnr)
     local scope
     local scope_start_line, scope_end_line
     if not scope_disabled and config.scope.enabled then
-        scope = scp.get(bufnr, config)
+        scope = scp.get(bufnr, config, global_buffer_state[bufnr] or {})
         if scope and scope:start() >= 0 then
             local scope_start = scope:start()
             local scope_end = scope:end_()
@@ -445,10 +445,21 @@ M.refresh = function(bufnr)
         if config.scope.show_exact_scope then
             scope_col_start_draw = exact_scope_col_start - 1
             scope_show_end_cond = #whitespace_tbl >= scope_col_start_single
+
+            -- one line scopes
+            if scope_start and scope_end then
+                vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start_draw, {
+                    end_col = scope_col_end,
+                    hl_group = scope_hl.underline,
+                    priority = config.scope.priority,
+                    strict = false,
+                })
+                inlay_hints.set(bufnr, row - 1, #whitespace, scope_hl.underline, scope_hl.underline)
+            end
         end
 
         -- Scope start
-        if config.scope.show_start and scope_start then
+        if config.scope.show_start and scope_start and not scope_end then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start_draw, {
                 end_col = #line,
                 hl_group = scope_hl.underline,
@@ -459,7 +470,7 @@ M.refresh = function(bufnr)
         end
 
         -- Scope end
-        if config.scope.show_end and scope_end and scope_show_end_cond then
+        if config.scope.show_end and scope_end and scope_show_end_cond and not scope_start then
             vim.api.nvim_buf_set_extmark(bufnr, namespace, row - 1, scope_col_start, {
                 end_col = scope_col_end,
                 hl_group = scope_hl.underline,

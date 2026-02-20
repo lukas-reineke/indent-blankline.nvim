@@ -453,6 +453,8 @@ config.scope                                                *ibl.config.scope*
                            this is to the right of the indent guide) and an
                            underline on the last line of the scope ending at
                            the exact end of the scope.
+                           Also activates exact highlighting of one line
+                           scopes.
 
                            Default: `false` ~
 
