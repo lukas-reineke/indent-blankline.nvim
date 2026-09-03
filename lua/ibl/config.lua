@@ -156,7 +156,7 @@ local validate_config = function(config)
         end
         if type(config.indent.highlight) == "table" then
             utils.validate {
-                tab_char = {
+                highlight = {
                     config.indent.highlight,
                     function(highlight)
                         return #highlight > 0
@@ -174,7 +174,7 @@ local validate_config = function(config)
         }, config.whitespace, "ibl.config.whitespace")
         if type(config.whitespace.highlight) == "table" then
             utils.validate {
-                tab_char = {
+                highlight = {
                     config.whitespace.highlight,
                     function(highlight)
                         return #highlight > 0
@@ -209,7 +209,7 @@ local validate_config = function(config)
         end
         if type(config.scope.highlight) == "table" then
             utils.validate {
-                tab_char = {
+                highlight = {
                     config.scope.highlight,
                     function(highlight)
                         return #highlight > 0

@@ -111,23 +111,28 @@ local debounced_refresh = setmetatable({
     __call = function(self, bufnr)
         bufnr = utils.get_bufnr(bufnr)
         local uv = vim.uv or vim.loop
-        if not self.timers[bufnr] then
-            self.timers[bufnr] = uv.new_timer()
-        end
-        if uv.timer_get_due_in(self.timers[bufnr]) <= 50 then
-            self.queued_buffers[bufnr] = nil
-            local config = conf.get_config(bufnr)
-            self.timers[bufnr]:start(config.debounce, 0, function()
-                if self.queued_buffers[bufnr] then
-                    self.queued_buffers[bufnr] = nil
-                    vim.schedule_wrap(M.refresh)(bufnr)
-                end
-            end)
-
-            M.refresh(bufnr)
-        else
+        local timer = self.timers[bufnr]
+        if timer and uv.timer_get_due_in(timer) > 50 then
             self.queued_buffers[bufnr] = true
+            return
         end
+
+        if not timer then
+            timer = assert(uv.new_timer())
+            self.timers[bufnr] = timer
+        end
+        self.queued_buffers[bufnr] = nil
+        local config = conf.get_config(bufnr)
+        timer:start(config.debounce, 0, function()
+            self.timers[bufnr] = nil
+            timer:close()
+            if self.queued_buffers[bufnr] then
+                self.queued_buffers[bufnr] = nil
+                vim.schedule_wrap(M.refresh)(bufnr)
+            end
+        end)
+
+        M.refresh(bufnr)
     end,
 })
 
@@ -142,6 +147,26 @@ M.debounced_refresh = function(bufnr)
     else
         debounced_refresh(bufnr)
     end
+end
+
+--- Releases all state indent-blankline keeps for a buffer
+---
+--- This is called automatically when a buffer is wiped out. Buffers that are only
+--- deleted or unloaded keep their state.
+---@param bufnr number
+M.clear_buffer_state = function(bufnr)
+    bufnr = utils.get_bufnr(bufnr)
+
+    local timer = debounced_refresh.timers[bufnr]
+    debounced_refresh.timers[bufnr] = nil
+    debounced_refresh.queued_buffers[bufnr] = nil
+    if timer and not timer:is_closing() then
+        timer:close()
+    end
+
+    global_buffer_state[bufnr] = nil
+    inlay_hints.clear_buffer_state(bufnr)
+    conf.clear_buffer_config(bufnr)
 end
 
 --- Refreshes indent-blankline in one buffer

@@ -64,6 +64,35 @@ describe("get_listchars", function()
     end)
 end)
 
+describe("fix_horizontal_scroll", function()
+    local indent = require "ibl.indent"
+    local INDENT = indent.whitespace.INDENT
+    local SPACE = indent.whitespace.SPACE
+
+    it("returns the whitespace table unchanged without horizontal scroll", function()
+        assert.are.same(
+            { INDENT, SPACE, INDENT, SPACE },
+            utils.fix_horizontal_scroll({ INDENT, SPACE, INDENT, SPACE }, 0)
+        )
+    end)
+
+    it("removes as many entries from the start as the window is scrolled", function()
+        assert.are.same({ INDENT, SPACE }, utils.fix_horizontal_scroll({ INDENT, SPACE, INDENT, SPACE }, 2))
+    end)
+
+    it("returns an empty whitespace table when scrolled past the indentation", function()
+        assert.are.same({}, utils.fix_horizontal_scroll({ INDENT, SPACE }, 5))
+    end)
+
+    it("does not modify the passed whitespace table", function()
+        local whitespace_tbl = { INDENT, SPACE, INDENT, SPACE }
+
+        utils.fix_horizontal_scroll(whitespace_tbl, 2)
+
+        assert.are.same({ INDENT, SPACE, INDENT, SPACE }, whitespace_tbl)
+    end)
+end)
+
 describe("has_repeat_indent", function()
     local config = conf.get_config(0)
 

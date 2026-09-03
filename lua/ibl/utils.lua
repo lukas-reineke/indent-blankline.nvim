@@ -472,12 +472,15 @@ end
 ---@param left_offset number
 ---@return ibl.indent.whitespace[]
 M.fix_horizontal_scroll = function(whitespace_tbl, left_offset)
-    local current_left_offset = left_offset
-    while #whitespace_tbl > 0 and current_left_offset > 0 do
-        table.remove(whitespace_tbl, 1)
-        current_left_offset = current_left_offset - 1
+    if left_offset <= 0 then
+        return whitespace_tbl
     end
-    return whitespace_tbl
+
+    local result = {}
+    for i = left_offset + 1, #whitespace_tbl do
+        result[#result + 1] = whitespace_tbl[i]
+    end
+    return result
 end
 
 ---@param bufnr number

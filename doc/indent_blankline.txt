@@ -120,6 +120,17 @@ refresh_all()                                              *ibl.refresh_all()*
  Refreshes indent-blankline in all buffers
 
 
+clear_buffer_state({bufnr})                     *ibl.clear_buffer_state()*
+
+ Releases all state indent-blankline keeps for a buffer
+
+ This is called automatically when a buffer is wiped out. Buffers that
+ are only deleted or unloaded keep their state.
+
+ Parameters: ~
+   • {bufnr}  (number) Buffer number (0 for current buffer)
+
+
 hooks.register({type}, {fn}, {opts})                    *ibl.hooks.register()*
 
  Registers a hook.

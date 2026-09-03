@@ -119,12 +119,14 @@ M.get = function(
             end
         end
 
-        table.insert(virt_text, {
-            char,
-            utils.tbl_filter(function(v)
-                return v ~= nil
-            end, { whitespace_hl, indent_hl, underline_hl }),
-        })
+        local hl = { whitespace_hl }
+        if indent_hl then
+            hl[#hl + 1] = indent_hl
+        end
+        if underline_hl then
+            hl[#hl + 1] = underline_hl
+        end
+        virt_text[#virt_text + 1] = { char, hl }
     end
 
     return virt_text, scope_hl
