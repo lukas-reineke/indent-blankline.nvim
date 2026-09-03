@@ -10,7 +10,9 @@ local M = {}
 ---@type function?
 local handler = nil
 
----@type table<number, number[]>
+--- The rows of every buffer that has inlay hints highlighted by indent-blankline
+---
+---@type table<number, table<number, boolean>>
 local buffer_state = {}
 
 local uv = vim.uv or vim.loop
@@ -84,10 +86,18 @@ end
 
 ---@param bufnr number
 M.clear_buffer = function(bufnr)
-    for _, row in ipairs(buffer_state[bufnr] or {}) do
+    for row, _ in pairs(buffer_state[bufnr] or {}) do
         pcall(set_extmark, bufnr, row, 0, "LspInlayHint", "")
     end
 
+    buffer_state[bufnr] = nil
+end
+
+--- Forgets a buffer without touching its extmarks
+---
+--- Used for buffers that are gone, where restoring the inlay hints is pointless
+---@param bufnr number
+M.clear_buffer_state = function(bufnr)
     buffer_state[bufnr] = nil
 end
 
@@ -100,7 +110,7 @@ M.set = function(bufnr, row, col, hl, hl_empty)
     if not buffer_state[bufnr] then
         buffer_state[bufnr] = {}
     end
-    table.insert(buffer_state[bufnr], row)
+    buffer_state[bufnr][row] = true
 
     set_extmark(bufnr, row, col, { "LspInlayHint", hl }, hl_empty)
 end

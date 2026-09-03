@@ -27,6 +27,14 @@ M.setup = function()
             ibl.debounced_refresh(opts.buf)
         end,
     })
+    vim.api.nvim_create_autocmd("BufWipeout", {
+        group = group,
+        pattern = "*",
+        callback = function(opts)
+            buffer_leftcol[opts.buf] = nil
+            ibl.clear_buffer_state(opts.buf)
+        end,
+    })
     vim.api.nvim_create_autocmd("OptionSet", {
         group = group,
         pattern = "list,listchars,shiftwidth,tabstop,vartabstop,breakindent,breakindentopt",
