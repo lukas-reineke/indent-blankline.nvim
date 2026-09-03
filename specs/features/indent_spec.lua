@@ -105,6 +105,12 @@ describe("indent", function()
         assert.are.same({ INDENT, SPACE, SPACE, SPACE, INDENT, SPACE, SPACE, SPACE }, whitespace_tbl)
     end)
 
+    it("doesn't cap without indent state", function()
+        local whitespace_tbl, _ = indent.get("        ", opts, false)
+
+        assert.are.same({ INDENT, SPACE, INDENT, SPACE, INDENT, SPACE, INDENT, SPACE }, whitespace_tbl)
+    end)
+
     it("doesn't cap with smart_indent_cap off", function()
         opts.smart_indent_cap = false
         local whitespace_tbl, _ = indent.get("        ", opts, false, { cap = false, stack = { 0, 4 } })
