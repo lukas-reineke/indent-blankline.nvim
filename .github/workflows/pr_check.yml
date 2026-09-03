@@ -12,21 +12,21 @@ jobs:
     uses: ./.github/workflows/tests.yml
     with:
       neovim_versions: |
-        [ "nightly", "v0.10.0" ]
+        [ "nightly", "v0.12.5" ]
 
   lua-language-server:
     uses: ./.github/workflows/lua_language_server.yml
     with:
-      lua_ls_version: 3.9.1
+      lua_ls_version: 3.19.1
       neovim_versions: |
-        [ "nightly", "v0.10.0" ]
+        [ "nightly", "v0.12.5" ]
 
   stylua:
     name: stylua
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: JohnnyMorganz/stylua-action@v3
+      - uses: actions/checkout@v4
+      - uses: JohnnyMorganz/stylua-action@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           version: latest
@@ -36,7 +36,7 @@ jobs:
     name: luacheck
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Prepare
         run: |
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: Block Fixup Commit Merge
         uses: 13rac1/block-fixup-merge-action@v2.0.0
 
@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 

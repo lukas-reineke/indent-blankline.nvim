@@ -16,10 +16,10 @@ jobs:
       matrix:
         rev: ${{ fromJson(inputs.neovim_versions) }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: date +%F > todays-date
       - name: Restore cache for Neovim
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .ci/neovim
           key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
@@ -27,7 +27,12 @@ jobs:
         run: |
           test -d .ci/neovim || {
             mkdir -p .ci/neovim
-            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}/nvim-linux64.tar.gz" | tar xzf - --strip-components=1 -C "${PWD}/.ci/neovim"
+            url="https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}"
+            # the linux asset was renamed in v0.10.4, fall back to the old name for older releases
+            curl -sfL "$url/nvim-linux-x86_64.tar.gz" -o nvim.tar.gz \
+              || curl -sSfL "$url/nvim-linux64.tar.gz" -o nvim.tar.gz
+            tar xzf nvim.tar.gz --strip-components=1 -C "${PWD}/.ci/neovim"
+            rm nvim.tar.gz
           }
 
       - name: Run tests
