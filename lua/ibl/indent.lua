@@ -29,8 +29,10 @@ M.whitespace = {
 ---@param indent_state ibl.indent_state?
 ---@return ibl.indent.whitespace[], ibl.indent_state
 M.get = function(whitespace, opts, whitespace_only, indent_state)
+    local smart_indent_cap = opts.smart_indent_cap
     if not indent_state then
         indent_state = { cap = false, stack = {} }
+        smart_indent_cap = false
     end
     local shiftwidth = opts.shiftwidth
     local tabstop = opts.tabstop
@@ -85,7 +87,7 @@ M.get = function(whitespace, opts, whitespace_only, indent_state)
                 table.insert(whitespace_tbl, M.whitespace.INDENT)
                 extra = extra + mod
             elseif mod == 0 then
-                if #whitespace_tbl < indent_cap or not opts.smart_indent_cap then
+                if #whitespace_tbl < indent_cap or not smart_indent_cap then
                     table.insert(whitespace_tbl, M.whitespace.INDENT)
                     extra = extra + mod
                 else

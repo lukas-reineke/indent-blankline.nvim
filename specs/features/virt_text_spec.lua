@@ -261,6 +261,21 @@ describe("get_char_map", function()
     end)
 end)
 
+--- Mirrors how `ibl.init` derives the scope index from the whitespace of the scope line
+---
+---@param ws string
+---@param opts ibl.indent_options
+---@return number
+local get_scope_index = function(ws, opts)
+    local scope_index = 1
+    for _, w in ipairs(indent.get(ws, opts, false)) do
+        if indent.is_indent(w) then
+            scope_index = scope_index + 1
+        end
+    end
+    return scope_index
+end
+
 describe("virt_text", function()
     before_each(function()
         conf.set_config()
@@ -693,6 +708,64 @@ describe("virt_text", function()
             { "e", { "@ibl.whitespace.char.2", "@ibl.scope.underline.2" } },
             { "f", { "@ibl.whitespace.char.3", "@ibl.indent.char.3", "@ibl.scope.underline.2" } },
             { "e", { "@ibl.whitespace.char.3", "@ibl.scope.underline.2" } },
+        })
+    end)
+
+    it("uses the same scope highlight for space and tab indentation", function()
+        local config = conf.set_config {
+            whitespace = { highlight = { "Error", "Function", "Label" } },
+            indent = { highlight = { "Error", "Function", "Label" } },
+            scope = { highlight = { "Error", "Function", "Label" } },
+        }
+        highlights.setup()
+        local char_map = {
+            [TAB_START] = "a",
+            [TAB_START_SINGLE] = "b",
+            [TAB_FILL] = "c",
+            [TAB_END] = "d",
+            [SPACE] = "e",
+            [INDENT] = "f",
+        }
+        local opts = {
+            tabstop = 2,
+            vartabstop = "",
+            shiftwidth = 2,
+            smart_indent_cap = true,
+        }
+        local scope_col_start_single = 2
+
+        local space_virt_text = vt.get(
+            config,
+            char_map,
+            { INDENT, SPACE, INDENT, SPACE },
+            true,
+            get_scope_index("  ", opts),
+            false,
+            false,
+            scope_col_start_single
+        )
+        local tab_virt_text = vt.get(
+            config,
+            char_map,
+            { TAB_START, TAB_END, TAB_START, TAB_END },
+            true,
+            get_scope_index("	", opts),
+            false,
+            false,
+            scope_col_start_single
+        )
+
+        assert.are.same(space_virt_text, {
+            { "f", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
+            { "e", { "@ibl.whitespace.char.1" } },
+            { "f", { "@ibl.whitespace.char.2", "@ibl.scope.char.2" } },
+            { "e", { "@ibl.whitespace.char.2" } },
+        })
+        assert.are.same(tab_virt_text, {
+            { "a", { "@ibl.whitespace.char.1", "@ibl.indent.char.1" } },
+            { "d", { "@ibl.whitespace.char.1" } },
+            { "a", { "@ibl.whitespace.char.2", "@ibl.scope.char.2" } },
+            { "d", { "@ibl.whitespace.char.2" } },
         })
     end)
 
