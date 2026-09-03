@@ -19,20 +19,20 @@ jobs:
       matrix:
         rev: ${{ fromJson(inputs.neovim_versions) }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: date +%F > todays-date
       - name: Restore cache for Neovim
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .ci/neovim
           key: ${{ matrix.rev }}-${{ hashFiles('todays-date') }}
       - name: Restore cache for vendor dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .ci/vendor
           key: ${{ hashFiles('todays-date') }}
       - name: Restore cache for lua LS
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: .ci/lua-ls
           key: ${{ inputs.lua_ls_version }}
@@ -40,11 +40,16 @@ jobs:
         run: |
           test -d .ci/neovim || {
             mkdir -p .ci/neovim
-            curl -sL "https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}/nvim-linux64.tar.gz" | tar xzf - --strip-components=1 -C "${PWD}/.ci/neovim"
+            url="https://github.com/neovim/neovim/releases/download/${{ matrix.rev }}"
+            # the linux asset was renamed in v0.10.4, fall back to the old name for older releases
+            curl -sfL "$url/nvim-linux-x86_64.tar.gz" -o nvim.tar.gz \
+              || curl -sSfL "$url/nvim-linux64.tar.gz" -o nvim.tar.gz
+            tar xzf nvim.tar.gz --strip-components=1 -C "${PWD}/.ci/neovim"
+            rm nvim.tar.gz
           }
           test -d .ci/lua-ls || {
             mkdir -p .ci/lua-ls
-            curl -sL "https://github.com/LuaLS/lua-language-server/releases/download/${{ inputs.lua_ls_version }}/lua-language-server-${{ inputs.lua_ls_version }}-linux-x64.tar.gz" | tar xzf - -C "${PWD}/.ci/lua-ls"
+            curl -sSfL "https://github.com/LuaLS/lua-language-server/releases/download/${{ inputs.lua_ls_version }}/lua-language-server-${{ inputs.lua_ls_version }}-linux-x64.tar.gz" | tar xzf - -C "${PWD}/.ci/lua-ls"
           }
 
       - name: Run check

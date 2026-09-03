@@ -69,7 +69,7 @@ M.register = function(type, cb, opts)
         cb = { cb, "function" },
         opts = { opts, "table", true },
     }
-    opts = vim.tbl_deep_extend("keep", opts or {}, default_opts)
+    opts = vim.tbl_deep_extend("keep", opts or {}, default_opts) --[[@as ibl.hooks.options]]
     utils.validate {
         bufnr = { opts.bufnr, "number", true },
     }
