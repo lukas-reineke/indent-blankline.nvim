@@ -11,6 +11,14 @@ This plugin requires the latest stable version of Neovim.
 
 Use your favorite plugin manager to install.
 
+For [vim.pack](https://neovim.io/doc/user/pack/#_plugin-manager) (Neovim 0.12+):
+
+```lua
+vim.pack.add({
+    "https://github.com/lukas-reineke/indent-blankline.nvim"
+})
+```
+
 For [lazy.nvim](https://github.com/folke/lazy.nvim):
 
 ```lua
