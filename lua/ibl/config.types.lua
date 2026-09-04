@@ -56,6 +56,8 @@
 ---@class ibl.config.scope
 --- Enables or disables scope
 ---@field enabled boolean?
+--- Whether inlay hints should be highlighted
+---@field highlight_inlay_hints boolean?
 --- Character, or list of characters, that get used to display the scope indentation guide
 ---
 --- Each character has to have a display width of 0 or 1
