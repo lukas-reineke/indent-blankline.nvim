@@ -64,6 +64,10 @@
 ---@field show_start boolean?
 --- Shows an underline on the last line of the scope
 ---@field show_end boolean?
+--- Uses Tree-sitter query captures to identify scopes
+---@field use_captures boolean?
+--- Name of the Tree-sitter query to use for scope captures
+---@field query_name string?
 --- Always shows an underline on the last line of the scope (default is to ignore some cases)
 --- and starts the scope underline at the actual beginning of the scope (even if it is to the
 --- right of the indent level)
@@ -76,12 +80,16 @@
 ---@field highlight string|string[]?
 --- Virtual text priority for the scope
 ---@field priority number?
---- Configures additional nodes to be used as scope
+--- Configures additional nodes and captures to be used as scope
 ---@field include ibl.config.scope.include?
---- Configures nodes or languages to be excluded from scope
+--- Configures nodes, captures, or languages to be excluded from scope
 ---@field exclude ibl.config.scope.exclude?
 
 ---@class ibl.config.scope.include
+--- Map of language to a list of capture names which should be used to define a scope
+---
+--- Use `*` as a wildcard for all languages
+---@field capture_name table<string, string[]>?
 --- map of language to a list of node types which can be used as scope
 ---
 --- Use `*` as a wildcard for all languages
@@ -96,6 +104,10 @@
 ---@field node_type table<string, string[]>?
 
 ---@class ibl.config.scope.exclude
+--- Map of language to a list of capture names which should not be used to define a scope
+---
+--- Use `*` as a wildcard for all languages
+---@field capture_name table<string, string[]>?
 --- List of treesitter languages for which scope is disabled
 ---@field language string[]?
 --- map of language to a list of node types which should not be used as scope
@@ -182,6 +194,10 @@
 ---@field show_start boolean
 --- Shows an underline on the last line of the scope
 ---@field show_end boolean
+--- Uses Tree-sitter query captures to improve scope detection
+---@field use_captures boolean
+--- Name of the Tree-sitter query to use for scope detection
+---@field query_name string
 --- Always shows an underline on the last line of the scope (default is to ignore some cases)
 --- and starts the scope underline at the actual beginning of the scope (even if it is to the
 --- right of the indent level)
@@ -194,12 +210,16 @@
 ---@field highlight string|string[]
 --- Virtual text priority for the scope
 ---@field priority number
---- Configures additional nodes to be used as scope
+--- Configures additional nodes and captures to be used as scope
 ---@field include ibl.config.full.scope.include
---- Configures nodes or languages to be excluded from scope
+--- Configures nodes, captures, or languages to be excluded from scope
 ---@field exclude ibl.config.full.scope.exclude: ibl.config.scope.exclude
 
 ---@class ibl.config.full.scope.include: ibl.config.scope.include
+--- Map of language to a list of capture names which should be used to define a scope
+---
+--- Use `*` as a wildcard for all languages
+---@field capture_name table<string, string[]>
 --- map of language to a list of node types which can be used as scope
 ---
 --- Use `*` as a wildcard for all languages
@@ -214,6 +234,10 @@
 ---@field node_type table<string, string[]>
 
 ---@class ibl.config.full.scope.exclude: ibl.config.scope.exclude
+--- Map of language to a list of capture names which should not be used to define a scope
+---
+--- Use `*` as a wildcard for all languages
+---@field capture_name table<string, string[]>
 --- List of treesitter languages for which scope is disabled
 ---@field language string[]
 --- map of language to a list of node types which should not be used as scope

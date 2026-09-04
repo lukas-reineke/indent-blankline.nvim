@@ -428,6 +428,10 @@ config.scope                                                *ibl.config.scope*
 <
  Note: Scope requires treesitter to be set up ~
 
+ Scope can use captures from a Tree-sitter query. Set {use_captures} to `true`
+ to enable this feature. The default query and capture names work with the
+ `locals` queries from |nvim-treesitter|.
+
  Fields: ~
                                                     *ibl.config.scope.enabled*
    • {enabled}             (boolean)
@@ -456,6 +460,18 @@ config.scope                                                *ibl.config.scope*
 
                            Default: `true` ~
 
+                                               *ibl.config.scope.use_captures*
+   • {use_captures}        (boolean)
+                           Uses Tree-sitter query captures to identify scopes
+
+                           Default: `false` ~
+
+                                                  *ibl.config.scope.query_name*
+   • {query_name}          (string)
+                           Name of the Tree-sitter query to use for scope
+                           captures
+
+                           Default: `"locals"` ~
 
                                            *ibl.config.scope.show_exact_scope*
    • {show_exact_scope}    (boolean)
@@ -491,11 +507,12 @@ config.scope                                                *ibl.config.scope*
                            Default: `1024` ~
 
    • {include}             (|ibl.config.scope.include|)
-                           Configures additional nodes to be used as scope
+                           Configures additional nodes and captures to be
+                           used as scope
 
    • {exclude}             (|ibl.config.scope.exclude|)
-                           Configures nodes or languages to be excluded
-                           from scope
+                           Configures nodes, captures, or languages to be
+                           excluded from scope
 
  Example: ~
    >lua
@@ -511,9 +528,20 @@ config.scope                                                *ibl.config.scope*
 
 config.scope.include                                *ibl.config.scope.include*
 
- Configures additional nodes to be used as scope
+ Configures additional nodes and captures to be used as scope
 
  Fields: ~
+                                       *ibl.config.scope.include.capture_name*
+   • {capture_name}  (table<string, string[]>)
+                      Map of language to a list of capture names which should
+                      be used to define a scope
+
+                      Use `*` as a wildcard for all languages
+
+                      Default: ~
+                        • `*`:
+                          • `local.scope`
+
                                           *ibl.config.scope.include.node_type*
    • {node_type}  (table<string, string[]>)
                   map of language to a list of node types which can be
@@ -535,13 +563,26 @@ config.scope.include                                *ibl.config.scope.include*
    {
        node_type = { ["*"] = { "*" } },
    }
+   -- Add an additional capture name for rust
+   {
+       capture_name = { rust = { "local.definition.namespace"} },
+   }
 
 
 config.scope.exclude                                *ibl.config.scope.exclude*
 
- Configures nodes or languages to be excluded from scope
+ Configures nodes, captures, or languages to be excluded from scope
 
  Fields: ~
+                                       *ibl.config.scope.exclude.capture_name*
+   • {capture_name}  (table<string, string[]>)
+                      Map of language to a list of capture names which should
+                      not be used to define a scope
+
+                      Use `*` as a wildcard for all languages
+
+                      Default: empty ~
+
                                            *ibl.config.scope.exclude.language*
    • {language}   (string[])
                   List of treesitter languages for which scope is disabled

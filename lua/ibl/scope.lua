@@ -61,8 +61,10 @@ M.get = function(bufnr, config)
 
     local include_node_types =
         utils.tbl_join(config.scope.include.node_type["*"] or {}, config.scope.include.node_type[lang] or {})
+    local include_capture_names =
+        utils.tbl_join(config.scope.include.capture_name["*"] or {}, config.scope.include.capture_name[lang] or {})
 
-    if not scope_lang[lang] and #include_node_types == 0 then
+    if not scope_lang[lang] and #include_node_types == 0 and #include_capture_names == 0 then
         -- Nothing configured to be included for this language
         return nil
     end
@@ -74,6 +76,10 @@ M.get = function(bufnr, config)
 
     local excluded_node_types =
         utils.tbl_join(config.scope.exclude.node_type["*"] or {}, config.scope.exclude.node_type[lang] or {})
+    local excluded_capture_names =
+        utils.tbl_join(config.scope.exclude.capture_name["*"] or {}, config.scope.exclude.capture_name[lang] or {})
+
+    local query = config.scope.use_captures and vim.treesitter.query.get(lang, config.scope.query_name) or nil
 
     while node and node:byte_length() > 0 do
         local type = node:type()
@@ -84,9 +90,22 @@ M.get = function(bufnr, config)
             or utils.tbl_contains(include_node_types, "*")
         then
             return node
-        else
-            node = node:parent()
+        elseif query then
+            for id, n in query:iter_captures(node, bufnr, node:start(), node:end_(), {}) do
+                local capture_name = query.captures[id]
+                if
+                    (n:start() <= range[1] and n:end_() >= range[3])
+                    and (utils.tbl_contains(include_capture_names, capture_name) or utils.tbl_contains(
+                        include_capture_names,
+                        "*"
+                    ))
+                    and (not utils.tbl_contains(excluded_capture_names, capture_name))
+                then
+                    return n
+                end
+            end
         end
+        node = node:parent()
     end
 end
 
