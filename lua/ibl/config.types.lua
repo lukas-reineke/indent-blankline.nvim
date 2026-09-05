@@ -132,7 +132,7 @@
 --- Configures the whitespace
 ---@field whitespace ibl.config.full.whitespace: ibl.config.whitespace
 --- Configures the scope
----@field scope ibl.config.full.scope: ig.config.scope
+---@field scope ibl.config.full.scope: ibl.config.scope
 --- Configures what is excluded from indent-blankline
 ---@field exclude ibl.config.full.exclude: ibl.config.exclude
 
