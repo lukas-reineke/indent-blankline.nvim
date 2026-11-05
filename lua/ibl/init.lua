@@ -343,7 +343,8 @@ M.refresh = function(bufnr)
         end
 
         local whitespace = utils.get_whitespace(line)
-        local foldclosed = utils.get_foldclosed(bufnr, row)
+        -- folds are only checked for the current buffer, skip the lookup otherwise
+        local foldclosed = is_current_buffer and utils.get_foldclosed(bufnr, row) or -1
         if is_current_buffer and foldclosed == row and not has_empty_foldtext then
             local foldtext = utils.get_foldtextresult(bufnr, row)
             local foldtext_whitespace = utils.get_whitespace(foldtext)
