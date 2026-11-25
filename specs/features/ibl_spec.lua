@@ -126,6 +126,7 @@ describe("refresh", function()
 
     it("does not look up folds for a buffer that is not current", function()
         local calls = 0
+        ---@diagnostic disable-next-line: duplicate-set-field
         utils.get_foldclosed = function(...)
             calls = calls + 1
             return get_foldclosed(...)
