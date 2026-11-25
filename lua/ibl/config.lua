@@ -38,6 +38,8 @@ M.default_config = {
     scope = {
         enabled = true,
         char = nil,
+        use_captures = false,
+        query_name = "locals",
         show_start = true,
         show_end = true,
         show_exact_scope = false,
@@ -45,9 +47,13 @@ M.default_config = {
         highlight = "IblScope",
         priority = 1024,
         include = {
+            capture_name = {
+                ["*"] = { "local.scope" },
+            },
             node_type = {},
         },
         exclude = {
+            capture_name = {},
             language = {},
             node_type = {
                 ["*"] = {
@@ -191,6 +197,8 @@ local validate_config = function(config)
             char = { config.scope.char, { "string", "table" }, true },
             show_start = { config.scope.show_start, "boolean", true },
             show_end = { config.scope.show_end, "boolean", true },
+            use_captures = { config.scope.use_captures, "boolean", true },
+            query_name = { config.scope.query_name, "string", true },
             show_exact_scope = { config.scope.show_exact_scope, "boolean", true },
             injected_languages = { config.scope.injected_languages, "boolean", true },
             highlight = { config.scope.highlight, { "string", "table" }, true },
@@ -220,12 +228,14 @@ local validate_config = function(config)
         end
         if config.scope.exclude then
             utils.validate_config({
+                capture_name = { config.scope.exclude.capture_name, "table", true },
                 language = { config.scope.exclude.language, "table", true },
                 node_type = { config.scope.exclude.node_type, "table", true },
             }, config.scope.exclude, "ibl.config.scope.exclude")
         end
         if config.scope.include then
             utils.validate_config({
+                capture_name = { config.scope.include.capture_name, "table", true },
                 node_type = { config.scope.include.node_type, "table", true },
             }, config.scope.include, "ibl.config.scope.include")
         end
