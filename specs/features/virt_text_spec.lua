@@ -259,6 +259,82 @@ describe("get_char_map", function()
             [INDENT] = "i",
         })
     end)
+
+    it("uses leadtab over tab listchars", function()
+        local config = conf.set_config { indent = { char = "i" } }
+        local listchars = {
+            tabstop_overwrite = false,
+            space_char = " ",
+            tab_char_start = "b",
+            tab_char_fill = "c",
+            tab_char_end = "d",
+            leadtab_char_start = "x",
+            leadtab_char_fill = "y",
+        }
+        local whitespace_only = false
+        local blankline = false
+        local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
+
+        assert.are.same(char_map, {
+            [TAB_START] = "x",
+            [TAB_START_SINGLE] = "x",
+            [TAB_FILL] = "y",
+            [TAB_END] = "y",
+            [SPACE] = " ",
+            [INDENT] = "i",
+        })
+    end)
+
+    it("uses tab over leadtab listchars on whitespace only lines", function()
+        local config = conf.set_config { indent = { char = "i" } }
+        local listchars = {
+            tabstop_overwrite = false,
+            space_char = " ",
+            tab_char_start = "b",
+            tab_char_fill = "c",
+            tab_char_end = "d",
+            leadtab_char_start = "x",
+            leadtab_char_fill = "y",
+            leadtab_char_end = "z",
+        }
+        local whitespace_only = true
+        local blankline = false
+        local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
+
+        assert.are.same(char_map, {
+            [TAB_START] = "b",
+            [TAB_START_SINGLE] = "d",
+            [TAB_FILL] = "c",
+            [TAB_END] = "d",
+            [SPACE] = " ",
+            [INDENT] = "i",
+        })
+    end)
+
+    it("uses tab_char over leadtab listchars", function()
+        local config = conf.set_config { indent = { char = "i", tab_char = "t" } }
+        local listchars = {
+            tabstop_overwrite = false,
+            space_char = " ",
+            tab_char_start = "b",
+            tab_char_fill = "c",
+            leadtab_char_start = "x",
+            leadtab_char_fill = "y",
+            leadtab_char_end = "z",
+        }
+        local whitespace_only = false
+        local blankline = false
+        local char_map = vt.get_char_map(config, listchars, whitespace_only, blankline)
+
+        assert.are.same(char_map, {
+            [TAB_START] = "t",
+            [TAB_START_SINGLE] = "t",
+            [TAB_FILL] = "y",
+            [TAB_END] = "z",
+            [SPACE] = " ",
+            [INDENT] = "i",
+        })
+    end)
 end)
 
 --- Mirrors how `ibl.init` derives the scope index from the whitespace of the scope line
