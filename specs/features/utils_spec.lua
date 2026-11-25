@@ -62,6 +62,24 @@ describe("get_listchars", function()
             tab_char_end = "↵",
         })
     end)
+
+    local has_leadtab = pcall(vim.api.nvim_set_option_value, "listchars", "tab:>-,leadtab:|.", { scope = "local" })
+    vim.cmd "setlocal listchars<"
+    if has_leadtab then
+        it("parses leadtab", function()
+            vim.opt.list = true
+            vim.opt.listchars = { tab = ">-", leadtab = "\\u2502.-" }
+            assert.are.same(utils.get_listchars(0), {
+                tabstop_overwrite = false,
+                space_char = " ",
+                tab_char_start = ">",
+                tab_char_fill = "-",
+                leadtab_char_start = "│",
+                leadtab_char_fill = ".",
+                leadtab_char_end = "-",
+            })
+        end)
+    end
 end)
 
 describe("fix_horizontal_scroll", function()

@@ -260,6 +260,9 @@ end
 ---@field tab_char_start string?
 ---@field tab_char_fill string
 ---@field tab_char_end string?
+---@field leadtab_char_start string?
+---@field leadtab_char_fill string?
+---@field leadtab_char_end string?
 
 ---@param bufnr number
 ---@return ibl.listchars
@@ -288,6 +291,7 @@ M.get_listchars = function(bufnr)
         local space_char = M.encode(listchars.space) or " "
         local multispace_chars
         local leadmultispace_chars
+        local leadtab_char = {}
         if listchars.tab then
             tab_char = vim.fn.split(M.encode(listchars.tab), "\\zs")
         else
@@ -300,6 +304,9 @@ M.get_listchars = function(bufnr)
         if listchars.leadmultispace then
             leadmultispace_chars = vim.fn.split(M.encode(listchars.leadmultispace), "\\zs")
         end
+        if listchars.leadtab then
+            leadtab_char = vim.fn.split(M.encode(listchars.leadtab), "\\zs")
+        end
         return {
             tabstop_overwrite = tabstop_overwrite,
             space_char = space_char,
@@ -310,6 +317,9 @@ M.get_listchars = function(bufnr)
             tab_char_start = tab_char[1] or space_char,
             tab_char_fill = tab_char[2] or space_char,
             tab_char_end = tab_char[3],
+            leadtab_char_start = leadtab_char[1],
+            leadtab_char_fill = leadtab_char[2],
+            leadtab_char_end = leadtab_char[3],
         }
     end
     return {

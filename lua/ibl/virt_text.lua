@@ -23,14 +23,17 @@ end
 ---@param blankline boolean
 ---@return ibl.char_map
 M.get_char_map = function(config, listchars, whitespace_only, blankline)
+    local tab_start, tab_fill, tab_end = listchars.tab_char_start, listchars.tab_char_fill, listchars.tab_char_end
+    if listchars.leadtab_char_start and not whitespace_only then
+        tab_start, tab_fill, tab_end =
+            listchars.leadtab_char_start, listchars.leadtab_char_fill or tab_fill, listchars.leadtab_char_end
+    end
+
     return {
-        [whitespace.TAB_START] = config.indent.tab_char or listchars.tab_char_start or config.indent.char,
-        [whitespace.TAB_START_SINGLE] = config.indent.tab_char
-            or listchars.tab_char_end
-            or listchars.tab_char_start
-            or config.indent.char,
-        [whitespace.TAB_FILL] = (blankline and " ") or listchars.tab_char_fill,
-        [whitespace.TAB_END] = (blankline and " ") or listchars.tab_char_end or listchars.tab_char_fill,
+        [whitespace.TAB_START] = config.indent.tab_char or tab_start or config.indent.char,
+        [whitespace.TAB_START_SINGLE] = config.indent.tab_char or tab_end or tab_start or config.indent.char,
+        [whitespace.TAB_FILL] = (blankline and " ") or tab_fill,
+        [whitespace.TAB_END] = (blankline and " ") or tab_end or tab_fill,
         [whitespace.SPACE] = (blankline and " ")
             or (whitespace_only and (listchars.trail_char or listchars.multispace_chars or listchars.space_char))
             or listchars.leadmultispace_chars
