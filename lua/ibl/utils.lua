@@ -264,29 +264,25 @@ end
 ---@param bufnr number
 ---@return ibl.listchars
 M.get_listchars = function(bufnr)
-    local listchars
-    ---@diagnostic disable-next-line
-    local list = vim.opt.list:get()
-    if list then
-        listchars = vim.opt.listchars:get()
-    end
-
+    ---@type vim.api.keyset.option
+    local opts = { win = 0 }
     if bufnr ~= vim.api.nvim_get_current_buf() then
         local win = M.get_win(bufnr)
-        if win then
-            list = vim.api.nvim_get_option_value("list", { win = win })
-            if list then
-                local raw_value = vim.api.nvim_get_option_value("listchars", { win = win })
-                listchars = {}
-                for _, key_value_str in ipairs(M.split(raw_value, ",")) do
-                    local key, value = unpack(M.split(key_value_str, ":"))
-                    listchars[vim.trim(key)] = value
-                end
-            end
-        end
+        opts = win and { win = win } or { scope = "global" }
     end
 
+    local list = vim.api.nvim_get_option_value("list", opts)
     if list then
+        ---@type table<string, string>
+        local listchars = {}
+        local raw_value = vim.api.nvim_get_option_value("listchars", opts)
+        for _, key_value_str in ipairs(M.split(raw_value, ",", { trimempty = true })) do
+            local key, value = key_value_str:match "^([^:]+):(.*)$"
+            if key then
+                listchars[vim.trim(key)] = value
+            end
+        end
+
         local tabstop_overwrite = false
         local tab_char
         local space_char = M.encode(listchars.space) or " "
@@ -456,8 +452,13 @@ end
 ---@vararg T
 ---@return T
 M.tbl_join = function(...)
-    ---@diagnostic disable-next-line: deprecated
-    return vim.iter and vim.iter({ ... }):flatten():totable() or vim.tbl_flatten { ... }
+    local result = {}
+    for i = 1, select("#", ...) do
+        for _, v in ipairs(select(i, ...) or {}) do
+            table.insert(result, v)
+        end
+    end
+    return result
 end
 
 ---@generic T
