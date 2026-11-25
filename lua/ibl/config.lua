@@ -37,6 +37,7 @@ M.default_config = {
     },
     scope = {
         enabled = true,
+        highlight_inlay_hints = true,
         char = nil,
         show_start = true,
         show_end = true,
@@ -188,6 +189,7 @@ local validate_config = function(config)
     if config.scope then
         utils.validate_config({
             enabled = { config.scope.enabled, "boolean", true },
+            highlight_inlay_hints = { config.scope.highlight_inlay_hints, "boolean", true },
             char = { config.scope.char, { "string", "table" }, true },
             show_start = { config.scope.show_start, "boolean", true },
             show_end = { config.scope.show_end, "boolean", true },
