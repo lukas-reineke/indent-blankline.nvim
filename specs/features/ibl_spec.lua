@@ -99,3 +99,42 @@ describe("debounced_refresh", function()
         assert.are.equal(timers + 1, count_timers())
     end)
 end)
+
+describe("refresh", function()
+    local utils = require "ibl.utils"
+    local namespace = vim.api.nvim_create_namespace "indent_blankline"
+    local bufnr, win, get_foldclosed
+
+    before_each(function()
+        ibl.setup {}
+        bufnr = vim.api.nvim_create_buf(false, false)
+        vim.bo[bufnr].filetype = "text"
+        vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, { "foo", "    bar", "        baz", "    qux" })
+        win = vim.api.nvim_open_win(bufnr, false, { split = "right" })
+        get_foldclosed = utils.get_foldclosed
+    end)
+
+    after_each(function()
+        utils.get_foldclosed = get_foldclosed
+        if vim.api.nvim_win_is_valid(win) then
+            vim.api.nvim_win_close(win, true)
+        end
+        if vim.api.nvim_buf_is_valid(bufnr) then
+            vim.api.nvim_buf_delete(bufnr, { force = true })
+        end
+    end)
+
+    it("does not look up folds for a buffer that is not current", function()
+        local calls = 0
+        utils.get_foldclosed = function(...)
+            calls = calls + 1
+            return get_foldclosed(...)
+        end
+
+        ibl.refresh(bufnr)
+
+        assert.are_not.equal(bufnr, vim.api.nvim_get_current_buf())
+        assert.are.equal(0, calls)
+        assert.are_not.equal(0, #vim.api.nvim_buf_get_extmarks(bufnr, namespace, 0, -1, {}))
+    end)
+end)
