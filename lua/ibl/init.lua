@@ -2,6 +2,7 @@ local highlights = require "ibl.highlights"
 local hooks = require "ibl.hooks"
 local autocmds = require "ibl.autocmds"
 local inlay_hints = require "ibl.inlay_hints"
+local virtual_lines = require "ibl.virtual_lines"
 local indent = require "ibl.indent"
 local vt = require "ibl.virt_text"
 local scp = require "ibl.scope"
@@ -21,6 +22,7 @@ local global_buffer_state = {}
 local clear_buffer = function(bufnr)
     vt.clear_buffer(bufnr)
     inlay_hints.clear_buffer(bufnr)
+    virtual_lines.clear_buffer(bufnr)
     for _, fn in pairs(hooks.get(bufnr, hooks.type.CLEAR)) do
         fn(bufnr)
     end
@@ -38,6 +40,7 @@ local setup = function(config)
     end
 
     inlay_hints.setup()
+    virtual_lines.setup()
     highlights.setup()
     autocmds.setup()
     M.initialized = true
@@ -166,6 +169,7 @@ M.clear_buffer_state = function(bufnr)
 
     global_buffer_state[bufnr] = nil
     inlay_hints.clear_buffer_state(bufnr)
+    virtual_lines.clear_buffer_state(bufnr)
     conf.clear_buffer_config(bufnr)
 end
 
@@ -224,6 +228,7 @@ M.refresh = function(bufnr)
 
     local range = math.min(win_end + config.viewport_buffer.min, vim.api.nvim_buf_line_count(bufnr))
     local lines = vim.api.nvim_buf_get_lines(bufnr, offset, range, false)
+    local vl_marks = virtual_lines.get_buffer_marks(bufnr, offset, range - 1)
 
     ---@type ibl.indent_options
     local indent_opts = {
@@ -337,8 +342,12 @@ M.refresh = function(bufnr)
 
     for i, line in ipairs(lines) do
         local row = i + offset
+        local row_marks = vl_marks and vl_marks[row - 1]
         if line_skipped[i] then
             vt.clear_buffer(bufnr, row)
+            if row_marks then
+                virtual_lines.set(bufnr, row - 1, {}, nil, row_marks)
+            end
             goto continue
         end
 
@@ -350,12 +359,18 @@ M.refresh = function(bufnr)
             local foldtext_whitespace = utils.get_whitespace(foldtext)
             if vim.fn.strdisplaywidth(foldtext_whitespace, 0) < vim.fn.strdisplaywidth(whitespace, 0) then
                 vt.clear_buffer(bufnr, row)
+                if row_marks then
+                    virtual_lines.set(bufnr, row - 1, {}, nil, row_marks)
+                end
                 goto continue
             end
         end
 
         if is_current_buffer and foldclosed > -1 and foldclosed + win_height < row then
             vt.clear_buffer(bufnr, row)
+            if row_marks then
+                virtual_lines.set(bufnr, row - 1, {}, nil, row_marks)
+            end
             goto continue
         end
 
@@ -435,6 +450,10 @@ M.refresh = function(bufnr)
         end
 
         -- Fix horizontal scroll
+        local vl_whitespace_tbl
+        if left_offset > 0 and row_marks then
+            vl_whitespace_tbl = whitespace_tbl
+        end
         whitespace_tbl = utils.fix_horizontal_scroll(whitespace_tbl, left_offset)
 
         for _, fn in
@@ -499,6 +518,33 @@ M.refresh = function(bufnr)
             pairs(hooks.get(bufnr, hooks.type.VIRTUAL_TEXT) --[=[@as ibl.hooks.cb.virtual_text[]]=])
         do
             virt_text = fn(buffer_state.tick, bufnr, row - 1, virt_text)
+        end
+
+        if row_marks then
+            local vl_virt_text = virt_text
+            if vl_whitespace_tbl then
+                for _, fn in
+                    pairs(hooks.get(bufnr, hooks.type.WHITESPACE) --[=[@as ibl.hooks.cb.whitespace[]]=])
+                do
+                    vl_whitespace_tbl = fn(buffer_state.tick, bufnr, row - 1, vl_whitespace_tbl)
+                end
+                vl_virt_text = vt.get(
+                    config,
+                    char_map,
+                    vl_whitespace_tbl,
+                    scope_active,
+                    scope_index,
+                    scope_start,
+                    scope_end,
+                    scope_col_start_single
+                )
+                for _, fn in
+                    pairs(hooks.get(bufnr, hooks.type.VIRTUAL_TEXT) --[=[@as ibl.hooks.cb.virtual_text[]]=])
+                do
+                    vl_virt_text = fn(buffer_state.tick, bufnr, row - 1, vl_virt_text)
+                end
+            end
+            virtual_lines.set(bufnr, row - 1, vl_virt_text, scope_hl.underline, row_marks)
         end
 
         -- Indent
